@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container">
+    <div class="jumbotron">
+      <div align='center'>
+        <h1>Методики, добавленные пользователем {{user.username}}</h1>
+        <img src="{{url_for('static', filename='profile_pics/'+user.profile_image)}}">
+      </div>
+    </div>
+
+
+  <div class="card-columns">
+  {% for method in methodics.items %}
+        <div class="card">
+          <img class="card-img-top" src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{method.title}}</h5>
+            <p class="card-text">{{method.short_desc}}</p>
+            <a class='btn btn-primary' href="{{url_for('methodics.method', method_id=method.id)}}">View Method</a>
+          </div>
+          <div class="" align='right' style="margin-right:5px">
+            <footer class="footer">
+              <small class="text-muted">
+                Published {{method.publish_date.strftime('%d %B %Y')}}
+                by: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
+                {% if method.change_date != None %}
+                  Updated: {{method.change_date.strftime('%d %B %Y')}}
+                {% endif %}
+              </small>
+            </footer>
+          </div>
+        </div>
+  {% endfor %}
+  </div>
+
+  <nav aria-label='Page Navigation example'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in methodics.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if methodics.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('users.user_methodics', username=user.username, page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('users.user_methodics', username=user.username, page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+
+{% endblock %}

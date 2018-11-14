@@ -1,0 +1,165 @@
+Блоки:
+
+          Views Blueprint 'core' template_folder='templates/core'
+          base
+          index
+          about
+
+Users - ведение пользователей, сообщения
+models:
+__tablename__ = 'users'
+  id (PK)
+  username
+  first_name
+  last_name
+  email
+  phone_num
+  address
+  curr_job_place
+  karma
+  password_hash
+  profile_image
+      relashionship
+      methodics (methodisc backref='author')
+
+          Views Blueprint
+          register
+          account
+          update
+          login
+          user_methods
+
+  __tablename__ = 'messages'
+  id (PK)
+  from
+  to
+  title
+  text
+  attachments
+  published
+  status
+
+
+Methodics - описание методик(+ фото, музыка, видео(ссылки)), коментарии, экспорт информации, классификация (категории, #-теги)
+__tablename__ = 'methodics'
+  id (PK)
+  user_id (FK users.id)
+  publish_date
+  change_date
+  title
+  short_desc
+  target            -цель
+  description
+  сonsumables       -материалы
+  timing_id         -ход занятия (FK timing.id)
+  method_label_image
+  presentation
+  images
+  music
+  video
+  literature
+  category (FK cotegories.id)
+  tags
+
+          Views Blueprint
+          create
+          view
+          update
+          delete
+
+
+__tablename__ = 'categories'
+  id (PK)
+  category_name
+  parrent_cat
+      relashionship
+      methodics (methodics backref='meth_list')
+
+          Views Blueprint
+          create
+          view
+          update
+          delete
+
+__tablename__ = 'method_timing' - ход занятия
+  id (PK)
+  duration
+  description
+      relashionship
+      steps (timing_steps backref='timing_steps')
+
+          Views Blueprint
+          create
+          view
+          update
+          delete
+
+__tablename__ = 'timing_steps'
+  id (PK)
+  method_timing_id (FK method_timing.id)
+  step_duration
+  step_desc
+  step_result
+  step_label_image
+
+
+          Views Blueprint
+          create
+          view
+          update
+          delete
+
+
+Projects - описание проекта, используемые методики, коментарии
+__tablename__ = 'projects'
+  id (PK)
+  proj_name
+  proj_short_desc
+  proj_desciprion
+  contacts
+  address
+  proj_label_image
+  methodisc
+
+          Views Blueprint
+          create
+          view
+          update
+          delete
+
+
+Courses - информация по текущему курсу на проекте, список участников, методический план с используемыми методиками, анкеты, отзывы, фотографии
+__tablename__ = 'courses'
+  id (PK)
+  project_id (FK projects.id)
+  title
+  description
+  course_label_image
+  start_date
+  finish_date
+        relashionship
+        members(members backref='members')
+
+          Views Blueprint
+          create
+          view
+          update
+          delete
+
+
+Members - участники программы
+__tablename__ = 'members'
+  id (PK)
+  course_id (FK course.id)
+  first_name
+  last_name
+  phone_num
+  address
+  description
+  member_avatar
+
+          Views Blueprint
+          create
+          view
+          update
+          delete

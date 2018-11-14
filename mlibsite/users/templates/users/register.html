@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="jumbotron">
+
+    <!--  FLASH  -->
+    {% for mess in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{ mess }}
+    </div>
+    {% endfor %}
+
+    <form method="POST">
+      {{form.hidden_tag()}}
+      <div class="form-group">
+        {{form.email.label()}}
+        {{form.email(class="form-control", placeholder="Введите свой существующий email")}}
+      </div>
+      <div class="form-group">
+        {{form.username.label()}}
+        {{form.username(class="form-control", placeholder="Придумайте себе имя пользователя")}}
+      </div>
+      <div class="form-group">
+        {{form.password.label()}}
+        {{form.password(class="form-control", placeholder="Введите свой пароль")}}
+      </div>
+      <div class="form-group">
+        {{form.pass_confirm.label()}}
+        {{form.pass_confirm(class="form-control", placeholder="Введите свой пароль еще раз")}}
+      </div>
+      <h5>Дополнительная информация</h5>
+      <p>Рекомендуется заполнить, но это не обязательно.</p>
+      <div class="form-group">
+        {{form.first_name.label()}}
+        {{form.first_name(class="form-control", placeholder="Ваше имя")}}
+      </div>
+      <div class="form-group">
+        {{form.last_name.label()}}
+        {{form.last_name(class="form-control", placeholder="Ваша фамилия")}}
+      </div>
+      <div class="form-group">
+        {{form.phone_num.label()}}
+        {{form.phone_num(class="form-control", placeholder="Номер телефона")}}
+      </div>
+      <div class="form-group">
+        {{form.address.label()}}
+        {{form.address(class="form-control", placeholder="Ваш адрес (город)")}}
+      </div>
+      <div class="form-group">
+        {{form.curr_job_place.label()}}
+        {{form.curr_job_place(class="form-control", placeholder="Место работы")}}
+      </div>
+      <div class="form-group">
+        {{form.submit()}}
+      </div>
+    </form>
+  </div>
+{% endblock %}
