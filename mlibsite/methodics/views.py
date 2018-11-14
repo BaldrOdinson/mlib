@@ -81,7 +81,7 @@ def update(method_id):
     if form.validate_on_submit():
         if form.method_label_image.data:
             method_id = method.id
-            pic = add_method_pic(form.method_label_image.data, method_id)
+            pic = add_method_pic(form.method_label_image.data, method_id) 
             method.method_label_image = pic
 
         # создание превьюшек картинок по указанным ссылкам
