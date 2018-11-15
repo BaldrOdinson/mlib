@@ -1,4 +1,4 @@
 # mlib
-Methodics Libruary Online
+Methodics Libruary Online.
 Flask Framework using Postgresql via SQLAlchemy. 
 Boostrap css
