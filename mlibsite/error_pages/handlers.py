@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 # вьюшка для описания ошибок
 from flask import Blueprint, render_template
 

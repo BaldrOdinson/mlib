@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 # related to forms
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField

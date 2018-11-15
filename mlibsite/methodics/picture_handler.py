@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 # pictures uploading
 import os, requests
 from PIL import Image

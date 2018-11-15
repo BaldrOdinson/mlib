@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 from mlibsite.models import Methodics
 from flask import render_template, request, Blueprint
 from mlibsite.methodics.text_formater import text_format_for_html

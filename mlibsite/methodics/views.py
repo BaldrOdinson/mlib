@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 from flask import render_template, url_for, flash, request, redirect, Blueprint
 from flask_login import current_user, login_required
 from mlibsite import db
@@ -81,7 +83,7 @@ def update(method_id):
     if form.validate_on_submit():
         if form.method_label_image.data:
             method_id = method.id
-            pic = add_method_pic(form.method_label_image.data, method_id) 
+            pic = add_method_pic(form.method_label_image.data, method_id)
             method.method_label_image = pic
 
         # создание превьюшек картинок по указанным ссылкам
