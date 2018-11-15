@@ -57,7 +57,7 @@ def thumbnail_for_net_pic(img_url, method_id):
 
 def thumbnail_list(img_url, method_id):
     """
-    Просто составляем лист со путями к превьюшкам
+    Просто составляем лист с путями к превьюшкам
     """
     thumb_list=[]
     img_curr_no=1
@@ -71,7 +71,7 @@ def thumbnail_list(img_url, method_id):
 
 def img_tupal(link, thumb):
     """
-    Создаем лист кортежей из url и пути к превьюшке
+    Создаем лист кортежей из url и пути к превьюшке для передачи форме
     """
     images_list=[]
     for i in range(len(link)):
