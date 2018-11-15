@@ -101,7 +101,7 @@ def account():
     return render_template('account.html', profile_image=profile_image, form=form)
 
 
-##### Методики конкретного автора #####
+##### Методики конкретного автора с выводом постранично #####
 @users.route('/<username>')
 def user_methodics(username):
     page = request.args.get('page', 1, type=int) # пригодится если страниц дохера, делаем разбивку по страницам
