@@ -5,6 +5,11 @@ from flask import url_for, current_app
 
 
 def add_method_pic(pic_upload, method_id):
+    '''
+    Меняем заглавную картинку для методики с той что уснатовленна по умолчанию.
+    Сохраняем ее в static\methodics_pics\method_ava\method_{method.id}
+    размером указанным в output_size
+    '''
 
     filename = pic_upload.filename
     ext_type = filename.split('.')[-1]
