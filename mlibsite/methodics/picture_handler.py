@@ -19,7 +19,7 @@ def add_method_pic(pic_upload, method_id):
     filename = pic_upload.filename
     ext_type = filename.split('.')[-1]
     storage_filename = 'method_'+str(method_id)+'.'+ext_type # Переименовываем картинку под текущюю методику
-    curr_folder_path = os.path.join('static', 'methodics_pics', 'method_ava')
+    curr_folder_path = os.path.join('static', 'methodics_pics', 'method_ava') # Расставляем слеши в зависимости от OS
 
     filepath = os.path.join(current_app.root_path, curr_folder_path, storage_filename)
     print(f'file path for pict save (filepath): {filepath}\ncurr_folder_path: {curr_folder_path}')
