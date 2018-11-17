@@ -16,8 +16,9 @@ def add_method_pic(pic_upload, method_id):
     filename = pic_upload.filename
     ext_type = filename.split('.')[-1]
     storage_filename = 'method_'+str(method_id)+'.'+ext_type # Переименовываем картинку под текущюю методику
+    curr_folder_path = os.path.join('static', 'methodics_pics', 'method_ava')
 
-    filepath = os.path.join(current_app.root_path, 'static\methodics_pics\method_ava', storage_filename)
+    filepath = os.path.join(current_app.root_path, curr_folder_path, storage_filename)
 
     output_size = (200, 200)
 
