@@ -18,7 +18,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # строка для sqlite
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir, 'data.sqlite')
 # строка для postgresql
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:admin42@localhost/mserver'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://mlib:mlib1@localhost/mlib'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
