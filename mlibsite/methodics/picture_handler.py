@@ -1,9 +1,12 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # pictures uploading
-import os, requests
+import os, requests, sys
 from PIL import Image
 from flask import url_for, current_app
+
+output_file = os.path.join(current_app.root_path, 'output_log')
+sys.stdout = open(output_file, 'w')
 
 
 def add_method_pic(pic_upload, method_id):
