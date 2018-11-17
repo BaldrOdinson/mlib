@@ -1,12 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 # pictures uploading
-import os, requests, sys
+import os, requests
 from PIL import Image
 from flask import url_for, current_app
-
-output_file = os.path.join(current_app.root_path, 'output_log')
-sys.stdout = open(output_file, 'w')
 
 
 def add_method_pic(pic_upload, method_id):
@@ -39,7 +36,8 @@ def thumbnail_for_net_pic(img_url, method_id):
     """
     output_size = (300, 200)
     storage_filename = ''
-    directory = os.path.join(current_app.root_path, 'static\methodics_pics\method_images', 'method_'+str(method_id))
+    curr_folder_path = os.path.join('static', 'methodics_pics', 'method_images')
+    directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -48,7 +46,7 @@ def thumbnail_for_net_pic(img_url, method_id):
     for url in img_url:
         storage_filename = 'method_'+str(method_id)+'_img'+str(img_curr_no)+'.png'
         thumb_filepath = 'methodics_pics/method_images/method_'+str(method_id)+'/'+storage_filename
-        filepath = os.path.join(current_app.root_path, 'static\methodics_pics\method_images\method_'+str(method_id), storage_filename)
+        filepath = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id), storage_filename)
         r = requests.get(url)
         with open('net_img.jpg', 'wb') as net_img:
             net_img.write(r.content)
