@@ -24,7 +24,7 @@ def add_method_pic(pic_upload, method_id, curr_pic):
     filepath = os.path.join(current_app.root_path, curr_folder_path, storage_filename)
     print(f'file path for pict save (filepath): {filepath}\ncurr_folder_path: {curr_folder_path}')
 
-    output_size = (200, 200)
+    output_size = (300, 300)
     # print(f'file path for pict update (pic_upload): {pic_upload}')
     pic = Image.open(pic_upload)
     pic.thumbnail(output_size)
