@@ -2,16 +2,6 @@
 {% block content %}
 <br>
   <div class="jumbotron">
-    <!--  FLASH  -->
-    {% for mess in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      {{ mess }}
-    </div>
-    {% endfor %}
-
     <h1>Методическая библиотека</h1>
     <h6>mlib.<span style="color:green">online</span></h6>
 
@@ -28,17 +18,16 @@
               {% for list in short_desc_dict[method.id] %}
                   <p class="card-text">{{ list }}</p>
               {% endfor %}
-
-              <!-- <p class="card-text">{{method.short_desc}}</p> -->
-              <a class='btn btn-primary' href="{{url_for('methodics.method', method_id=method.id)}}">View Method</a>
+              <!-- <p class="card-text">{{method.short_desc}}</p>  для показа без переносов-->
+              <a class='btn btn-primary' href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
             </div>
             <div class="" align='right' style="margin-right:5px">
               <footer class="footer">
                 <small class="text-muted">
-                  Published {{method.publish_date.strftime('%d %B %Y')}}
-                  by: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
+                  Автор: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
+                  Добавленно: {{method.publish_date.strftime('%d %B %Y')}}<br>
                   {% if method.change_date != None %}
-                    Updated: {{method.change_date.strftime('%d %B %Y')}}
+                    Последнее обновление: {{method.change_date.strftime('%d %B %Y')}}
                   {% endif %}
                 </small>
               </footer>

@@ -1,33 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
   <div class="jumbotron">
-    <!--  FLASH  -->
-    {% for mess in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      {{ mess }}
-    </div>
-    {% endfor %}
 
     <!-- Вывод методики в карточки по пунктам -->
-    <h1>{{method.title}}</h1>
-    <div align='right'>
-      <h6 class="card-subtitle mb-2 text-muted">Written By:
-      <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a></h6>
-      <h6 class="card-subtitle mb-2 text-muted">Published: {{method.publish_date.strftime('%d %B %Y')}}</h6>
-      {% if (method.change_date != None) %}
-        <h6 class="card-subtitle mb-2 text-muted">Updated: {{method.change_date.strftime('%d %B %Y')}}</h6>
-      {% endif %}
+    <div class="container">
+      <div class="row">
+        <div class="col-auto" align='center'>
+          <img align='center' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method_label_image)}}">
+        </div>
+        <div class="col-lg">
+          <h1>{{method.title}}</h1>
+          <div align='right'>
+            <h6 class="card-subtitle mb-2 text-muted">Автор:
+            <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a></h6>
+            <h6 class="card-subtitle mb-2 text-muted">Добавленно: {{method.publish_date.strftime('%d %B %Y')}}</h6>
+            {% if (method.change_date != None) %}
+              <h6 class="card-subtitle mb-2 text-muted">Последнее обновление: {{method.change_date.strftime('%d %B %Y')}}</h6>
+            {% endif %}
+          </div>
+          <!-- Вывод короткого описания -->
+            {% for line in short_desc %}
+              <p>{{line}}</p>
+            {% endfor %}
+        </div>
+      </div>
     </div>
-    <!-- Вывод короткого описания -->
-      {% for line in short_desc %}
-        <p>{{line}}</p>
-      {% endfor %}
   </div>
 
-    {% if (description != "" and method.literature != None) %}
+    {% if (method.target != "" and method.target != None) %}
       <div class="card">
         <h5 class="card-header">Достигаемые цели:</h5>
         <div class="card-body">
@@ -36,7 +36,7 @@
       </div>
     {% endif %}
 
-    {% if (description != "" and method.literature != None) %}
+    {% if (description != "" and method.description != None) %}
       <div class="card">
         <h5 class="card-header">Описание:</h5>
         <div class="card-body">
@@ -47,7 +47,7 @@
       </div>
     {% endif %}
 
-    {% if (method.consumables != "" and method.literature != None) %}
+    {% if (method.consumables != "" and method.consumables != None) %}
       <div class="card">
         <h5 class="card-header">Необходимые материалы:</h5>
         <div class="card-body">
@@ -63,7 +63,7 @@
     <h5>Презентация:</h5>
     {{method.presentation}}
 
-    {% if (method.images != "" and method.literature != None) %}
+    {% if (method.images != "" and method.images != None) %}
       <div class="card">
         <h5 class="card-header">Изображения:</h5>
         <div class="card-body">
@@ -71,13 +71,12 @@
               <a href="{{ link }}">
                 <img src="{{url_for('static', filename=''+thumb)}}" alt="" style="margin:3px; margin-top:3px; position: relative">
               </a>
-<!-- {{url_for('static', filename='profile_pics/'+current_user.profile_image)}} -->
           {% endfor %}
         </div>
       </div>
     {% endif %}
 
-    {% if (method.music != "" and method.literature != None) %}
+    {% if (method.music != "" and method.music != None) %}
       <div class="card">
         <h5 class="card-header">Музыка:</h5>
         <div class="card-body">
@@ -86,7 +85,7 @@
       </div>
     {% endif %}
 
-    {% if (method.video != "" and method.literature != None) %}
+    {% if (method.video != "" and method.video != None) %}
       <div class="card">
         <h5 class="card-header">Видео:</h5>
         <div class="card-body">
@@ -107,9 +106,10 @@
 
 
     {% if method.author == current_user %}
+      <br>
       <div class="" align='right'>
-        <a href="{{url_for('methodics.update', method_id=method.id)}}">Update</a>
-        <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal'>Delete</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+        <a class='btn btn-warning' href="{{url_for('methodics.update', method_id=method.id)}}">Изменить</a>
+        <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
       </div>
     {% endif %}
 
@@ -119,19 +119,19 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Delete Post?</h5>
+        <h5 class="modal-title">Удалить методику?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to delete the post?</p>
+        <p>Вы уверены что хотите полностью удалить методику?</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
         <!--  Вставка взамен существующей в примере кнопки-->
         <form action="{{url_for('methodics.delete_method', method_id=method.id)}}" method="POST">
-          <input class='btn btn-danger' type="submit" value="Delete">
+          <input class='btn btn-danger' type="submit" value="Удалить">
         </form>
       </div>
     </div>

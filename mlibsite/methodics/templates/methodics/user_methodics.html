@@ -16,15 +16,15 @@
           <div class="card-body">
             <h5 class="card-title">{{method.title}}</h5>
             <p class="card-text">{{method.short_desc}}</p>
-            <a class='btn btn-primary' href="{{url_for('methodics.method', method_id=method.id)}}">View Method</a>
+            <a class='btn btn-primary' href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
           </div>
           <div class="" align='right' style="margin-right:5px">
             <footer class="footer">
               <small class="text-muted">
-                Published {{method.publish_date.strftime('%d %B %Y')}}
-                by: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
+                Автор: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
+                Добавленно: {{method.publish_date.strftime('%d %B %Y')}}<br>
                 {% if method.change_date != None %}
-                  Updated: {{method.change_date.strftime('%d %B %Y')}}
+                  Последнее обновление: {{method.change_date.strftime('%d %B %Y')}}
                 {% endif %}
               </small>
             </footer>

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import render_template, url_for, flash, request, redirect, Blueprint
+from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import Methodics
@@ -8,6 +8,7 @@ from mlibsite.methodics.forms import MethodForm, UpdateMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from datetime import datetime
 from mlibsite.methodics.text_formater import text_format_for_html
+import os, shutil
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
 
@@ -43,7 +44,7 @@ def create_method():
 
         db.session.add(method)
         db.session.commit()
-        flash('Method Created')
+        flash('Методика добавлена')
         return redirect(url_for('core.index'))
     return render_template('create_method.html', form=form)
 
@@ -56,18 +57,25 @@ def method(method_id):
     description_html_list=text_format_for_html(method.description)
     short_desc_html_list=text_format_for_html(method.short_desc)
     # создание превьюшек картинок по указанным ссылкам
+    # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
+    # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
     image_html_links=text_format_for_html(method.images)
-    thumb_links=thumbnail_list(image_html_links, method.id)
-    images_list=img_tupal(image_html_links, thumb_links)
-    # print(f'images_list: {images_list}')
+    if method.images:
+        thumb_links=thumbnail_list(image_html_links, method.id)
+        images_list=img_tupal(image_html_links, thumb_links)
+    else:
+        images_list=[]
+        # print(f'images_list: {images_list}')
+    method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
                             description=description_html_list,
                             short_desc=short_desc_html_list,
-                            images_links=image_html_links,
-                            images_thumb_links=thumb_links,
+                            # images_links=image_html_links,
+                            # images_thumb_links=thumb_links,
                             images_list=images_list,
+                            method_label_image=method.method_label_image,
                             method=method)
 
 
@@ -82,16 +90,19 @@ def update(method_id):
     form = UpdateMethodForm()
 
     if form.validate_on_submit():
+        # Если пытаются изменить заглавную картинку
         if form.method_label_image.data:
             # print(f'Path from form: {form.method_label_image.data}')
             method_id = method.id
-            pic = add_method_pic(form.method_label_image.data, method_id)
+            pic = add_method_pic(form.method_label_image.data, method_id, method.method_label_image)
             method.method_label_image = pic
 
         # создание превьюшек картинок по указанным ссылкам
-        if form.images.data:
+        images_data = form.images.data
+        wrong_links = []
+        if form.images.data != method.images:
             image_html_links=text_format_for_html(form.images.data)
-            thumb_links=thumbnail_for_net_pic(image_html_links, method.id)
+            thumb_links, wrong_links, images_data = thumbnail_for_net_pic(image_html_links, method.id)
             # images_list=img_tupal(image_html_links, thumb_links)
 
         method.change_date = datetime.utcnow()
@@ -102,7 +113,7 @@ def update(method_id):
         method.consumables = form.consumables.data
         method.timing_id = form.timing_id.data
         method.presentation = form.presentation.data
-        method.images = form.images.data
+        method.images = images_data
         method.music = form.music.data
         method.video = form.video.data
         method.literature = form.literature.data
@@ -110,7 +121,14 @@ def update(method_id):
         method.tags = form.tags.data
 
         db.session.commit()
-        flash('Method Updated')
+
+        flash_text = 'Изменения и дополнения сохранены '
+        if len(wrong_links) != 0:
+            flash_text += 'но ссылка на картинку (или несколько): -> '
+            for link in wrong_links:
+                flash_text += link
+            flash_text += ' <- не открывается. Проерьте ее.'
+        flash(flash_text)
         return redirect(url_for('methodics.method', method_id=method_id))
     elif request.method == 'GET':
 
@@ -131,7 +149,7 @@ def update(method_id):
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
     return render_template('update_method.html',
                             method_label_image=method.method_label_image,
-                            title='Updating',
+                            title='Редактирование методики',
                             form=form)
 
 
@@ -145,5 +163,7 @@ def delete_method(method_id):
 
     db.session.delete(method)
     db.session.commit()
-    flash('Method Deleted')
+    del_meth_folder = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_images', 'method_'+str(method_id)))
+    shutil.rmtree(del_meth_folder, ignore_errors=True)
+    flash('Методика удалена')
     return redirect(url_for('core.index'))

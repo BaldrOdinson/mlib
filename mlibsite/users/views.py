@@ -35,7 +35,7 @@ def register():
 
         db.session.add(user)
         db.session.commit()
-        flash('Thanks for registration!')
+        flash('Спасибо что зарегистрировались.')
         return redirect(url_for('users.login'))
 
     return render_template('register.html', form=form)
@@ -50,7 +50,7 @@ def login():
 
         if user.check_password(form.password.data) and user is not None: # Проверка пароля
             login_user(user)
-            flash('Log in Success!')
+            flash('Вход успешно выполнен.')
 
             next = request.args.get('next') # Переход туда куда до этого хотел юзер
             if next == None or not next[0]=='/':
@@ -76,7 +76,7 @@ def account():
 
         if form.picture.data:
             username = current_user.username
-            pic = add_profile_pic(form.picture.data, username)
+            pic = add_profile_pic(form.picture.data, username, current_user.profile_image)
             current_user.profile_image = pic
 
         current_user.username = form.username.data
@@ -88,7 +88,7 @@ def account():
         current_user.curr_job_place = form.curr_job_place.data
 
         db.session.commit()
-        flash('User Account Updated.')
+        flash('Информация о пользователе обновлена.')
         return redirect(url_for('users.account'))
 
     elif request.method == 'GET':

@@ -5,17 +5,6 @@
       <h2>{{current_user.username}}, это страница с вашей информацией</h2>
       <img align='center' src="{{url_for('static', filename='profile_pics/'+current_user.profile_image)}}">
       <p>{{current_user.email}}</p>
-
-      <!--  FLASH  -->
-      {% for mess in get_flashed_messages() %}
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        {{ mess }}
-      </div>
-      {% endfor %}
-
     </div>
   </div>
 

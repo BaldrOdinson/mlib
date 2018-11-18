@@ -1,16 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
   <div class="jumbotron" align="center">
-    <!--  FLASH  -->
-    {% for mess in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      {{ mess }}
-    </div>
-    {% endfor %}
-
     <h2>Добавление методики</h2>
       {% if method %}
         <img align='center' src="{{url_for('static', filename='methodics_pics/method_ava'+method.method_label_image)}}">

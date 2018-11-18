@@ -19,6 +19,15 @@ def text_format_for_html(text):
     return html_text_list
 
 
+def text_from_list(data_list):
+    data_list = list(data_list)
+    combined_text = ''
+    for item in data_list:
+        combined_text = combined_text + item +'\n'
+    return combined_text
+
+
+
 if __name__ == '__main__':
     text='one\ntwo\nthree'
     text_format_for_html(text)
