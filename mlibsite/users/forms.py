@@ -12,14 +12,14 @@ from mlibsite.models import User
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Log In')
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    submit = SubmitField('Войти')
 
 
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     username = StringField('Имя пользователя (никнейм)', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired(), EqualTo('pass_confirm', message='Passwords must match!')])
+    password = PasswordField('Пароль', validators=[DataRequired(), EqualTo('pass_confirm', message='Парли должны совпадать!')])
     pass_confirm = PasswordField('Подтверждение пароля', validators=[DataRequired()])
     first_name = StringField('Имя')
     last_name = StringField('Фамилия')
@@ -30,15 +30,15 @@ class RegistrationForm(FlaskForm):
 
     def check_email(self, field):
         if User.query.filter_by(email=field.data).first():
-            raise ValidationError('Your email has been register already!')
+            raise ValidationError('Указанный вами email уже зарегистрирован.')
 
     def check_phone_num(self, field):
         if User.query.filter_by(phone_num=field.data).first():
-            raise ValidationError('Your phone number has been register already!')
+            raise ValidationError('Указанный вами номер телефона уже зарегистрирован.')
 
     def check_username(self, field):
         if User.query.filter_by(username=field.data).first():
-            raise ValidationError('Your username has been register already!')
+            raise ValidationError('Выбранное вами имя пользователя занято.')
 
 
 class UpdateUserForm(FlaskForm):
@@ -54,8 +54,8 @@ class UpdateUserForm(FlaskForm):
 
     def check_email(self, field):
         if User.query.filter_by(email=field.data).first():
-            raise ValidationError('Your email has been register already!')
+            raise ValidationError('Указанный вами email уже зарегистрирован.')
 
     def check_username(self, field):
         if User.query.filter_by(username=field.data).first():
-            raise ValidationError('Your username has been register already!')
+            raise ValidationError('Выбранное вами имя пользователя занято.')
