@@ -11,6 +11,7 @@ from mlibsite.methodics.text_formater import text_format_for_html
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
 
+
 # Views
 
 # Create
@@ -58,7 +59,7 @@ def method(method_id):
     image_html_links=text_format_for_html(method.images)
     thumb_links=thumbnail_list(image_html_links, method.id)
     images_list=img_tupal(image_html_links, thumb_links)
-    print(f'images_list: {images_list}')
+    # print(f'images_list: {images_list}')
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
@@ -82,6 +83,7 @@ def update(method_id):
 
     if form.validate_on_submit():
         if form.method_label_image.data:
+            # print(f'Path from form: {form.method_label_image.data}')
             method_id = method.id
             pic = add_method_pic(form.method_label_image.data, method_id)
             method.method_label_image = pic
