@@ -10,7 +10,7 @@ def add_profile_pic(pic_upload, username):
     filename = pic_upload.filename
     ext_type = filename.split('.')[-1]
     storage_filename = str(username)+'.'+ext_type # Переименовываем картинку под текущего юзера
-    folder_path = os.path.join('static', 'profile_pics')
+    folder_path = os.path.join('static', 'profile_pics_test_mark')
 
     filepath = os.path.join(current_app.root_path, folder_path, storage_filename)
 
