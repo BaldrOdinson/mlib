@@ -68,7 +68,7 @@ def thumbnail_for_net_pic(img_url, method_id):
                 curr_image.save(filepath, "PNG")
                 thumb_list.append(thumb_filepath)
                 images_data.append(url)
-                print(thumb_filepath)
+                # print(thumb_filepath)
             img_curr_no+=1
             os.remove('net_img.jpg')
         except:
@@ -88,6 +88,7 @@ def thumbnail_list(img_url, method_id):
     directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
     thumb_list=[]
     thumb_file_list = os.listdir(directory)
+    thumb_file_list.sort()
     for thumb in thumb_file_list:
         thumb_filepath = 'methodics_pics/method_images/method_'+str(method_id)+'/'+thumb
         thumb_list.append(thumb_filepath)
