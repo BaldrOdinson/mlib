@@ -23,13 +23,13 @@ class MethodForm(FlaskForm):
 
 
 class UpdateMethodForm(FlaskForm):
-    title = StringField('Название', validators=[DataRequired()])
-    method_label_image = FileField('Загрузите заглавное изображение для этой методики (jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
+    title = StringField('Название методики', validators=[DataRequired()])
+    method_label_image = FileField('Для изменения заглавного изображения этой методики<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
     short_desc = TextAreaField('Короткое описание', validators={DataRequired()})
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
     consumables = TextAreaField('Используемые материалы')
-    timing_id = IntegerField('Ход занятия', default=1)
+    timing_id = IntegerField('Длительность занятия ', default=1)
     presentation = StringField('Презентация')
     images = TextAreaField('Картинки')
     music = TextAreaField('Музыка')

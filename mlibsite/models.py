@@ -62,7 +62,7 @@ class Methodics(db.Model):
     target = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
     consumables = db.Column(db.Text)
-    timing_id = db.Column(db.Integer, db.ForeignKey('method_timing.id'), nullable=False, default=1)
+    timing_id = db.Column(db.Integer, db.ForeignKey('method_timing.id'))
     method_label_image = db.Column(db.String(64), nullable=False, default='default_method.png')
     presentation = db.Column(db.String(64))
     images = db.Column(db.Text)
@@ -115,12 +115,14 @@ class MethodTiming(db.Model):
     __tablename__ = 'method_timing'
 
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(256), nullable=False)
+    method_id = db.Column(db.Integer, db.ForeignKey('methodics.id'), nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
     # Relationships
     steps = db.relationship('TimingSteps', backref='steps', lazy=True)
 
-    def __init__(self, description):
-        self.description = description
+    def __init__(self, method_id, duration):
+        self.method_id = method_id
+        self.duration = duration
 
 
 ### Этапы занятия ###
@@ -130,6 +132,12 @@ class TimingSteps(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     method_timing_id = db.Column(db.Integer, db.ForeignKey('method_timing.id'), nullable=False)
     step_duration = db.Column(db.Integer, nullable=False)
-    step_desc = db.Column(db.String(256), nullable=False)
+    step_desc = db.Column(db.Text, nullable=False)
     step_result = db.Column(db.Text, nullable=False)
     step_label_image = db.Column(db.String(64), nullable=False, default='default_step.png')
+
+    def __init__(self, method_timing_id, step_duration, step_desc, step_result):
+        self.method_timing_id = method_timing_id
+        self.step_duration = step_duration
+        self.step_desc = step_desc
+        self.step_result = step_result

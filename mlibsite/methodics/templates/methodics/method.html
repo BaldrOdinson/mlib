@@ -10,6 +10,10 @@
         </div>
         <div class="col-lg">
           <h1>{{method.title}}</h1>
+          <!-- Вывод короткого описания -->
+          {% for line in short_desc %}
+            <p>{{line}}</p>
+          {% endfor %}
           <div align='right'>
             <h6 class="card-subtitle mb-2 text-muted">Автор:
             <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a></h6>
@@ -18,10 +22,6 @@
               <h6 class="card-subtitle mb-2 text-muted">Последнее обновление: {{method.change_date.strftime('%d %B %Y')}}</h6>
             {% endif %}
           </div>
-          <!-- Вывод короткого описания -->
-            {% for line in short_desc %}
-              <p>{{line}}</p>
-            {% endfor %}
         </div>
       </div>
     </div>
