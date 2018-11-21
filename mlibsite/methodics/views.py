@@ -3,7 +3,7 @@
 from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app
 from flask_login import current_user, login_required
 from mlibsite import db
-from mlibsite.models import Methodics
+from mlibsite.models import Methodics, MethodTiming, TimingSteps
 from mlibsite.methodics.forms import MethodForm, UpdateMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from datetime import datetime
@@ -131,13 +131,18 @@ def update(method_id):
         flash(flash_text)
         return redirect(url_for('methodics.method', method_id=method_id))
     elif request.method == 'GET':
+        # Если задан тайминг, показываем длительность занятия
+        timing = MethodTiming.query.filter_by(method_id=method_id).first()
+        if timing:
+            form.timing_id.data = timing.duration
+        else:
+            form.timing_id.data = method.timing_id
 
         form.title.data = method.title
         form.short_desc.data = method.short_desc
         form.target.data = method.target
         form.description.data = method.description
         form.consumables.data = method.consumables
-        form.timing_id.data = method.timing_id
         form.presentation.data = method.presentation
         form.images.data = method.images
         form.music.data = method.music
@@ -150,6 +155,8 @@ def update(method_id):
     return render_template('update_method.html',
                             method_label_image=method.method_label_image,
                             title='Редактирование методики',
+                            method_id = method.id,
+                            timing_id = form.timing_id.data,
                             form=form)
 
 

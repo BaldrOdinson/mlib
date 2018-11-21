@@ -19,7 +19,7 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     username = StringField('Имя пользователя (никнейм)', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired(), EqualTo('pass_confirm', message='Парли должны совпадать!')])
+    password = PasswordField('Пароль', validators=[DataRequired(), EqualTo('pass_confirm', message='Пароли должны совпадать!')])
     pass_confirm = PasswordField('Подтверждение пароля', validators=[DataRequired()])
     first_name = StringField('Имя')
     last_name = StringField('Фамилия')

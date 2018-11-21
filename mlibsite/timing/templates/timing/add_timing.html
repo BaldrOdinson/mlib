@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="jumbotron" align="center">
+  <h2>Ход занятия</h2>
+  <p>Укажите длительность занятия, добавьте <strong>по порядку</strong> необходимое количество этапов и нажмите Сохранить</p>
+</div>
+
+
+<div class="container">
+  <form class="form-group" method="post">
+    {{form.hidden_tag()}}
+    <div class="form-group">
+      {{form.duration.label(class='form-control-label')}}
+      {{form.duration(class='form-control form-control-lg')}}
+    </div>
+    {% if form.duration.error %}
+        <ul class="errors">{% for error in form.duration.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+    {% endif %}
+
+    <div class="form-group" align='right'>
+      {{form.submit(class='btn btn-outline-info')}}
+    </div>
+    <p>Этапы занятия</p>
+    <!-- Цикл с привязанными этапами -->
+    <div class="container">
+      {% for step in steps %}
+        <div class="card text-center">
+          <div class="card-header">
+            {{step.step_duration}} минут
+          </div>
+          <div class="card-body">
+            <h5 class="card-tytle">
+              {{step.step_desc}}
+            </h5>
+            <p class='card-text'>Результат этапа: {{step.step_result}}</p>
+            {% if method_author == current_user %}
+              <br>
+              <div class="" align='right'>
+                <a class='btn btn-outline-warning' href="{{url_for('timing.step_update', step_id=step.id)}}">Изменить</a>
+                <button type="button" class='btn btn-outline-danger' data-toggle='modal' data-target='#del_modal'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="modal" tabindex="-1" role="dialog" id='del_modal'>   <!--  id='del_modal' это тоже имя что и в настройке кнопки data-target='#del_modal'-->
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Удалить этап занятия?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Вы уверены что хотите полностью удалить этап занятия?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                <!--  Вставка взамен существующей в примере кнопки-->
+                <a class='btn btn-danger' href="{{url_for('timing.delete_timing_step', step_id=step.id)}}">Удалить</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <br>
+
+    Осталось свободного времени:
+    {% if timing_left < 0 %}
+      <span style='color:red'>{{timing_left}} мин.</span>
+    {% else %}
+      <span style='color:green'>{{timing_left}} мин.</span>
+    {% endif %}
+    <div class="form-group">
+      <!-- timing{{timing_id}} method{{method_id}} -->
+      <a class='btn btn-success' href="{{url_for('timing.add_timing_step', timing_id=timing_id)}}">Добавить этап</a>
+    </div>
+
+
+  </form>
+</div>
+
+{% endblock %}
