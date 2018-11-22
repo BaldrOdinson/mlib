@@ -62,7 +62,7 @@ class Methodics(db.Model):
     target = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
     consumables = db.Column(db.Text)
-    timing_id = db.Column(db.Integer, db.ForeignKey('method_timing.id'))
+    timing_id = db.Column(db.Integer)
     method_label_image = db.Column(db.String(64), nullable=False, default='default_method.png')
     presentation = db.Column(db.String(64))
     images = db.Column(db.Text)
