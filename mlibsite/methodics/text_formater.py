@@ -20,10 +20,15 @@ def text_format_for_html(text):
 
 
 def text_from_list(data_list):
+    """
+    Берем каждое значение из списка и объединяем в общий текст
+    с переносом после каждого значения
+    """
     data_list = list(data_list)
     combined_text = ''
     for item in data_list:
-        combined_text = combined_text + item +'\n'
+        # combined_text = combined_text + item +'\n'
+        combined_text = combined_text + item
     return combined_text
 
 

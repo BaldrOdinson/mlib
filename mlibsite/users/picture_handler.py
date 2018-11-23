@@ -7,6 +7,9 @@ from flask import url_for, current_app
 from time import time
 
 def add_profile_pic(pic_upload, username, profile_image):
+    """
+    Берем загруженную в формы картинку, изменяем размер, сохраняем по адресу в static
+    """
 
     filename = pic_upload.filename
     timestamp = str(time()*1000).split('.')[0]

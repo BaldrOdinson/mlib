@@ -53,7 +53,7 @@
       {% if timing_id %}
         {{form.timing_id.label(class='form-control-label')}}
         {{timing_id}} минут <br>
-        <a class='btn btn-warning' href="{{url_for('timing.edit_timing', method_id=method_id)}}">Ход занятия</a>
+        <a class='btn btn-warning' href="{{url_for('timing.edit_timing', method_id=method_id)}}">Этапы занятия</a>
       {% else %}
         {{form.timing_id.label(class='form-control-label')}}
         {{timing_id}}
@@ -76,6 +76,28 @@
       {{form.literature.label(class='form-control-label')}}
       {{form.literature(class='form-control form-control-lg')}}
     </div>
+    <!-- Блок работы с презентацией -->
+    {% if curr_presentation %}
+      Прикрепленная презентация:<br> {{curr_presentation}}
+      <a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method_id)}}">Скачать</a>
+      <a class='btn btn-outline-danger btn-sm' href="{{url_for('methodics.delete_presentation', method_id=method_id)}}">Удалить</a>
+      <div class="form-group">
+        Для замены презентации (pdf, pptx)
+        {{form.presentation(class='form-control-file')}}
+      </div>
+    {% else %}
+    <div class="form-group">
+      {{form.presentation.label(class='form-control-label')}}
+      {{form.presentation(class='form-control-file')}}
+    </div>
+    {% endif %}
+
+    <!-- Прикрепленная презентация: {{curr_presentation}}
+    <a class='btn btn-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method_id)}}">Скачать</a>
+    <div class="form-group">
+      {{form.presentation.label(class='form-control-label')}}
+      {{form.presentation(class='form-control-file')}}
+    </div> -->
     <div class="form-group">
       {{form.tags.label(class='form-control-label')}}
       {{form.tags(class='form-control form-control-lg')}}

@@ -64,7 +64,7 @@ class Methodics(db.Model):
     consumables = db.Column(db.Text)
     timing_id = db.Column(db.Integer)
     method_label_image = db.Column(db.String(64), nullable=False, default='default_method.png')
-    presentation = db.Column(db.String(64))
+    presentation = db.Column(db.String(256))
     images = db.Column(db.Text)
     music = db.Column(db.Text)
     video = db.Column(db.Text)
@@ -72,20 +72,21 @@ class Methodics(db.Model):
     category = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False, default=1)
     tags = db.Column(db.Text)
 
-    def __init__(self, user_id, title, short_desc, target, description, consumables, timing_id,
-                 presentation, images, music, video, literature, category, tags):
+    def __init__(self, user_id, title, short_desc, target, description,
+                # consumables, timing_id, presentation, images, music, video, literature,
+                category, tags):
         self.user_id = user_id
         self.title = title
         self.short_desc = short_desc
         self.target = target
         self.description = description
-        self.consumables = consumables
-        self.timing_id = timing_id
-        self.presentation = presentation
-        self.images = images
-        self.music = music
-        self.video = video
-        self.literature = literature
+        # self.consumables = consumables
+        # self.timing_id = timing_id
+        # self.presentation = presentation
+        # self.images = images
+        # self.music = music
+        # self.video = video
+        # self.literature = literature
         self.category = category
         self.tags = tags
 

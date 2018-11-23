@@ -27,6 +27,9 @@ timing = Blueprint('timing', __name__, template_folder='templates/timing')
 @timing.route('/<int:method_id>/timing', methods=['GET', 'POST'])
 @login_required
 def add_timing(method_id):
+    """
+    Создаем новый тайминг для методики method_id
+    """
     form = AddTimingForm()
 
     if form.validate_on_submit():
@@ -49,7 +52,9 @@ def add_timing(method_id):
 @timing.route('/timing_<int:timing_id>/timing_steps', methods=['GET', 'POST'])
 @login_required
 def add_timing_step(timing_id):
-
+    """
+    Создаем новый этап у тайминга timing_id
+    """
     form = AddTimingStepsForm()
 
     if form.validate_on_submit():
@@ -62,6 +67,10 @@ def add_timing_step(timing_id):
         db.session.commit()
         method = Methodics.query.filter_by(timing_id=timing_id).first()
         return redirect(url_for('timing.edit_timing', method_id=method.id))
+    # Если первая загрузка формы поле step_duration не проверяем.
+    if (form.step_duration.data == None and
+        (form.step_desc.data != None or form.step_result.data != None)):
+        form.check_duration_data_type(form.step_duration)
     return render_template('add_timing_step.html', form=form, timing_id=timing_id)
 
 
@@ -69,6 +78,9 @@ def add_timing_step(timing_id):
 @timing.route('/<int:method_id>/timing_update', methods=['GET', 'POST'])
 @login_required
 def edit_timing(method_id):
+    """
+    Редактируем и дополняем существующий тайминг для методики method_id
+    """
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     method = Methodics.query.get_or_404(method_id)
     # steps = TimingSteps.query.filter_by(method_timing_id=method.timing_id)
@@ -86,7 +98,7 @@ def edit_timing(method_id):
     elif request.method == 'GET':
         form.duration.data = timing.duration
     form.check_duration_data_type(form.duration)
-    return render_template('add_timing.html',
+    return render_template('update_timing.html',
                                     form=form,
                                     timing_id=timing.id,
                                     method_author=method.author,
@@ -99,7 +111,9 @@ def edit_timing(method_id):
 @timing.route('/step_<int:step_id>/timing_steps_update', methods=['GET', 'POST'])
 @login_required
 def step_update(step_id):
-
+    """
+    Редактируем существующий этап (step_id) тайминга
+    """
     form = AddTimingStepsForm()
 
     # step = TimingSteps.query.get_or_404(step_id)
@@ -126,11 +140,14 @@ def step_update(step_id):
 @timing.route('/step_<int:step_id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_timing_step(step_id):
+    """
+    Удаляем этап (step_id) тайминга
+    """
     step = TimingSteps.query.get_or_404(step_id)
     timing_id = step.method_timing_id
     method = Methodics.query.filter_by(timing_id=timing_id).first()
     print(f'id {step_id}, step_id {step_id}')
     db.session.delete(step)
     db.session.commit()
-    flash('Этап занятия удален')
+    flash('Этап занятия удален', 'warning')
     return redirect(url_for('timing.edit_timing', method_id=method.id))

@@ -60,8 +60,15 @@
     <pre STYLE="font-size: 12pt; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif">{{method.consumables}}</pre>
     {{method.consumables}} -->
 
-    <h5>Презентация:</h5>
-    {{method.presentation}}
+    {% if (method.presentation != "" and method.presentation != None) %}
+      <div class="card">
+        <h5 class="card-header">Презентация:</h5>
+        <div class="card-body">
+          {{method.presentation}}
+          <a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method.id)}}">Скачать</a>
+        </div>
+      </div>
+    {% endif %}
 
     {% if (method.images != "" and method.images != None) %}
       <div class="card">
@@ -89,7 +96,9 @@
       <div class="card">
         <h5 class="card-header">Видео:</h5>
         <div class="card-body">
-          {{method.video}}
+          {% for video in videos %}
+              <iframe width="560" height="315" style="margin:3px; margin-top:3px; position: relative" src="{{video}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          {% endfor %}
         </div>
       </div>
     {% endif %}
@@ -102,7 +111,6 @@
         </div>
       </div>
     {% endif %}
-
 
 
     {% if method.author == current_user %}
@@ -138,4 +146,5 @@
   </div>
 </div>
 <p></p>
+
 {% endblock %}

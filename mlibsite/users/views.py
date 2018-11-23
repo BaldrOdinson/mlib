@@ -35,7 +35,7 @@ def register():
 
         db.session.add(user)
         db.session.commit()
-        flash('Спасибо что зарегистрировались.')
+        flash('Спасибо что зарегистрировались.', 'success')
         return redirect(url_for('users.login'))
 
     return render_template('register.html', form=form)
@@ -50,7 +50,7 @@ def login():
 
         if user.check_password(form.password.data) and user is not None: # Проверка пароля
             login_user(user)
-            flash('Вход успешно выполнен.')
+            flash('Вход успешно выполнен.', 'success')
 
             next = request.args.get('next') # Переход туда куда до этого хотел юзер
             if next == None or not next[0]=='/':
@@ -88,7 +88,7 @@ def account():
         current_user.curr_job_place = form.curr_job_place.data
 
         db.session.commit()
-        flash('Информация о пользователе обновлена.')
+        flash('Информация о пользователе обновлена.', 'success')
         return redirect(url_for('users.account'))
 
     elif request.method == 'GET':

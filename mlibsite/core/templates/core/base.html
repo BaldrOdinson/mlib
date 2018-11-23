@@ -32,8 +32,24 @@
     </nav>
 
     <!--  FLASH  -->
-    {% for mess in get_flashed_messages() %}
+    {% for mess in get_flashed_messages(category_filter=['negative']) %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{ mess }}
+    </div>
+    {% endfor %}
+    {% for mess in get_flashed_messages(category_filter=['warning']) %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{ mess }}
+    </div>
+    {% endfor %}
+    {% for mess in get_flashed_messages(category_filter=['success']) %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>

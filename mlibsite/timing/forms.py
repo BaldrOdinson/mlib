@@ -12,7 +12,7 @@ class AddTimingForm(FlaskForm):
 
     def check_duration_data_type(self, field):
         if not field.data:
-            flash('Значение длительности не выглядит как правильное')
+            flash('Значение длительности не выглядит как правильное', 'negative')
 
 
 class AddTimingStepsForm(FlaskForm):
@@ -23,5 +23,5 @@ class AddTimingStepsForm(FlaskForm):
 
     def check_duration_data_type(self, field):
         if not field.data:
-            flash('Значение длительности не выглядит как правильное')
+            flash('Значение длительности не выглядит как правильное', 'negative')
             # raise ValidationError('Значение длительности не выглядит как привильное значение')

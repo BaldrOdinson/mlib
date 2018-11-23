@@ -11,7 +11,7 @@ from mlibsite.methodics.text_formater import text_from_list
 def add_method_pic(pic_upload, method_id, curr_pic):
     '''
     Меняем заглавную картинку для методики с той что уснатовленна по умолчанию.
-    Сохраняем ее в static\methodics_pics\method_ava\method_{method.id}
+    Сохраняем ее в static/methodics_pics/method_ava/method_{method.id}
     размером указанным в output_size
     '''
 
@@ -79,6 +79,7 @@ def thumbnail_for_net_pic(img_url, method_id):
     # Преобразуем лист images_data с корректными ссылками в строку
     images_data_str = text_from_list(images_data)
     return thumb_list, wrong_links, images_data_str
+
 
 def thumbnail_list(img_url, method_id):
     """
