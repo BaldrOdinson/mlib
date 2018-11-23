@@ -125,7 +125,7 @@ def update(method_id):
             thumb_links, wrong_links, images_data = thumbnail_for_net_pic(image_html_links, method.id)
 
         # обработка ссылок на видео
-        video_link = form.video.data
+        video_data= form.video.data
         wrong_video_links = []
         if form.video.data != method.video:
             video_html_links=text_format_for_html(form.video.data)
