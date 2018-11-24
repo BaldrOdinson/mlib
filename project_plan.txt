@@ -1,3 +1,17 @@
+ToDo:
+Music
+Tags
+Categories
+Admin User
+Reset password
+Email confirmation
+upload images
+images for steps
+Real example photo
+view of linked images/video/audio with delete button
+
+
+
 Блоки:
 
           Views Blueprint 'core' template_folder='templates/core'

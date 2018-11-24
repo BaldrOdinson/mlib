@@ -29,7 +29,7 @@ class UpdateMethodForm(FlaskForm):
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
     consumables = TextAreaField('Используемые материалы')
-    timing_id = IntegerField('Длительность занятия ', default=1)
+    timing_id = IntegerField('Длительность занятия ')
     presentation = FileField('Для загрузки файла с презентацией (pdf, pptx)', validators=[FileAllowed(['pdf', 'pptx'])])
     images = TextAreaField('Картинки')
     music = TextAreaField('Музыка')
