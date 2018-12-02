@@ -113,7 +113,7 @@
     {% endif %}
 
 
-    {% if method.author == current_user %}
+    {% if ((method.author == current_user) or (current_user.username == 'Administrator')) %}
       <br>
       <div class="" align='right'>
         <a class='btn btn-warning' href="{{url_for('methodics.update', method_id=method.id)}}">Изменить</a>

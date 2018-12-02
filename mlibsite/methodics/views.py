@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, send_file
+from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, send_file, abort
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import Methodics, MethodTiming, TimingSteps
@@ -97,8 +97,8 @@ def method(method_id):
 @login_required
 def update(method_id):
     method = Methodics.query.get_or_404(method_id)
-    if method.author != current_user:
-        abort(403)  # Проверяем что изменения вносит автор, иначе 403 (все в сад)
+    if ((method.author != current_user) and (current_user.username != 'Administrator')):
+        abort(403)  # Проверяем что изменения вносит автор или админ, иначе 403 (все в сад)
     # для показа названия презентации
     presentation_filename = method.presentation
 
@@ -201,7 +201,7 @@ def update(method_id):
 @login_required
 def delete_method(method_id):
     method = Methodics.query.get_or_404(method_id)
-    if method.author != current_user:
+    if ((method.author != current_user) and (current_user.username != 'Administrator')):
         abort(403)
 
     db.session.delete(method)
@@ -233,7 +233,7 @@ def delete_presentation(method_id):
     Удаляем презентацияю для выбранной методики вместе с директорией
     """
     method = Methodics.query.get_or_404(method_id)
-    if method.author != current_user:
+    if ((method.author != current_user) and (current_user.username != 'Administrator')):
         abort(403)
     filename = method.presentation
     curr_folder_path = os.path.join('static', 'methodics_presentations')
