@@ -3,10 +3,11 @@
 
 #user's views
 from flask import render_template, url_for, flash, redirect, request, Blueprint
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_user import current_user, login_required
+# from flask_login import logout_user
 from mlibsite import db
 from mlibsite.models import User, Methodics
-from mlibsite.users.forms import RegistrationForm, LoginForm, UpdateUserForm
+from mlibsite.users.forms import UpdateUserForm
 from mlibsite.users.picture_handler import add_profile_pic
 
 users = Blueprint('users', __name__, template_folder='templates/users')
@@ -18,51 +19,20 @@ users = Blueprint('users', __name__, template_folder='templates/users')
 # user's list of Blog posts
 
 ##### REGISTER #####
-@users.route('/register', methods=['GET', 'POST'])
+@users.route('/user/register', methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm()
-
-    if form.validate_on_submit():
-        # Создаем экземпляр класса User из данных полученно формы
-        user = User(username=form.username.data,
-                    first_name=form.first_name.data,
-                    last_name=form.last_name.data,
-                    email=form.email.data,
-                    phone_num=form.phone_num.data,
-                    address=form.address.data,
-                    curr_job_place=form.curr_job_place.data,
-                    password=form.password.data)
-
-        db.session.add(user)
-        db.session.commit()
-        flash('Спасибо что зарегистрировались.', 'success')
-        return redirect(url_for('users.login'))
-
-    return render_template('register.html', form=form)
+    return redirect(url_for('/user/login'))
 
 ##### LOGIN ######
-@users.route('/login', methods=['GET', 'POST'])
+@users.route('/user/sign-in', methods=['GET', 'POST'])
+@login_required
 def login():
-    form = LoginForm()
-
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first() # Проверка на существование юзера в базе
-
-        if user.check_password(form.password.data) and user is not None: # Проверка пароля
-            login_user(user)
-            flash('Вход успешно выполнен.', 'success')
-
-            next = request.args.get('next') # Переход туда куда до этого хотел юзер
-            if next == None or not next[0]=='/':
-                next = url_for('core.index')
-            return redirect(next)
-    return render_template('login.html', form=form)
+    return redirect(url_for('core.index'))
 
 
 ##### LOGOUT #####
-@users.route('/logout')
+@users.route('/user/sign-out')
 def logout():
-    logout_user()
     return redirect(url_for('core.index'))
 
 

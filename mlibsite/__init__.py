@@ -4,7 +4,8 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_mail import Mail
+from flask_babel import Babel
 
 app = Flask(__name__)
 
@@ -14,23 +15,33 @@ app.config['SECRET_KEY'] = 'mysecretkey'
 # DATABASE SETUP
 ############################################################
 basedir = os.path.abspath(os.path.dirname(__file__))
-# строка для sqlite
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir, 'data.sqlite')
 # строка для postgresql
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql://mlib:mlib1@localhost/mlib'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['CSRF_ENABLED'] = True
+app.config['USER_ENABLE_EMAIL'] = True
+app.config['USER_ENABLE_CONFIRM_EMAIL'] = True
+app.config['USER_APP_NAME'] = 'M-LIB'  # For using in mail
+app.config['USER_AFTER_REGISTER_ENDPOINT'] = 'user.login'
+app.config['USER_AFTER_FORGOT_PASSWORD_ENDPOINT'] = 'core.index'
+app.config['USER_AFTER_RESET_PASSWORD_ENDPOINT'] = 'user.login'
+app.config['USER_AFTER_LOGOUT_ENDPOINT'] = 'core.index'
+# Mail settings
+app.config.from_pyfile('config.cfg')
 
 db = SQLAlchemy(app)
 Migrate(app, db)
+mail = Mail(app)
+# translation
+app.config['BABEL_DEFAULT_LOCALE'] = 'ru'
+babel = Babel(app)
 
-############################################################
-# LOGIN CONFIGURATIONS
-############################################################
-login_manager = LoginManager()
-
-login_manager.init_app(app)
-login_manager.login_view = 'users.login'
-
+# Use the browser's language preferences to select an available translation
+@babel.localeselector
+def get_locale():
+    translations = [str(translation) for translation in babel.list_translations()]
+    # return request.accept_languages.best_match(translations)
+    return 'ru'
 
 
 ############################################################
