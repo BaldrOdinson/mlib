@@ -55,6 +55,11 @@ def thumbnail_for_net_pic(img_url, method_id):
     img_curr_no=1
     timestamp = str(time()*1000).split('.')[0]
     old_thimbs = os.listdir(directory)
+    # Удаляем старые превьюшки
+    for old_file in old_thimbs:
+        curr_filepath = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id), old_file)
+        os.remove(curr_filepath)
+    # Формируем новые
     for url in img_url:
         storage_filename = 'method_'+str(method_id)+'_img'+str(img_curr_no)+'_'+timestamp+'.png'
         thumb_filepath = 'methodics_pics/method_images/method_'+str(method_id)+'/'+storage_filename
@@ -73,9 +78,6 @@ def thumbnail_for_net_pic(img_url, method_id):
             os.remove('net_img.jpg')
         except:
             wrong_links.append(url)
-    for old_file in old_thimbs:
-        curr_filepath = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id), old_file)
-        os.remove(curr_filepath)
     # Преобразуем лист images_data с корректными ссылками в строку
     images_data_str = text_from_list(images_data)
     return thumb_list, wrong_links, images_data_str
