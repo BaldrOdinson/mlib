@@ -1,14 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from mlibsite import db, login_manager
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from mlibsite import db, app
+from flask_user import UserMixin, SQLAlchemyAdapter, UserManager
 from datetime import datetime
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
 
 ### Авторы ###
 class User(db.Model, UserMixin):
@@ -16,34 +11,31 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, index=True)
+    username = db.Column(db.String(64), unique=True, index=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False, server_default='')
+    active = db.Column(db.Boolean(), nullable=False, server_default='0')
+    email = db.Column(db.String(64), unique=True, index=True)
+    confirmed_at = db.Column(db.DateTime())
+    # addition information
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
-    email = db.Column(db.String(64), unique=True, index=True)
     phone_num = db.Column(db.String(64), unique=True, index=True)
     address = db.Column(db.String(254))
     curr_job_place = db.Column(db.String(254))
     karma = db.Column(db.Integer, nullable=False, default=0)
-    password_hash = db.Column(db.String(128))
     profile_image = db.Column(db.String(64), nullable=False, default='default_profile.png')
     # Relationships
     posts = db.relationship('Methodics', backref='author', lazy=True)
 
-    def __init__(self, username, first_name, last_name, email, phone_num, address, curr_job_place, password):
-     self.username = username
-     self.first_name = first_name
-     self.last_name = last_name
-     self.email = email
-     self.phone_num = phone_num
-     self.address = address
-     self.curr_job_place = curr_job_place
-     self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
     def __repr__(self):
         return f'Username {self.username}'
+
+
+############################################################
+# USER CONFIGURATIONS
+############################################################
+db_adapter = SQLAlchemyAdapter(db, User)
+user_manager = UserManager(db_adapter, app)
 
 
 ### Методики ###
@@ -72,24 +64,14 @@ class Methodics(db.Model):
     category = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False, default=1)
     tags = db.Column(db.Text)
 
-    def __init__(self, user_id, title, short_desc, target, description,
-                # consumables, timing_id, presentation, images, music, video, literature,
-                category, tags):
+    def __init__(self, user_id, title, short_desc, target, description,  category, tags):
         self.user_id = user_id
         self.title = title
         self.short_desc = short_desc
         self.target = target
         self.description = description
-        # self.consumables = consumables
-        # self.timing_id = timing_id
-        # self.presentation = presentation
-        # self.images = images
-        # self.music = music
-        # self.video = video
-        # self.literature = literature
         self.category = category
         self.tags = tags
-
 
     def __repr__(self):
         return f'Post ID: {self.id} -- Date {self.date} -- {self.title}'
@@ -107,8 +89,6 @@ class Categories(db.Model):
 
     def __init__(self, category_name):
         self.category_name = category_name
-
-
 
 
 ### Тайминг занятия ###
