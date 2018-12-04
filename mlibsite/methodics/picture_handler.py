@@ -61,7 +61,7 @@ def thumbnail_for_net_pic(img_url, method_id):
         os.remove(curr_filepath)
     # Формируем новые
     for url in img_url:
-        storage_filename = 'method_'+str(method_id)+'_img'+str(img_curr_no)+'_'+timestamp+'.png'
+        storage_filename = 'method_'+str(method_id)+'_img'+str(img_curr_no).rjust(5, '0')+'_'+timestamp+'.png'
         thumb_filepath = 'methodics_pics/method_images/method_'+str(method_id)+'/'+storage_filename
         filepath = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id), storage_filename)
         try:
