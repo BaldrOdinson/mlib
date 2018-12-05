@@ -44,6 +44,7 @@ def thumbnail_for_net_pic(img_url, method_id):
     storage_filename = ''
     curr_folder_path = os.path.join('static', 'methodics_pics', 'method_images')
     directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
+    print(f'Create thumbnails for method {method_id}')
     if not os.path.exists(directory):
         os.makedirs(directory)
     # ссылки
@@ -65,7 +66,11 @@ def thumbnail_for_net_pic(img_url, method_id):
         thumb_filepath = 'methodics_pics/method_images/method_'+str(method_id)+'/'+storage_filename
         filepath = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id), storage_filename)
         try:
-            r = requests.get(url)
+            if url[-1] not in 'abcdifghijklmnopqrstuvwxyzABCDEFJHIJKLMNOPQRSTUVWXYZ01234567890/,.-':
+                one_line_url = url[:-1]
+            else:
+                one_line_url = url
+            r = requests.get(one_line_url)
             with open('net_img.jpg', 'wb') as net_img:
                 net_img.write(r.content)
             with Image.open('net_img.jpg') as curr_image:

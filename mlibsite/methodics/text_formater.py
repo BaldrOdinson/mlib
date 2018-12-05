@@ -31,6 +31,26 @@ def text_from_list(data_list):
         combined_text = combined_text + item
     return combined_text
 
+def check_url_list(from_form, from_base):
+    '''
+    Удаляем перенос строк из списка ссылок в базе и в форме, для сравнения, чтобы определить изменилось ли чтото
+    Просто так сравнение не проходит, видимо из-за разных символов переноса строки
+    '''
+    print('check_url_list matching')
+    from_form_list = [url.rstrip() for url in from_form]
+    from_form = ''
+    for char in from_form_list:
+        from_form += char
+    from_base_list = [url.rstrip() for url in from_base]
+    from_base = ''
+    for char in from_base_list:
+        from_base += char
+    from_base = ('' + from_base).replace('\n', '')
+    # print(f'check result if {from_form == from_base}')
+    # print(f'from form:\n {from_form}')
+    # print(f'from base:\n {from_base}')
+    return from_form == from_base
+
 
 
 if __name__ == '__main__':

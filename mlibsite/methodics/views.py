@@ -9,8 +9,8 @@ from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net
 from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
 from datetime import datetime
-from mlibsite.methodics.text_formater import text_format_for_html
-import os, shutil
+from mlibsite.methodics.text_formater import text_format_for_html, check_url_list
+import os, shutil, binascii
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
 
@@ -105,6 +105,7 @@ def update(method_id):
     form = UpdateMethodForm()
 
     if form.validate_on_submit():
+
         # Если пытаются изменить заглавную картинку
         if form.method_label_image.data:
             method_id = method.id
@@ -120,16 +121,17 @@ def update(method_id):
         # создание превьюшек картинок по указанным ссылкам
         images_data = form.images.data
         wrong_links = []
-        if form.images.data != method.images:
+        # Проверяем данные в форме и базе на совпадение, чтобы лишний раз не обрабатывать если ничего не изменилось
+        if not check_url_list(form.images.data, method.images):
             image_html_links=text_format_for_html(form.images.data)
             thumb_links, wrong_links, images_data = thumbnail_for_net_pic(image_html_links, method.id)
 
         # обработка ссылок на видео
         video_data= form.video.data
         wrong_video_links = []
-        if form.video.data != method.video:
+        if not check_url_list(form.video.data, method.video):
             video_html_links=text_format_for_html(form.video.data)
-            wrong_video_links, video_data = check_video_links(video_html_links)
+            wrong_video_links, video_data = check_video_links(video_html_links, method_id)
 
         method.change_date = datetime.utcnow()
         method.title = form.title.data
@@ -165,6 +167,8 @@ def update(method_id):
             flash(flash_text, 'warning')
 
         return redirect(url_for('methodics.method', method_id=method_id))
+
+    # Первоначальное открытие формы на редактирование
     elif request.method == 'GET':
         # Если задан тайминг, показываем длительность занятия
         timing = MethodTiming.query.filter_by(method_id=method_id).first()
@@ -178,7 +182,6 @@ def update(method_id):
         form.target.data = method.target
         form.description.data = method.description
         form.consumables.data = method.consumables
-        # form.presentation.data = method.presentation
         form.images.data = method.images
         form.music.data = method.music
         form.video.data = method.video

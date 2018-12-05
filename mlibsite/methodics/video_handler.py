@@ -7,7 +7,7 @@ from time import time
 from mlibsite.methodics.text_formater import text_from_list
 import youtube_dl
 
-def check_video_links(video_html_links):
+def check_video_links(video_html_links, method_id):
     """
     Берем все предложенные ссылки на видео,
     выбираем те что ведут на youtube
@@ -15,10 +15,11 @@ def check_video_links(video_html_links):
     Если info не получено, ссылку бракуем.
     Остальные, успешно прошедшие проверку (т.е. на которые получено info), публикуем.
     """
+    print(f'Check videos for method {method_id}')
     wrong = []
     video_data = []
     for link in video_html_links:
-        print(f'Link in check_video_link: {link}')
+        # print(f'Link in check_video_link: {link}')
         if link[:4] == 'http':
             if 'https://www.youtube.com/' in link:
                 # Проверяем что ссылка на видео живая
@@ -39,5 +40,5 @@ def check_video_links(video_html_links):
         else:
             wrong.append(link)
     video_data_str = text_from_list(video_data)
-    print(video_data_str)
+    # print(video_data_str)
     return wrong, video_data_str
