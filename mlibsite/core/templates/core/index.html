@@ -25,9 +25,9 @@
               <footer class="footer">
                 <small class="text-muted">
                   Автор: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
-                  Добавленно: {{method.publish_date.strftime('%d %B %Y')}}<br>
+                  Добавленно: {{date_translate(method.publish_date)}}<br>
                   {% if method.change_date != None %}
-                    Последнее обновление: {{method.change_date.strftime('%d %B %Y')}}
+                    Последнее обновление: {{date_translate(method.change_date)}}
                   {% endif %}
                 </small>
               </footer>

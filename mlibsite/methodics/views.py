@@ -10,8 +10,10 @@ from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
 from mlibsite.methodics.music_handler import take_music_url, check_music_link
 from datetime import datetime
-from mlibsite.methodics.text_formater import text_format_for_html, check_url_list
-import os, shutil, binascii
+from mlibsite.methodics.text_formater import text_format_for_html, check_url_list, date_translate
+from flask_babel import format_date
+from babel import dates
+import os, shutil
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
 
@@ -85,7 +87,13 @@ def method(method_id):
         print(video_html_links)
     else:
         video_html_links = []
-    method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
+    # Проверяем наличие тайминга
+    timing = MethodTiming.query.filter_by(method_id=method_id).first()
+    if timing:
+        timing_duration = timing.duration
+        steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
+    else:
+        timing_duration = None
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
@@ -97,7 +105,10 @@ def method(method_id):
                             music_list=music_url_list,
                             method_label_image=method.method_label_image,
                             method=method,
-                            videos=video_html_links)
+                            videos=video_html_links,
+                            date_translate=date_translate,
+                            timing_duration=timing_duration,
+                            steps=steps)
 
 
 ###### UPDATE ######
@@ -152,13 +163,20 @@ def update(method_id):
             video_html_links=text_format_for_html(form.video.data)
             wrong_video_links, video_data = check_video_links(video_html_links, method_id)
 
+        # проверка на наличие тайминга
+        timing_exist = MethodTiming.query.filter_by(method_id=method_id).first()
+        if timing_exist:
+            timing_id = timing_exist.id
+        else:
+            timing_id = None
+
         method.change_date = datetime.utcnow()
         method.title = form.title.data
         method.short_desc = form.short_desc.data
         method.target = form.target.data
         method.description = form.description.data
         method.consumables = form.consumables.data
-        method.timing_id = form.timing_id.data
+        method.timing_id = timing_id
         # method.presentation = form.presentation.data
         method.images = images_data
         method.music = music_data
@@ -178,7 +196,7 @@ def update(method_id):
                 flash_text += 'но ссылка на картинку (или несколько): -> '
                 for link in wrong_links:
                     flash_text += link
-                flash_text += ' <- не открывается. Проерьте ее. '
+                flash_text += ' <- не открывается. Проверьте ее. '
             if len(wrong_video_links) != 0:
                 flash_text += 'Но при этом не обработалась ссылка/ки на видео: '
                 for link in wrong_video_links:
@@ -188,7 +206,7 @@ def update(method_id):
                 for link in wrong_music_links:
                     flash_text += link
             flash(flash_text, 'negative')
-        
+
         return redirect(url_for('methodics.method', method_id=method_id))
 
     # Первоначальное открытие формы на редактирование

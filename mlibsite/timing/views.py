@@ -84,7 +84,7 @@ def edit_timing(method_id):
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     method = Methodics.query.get_or_404(method_id)
     # steps = TimingSteps.query.filter_by(method_timing_id=method.timing_id)
-    steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
+    steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
     timing_left = time_left(steps, timing.duration)
     print(steps)
 

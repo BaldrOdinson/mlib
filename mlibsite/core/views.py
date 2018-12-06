@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from mlibsite.models import Methodics
 from flask import render_template, request, Blueprint
-from mlibsite.methodics.text_formater import text_format_for_html
+from mlibsite.methodics.text_formater import text_format_for_html, date_translate
 
 core = Blueprint('core', __name__, template_folder='templates/core')
 
@@ -18,7 +18,8 @@ def index():
         short_desc_html_list_dict[method.id] = text_format_for_html(method.short_desc)
     return render_template('index.html',
                             short_desc_dict=short_desc_html_list_dict,
-                            methodics=methodics)
+                            methodics=methodics,
+                            date_translate=date_translate)
 
 
 @core.route('/info')

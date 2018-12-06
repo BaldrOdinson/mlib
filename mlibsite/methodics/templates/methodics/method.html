@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
   <div class="jumbotron">
-
     <!-- Вывод методики в карточки по пунктам -->
     <div class="container">
       <div class="row">
@@ -17,9 +16,10 @@
           <div align='right'>
             <h6 class="card-subtitle mb-2 text-muted">Автор:
             <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a></h6>
-            <h6 class="card-subtitle mb-2 text-muted">Добавленно: {{method.publish_date.strftime('%d %B %Y')}}</h6>
+            <!-- <small class="form-text text-muted">Добавленно: {{method.publish_date.strftime('%d %B %Y')}}</small> -->
+            <small class="form-text text-muted">Добавленно: {{date_translate(method.publish_date)}}</small>
             {% if (method.change_date != None) %}
-              <h6 class="card-subtitle mb-2 text-muted">Последнее обновление: {{method.change_date.strftime('%d %B %Y')}}</h6>
+              <small class="form-text text-muted">Последнее обновление: {{date_translate(method.change_date)}}</small>
             {% endif %}
           </div>
         </div>
@@ -56,16 +56,35 @@
       </div>
     {% endif %}
 
-    <!-- <h5>Необходимые материалы:</h5>
-    <pre STYLE="font-size: 12pt; font-family:'Helvetica Neue', Helvetica, Arial, sans-serif">{{method.consumables}}</pre>
-    {{method.consumables}} -->
-
     {% if (method.presentation != "" and method.presentation != None) %}
       <div class="card">
         <h5 class="card-header">Презентация:</h5>
         <div class="card-body">
           {{method.presentation}}
           <a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method.id)}}">Скачать</a>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if timing_duration %}
+      <div class="card">
+        <h5 class="card-header">Продолжительность занятия: {{timing_duration}} мин.</h5>
+        <div class="card-body">
+          <p><strong>Этапы занятия:</strong></p>
+          <table class="table table-sm">
+            <tr class="table-info">
+              <th scope="col">Длительность</th>
+              <th scope="col">Описание</th>
+              <th scope="col">Результат этапа</th>
+            </tr>
+            {% for step in steps %}
+              <tr>
+                <td> {{ step.step_duration }} мин.</td>
+                <td> {{ step.step_desc }}</td>
+                <td> {{ step.step_result }}</td>
+              </tr>
+            {% endfor %}
+          </table>
         </div>
       </div>
     {% endif %}

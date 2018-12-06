@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+from flask_babel import format_date
+from babel import dates
 
 def text_format_for_html(text):
     '''
@@ -54,6 +56,9 @@ def check_url_list(from_form, from_base):
     # print(f'from form:\n {from_form}')
     # print(f'from base:\n {from_base}')
     return from_form == from_base
+
+def date_translate(date):
+    return dates.format_date(date, locale='ru_RU')
 
 
 
