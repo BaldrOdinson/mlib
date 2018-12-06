@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, send_file, abort
+from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, send_file, abort, Markup
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import Methodics, MethodTiming, TimingSteps
@@ -8,6 +8,7 @@ from mlibsite.methodics.forms import MethodForm, UpdateMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
+from mlibsite.methodics.music_handler import take_music_url, check_music_link
 from datetime import datetime
 from mlibsite.methodics.text_formater import text_format_for_html, check_url_list
 import os, shutil, binascii
@@ -72,6 +73,12 @@ def method(method_id):
         images_list=img_tupal(image_html_links, thumb_links)
     else:
         images_list=[]
+    # ссылки на музыку
+    if method.music:
+        music_list = text_format_for_html(method.music)
+        music_url_list = take_music_url(music_list)
+    else:
+        music_url_list=[]
     # формируем ссылку на видео
     if method.video:
         video_html_links=text_format_for_html(method.video)
@@ -87,6 +94,7 @@ def method(method_id):
                             # images_links=image_html_links,
                             # images_thumb_links=thumb_links,
                             images_list=images_list,
+                            music_list=music_url_list,
                             method_label_image=method.method_label_image,
                             method=method,
                             videos=video_html_links)
@@ -112,13 +120,14 @@ def update(method_id):
             pic = add_method_pic(form.method_label_image.data, method_id, method.method_label_image)
             method.method_label_image = pic
 
-        # Если пытаются загрузить файл с презентацией
+        # Если пытаются загрузить файл с ПРЕЗЕНТАЦИЕЙ
         if form.presentation.data:
             method_id = method.id
             presentation_filename = add_method_presentation(form.presentation.data, method_id, method.presentation)
             method.presentation = presentation_filename
 
-        # создание превьюшек картинок по указанным ссылкам
+        # создание превьюшек КАРТИНОК по указанным ссылкам
+        print(f'image processing for method {method.id}')
         images_data = form.images.data
         wrong_links = []
         # Проверяем данные в форме и базе на совпадение, чтобы лишний раз не обрабатывать если ничего не изменилось
@@ -126,8 +135,18 @@ def update(method_id):
             image_html_links=text_format_for_html(form.images.data)
             thumb_links, wrong_links, images_data = thumbnail_for_net_pic(image_html_links, method.id)
 
-        # обработка ссылок на видео
-        video_data= form.video.data
+        # обработка ссылок на Yandex.MUSIC
+        print(f'music processing for method {method.id}')
+        # print(f'form.music.data: {form.music.data}')
+        music_data = form.music.data
+        wrong_music_links = []
+        if not check_url_list(form.music.data, method.music):
+            music_html_links=text_format_for_html(form.music.data)
+            wrong_music_links, music_data = check_music_link(music_html_links, method_id)
+
+        # обработка ссылок на ВИДЕО
+        print(f'video processing for method {method.id}')
+        video_data = form.video.data
         wrong_video_links = []
         if not check_url_list(form.video.data, method.video):
             video_html_links=text_format_for_html(form.video.data)
@@ -142,7 +161,7 @@ def update(method_id):
         method.timing_id = form.timing_id.data
         # method.presentation = form.presentation.data
         method.images = images_data
-        method.music = form.music.data
+        method.music = music_data
         method.video = video_data
         method.literature = form.literature.data
         method.category = form.category.data
@@ -152,20 +171,24 @@ def update(method_id):
 
         flash_text = 'Изменения и дополнения сохранены. '
         # или при необходимости показываем ругань на битые ссылки
-        if len(wrong_links) != 0:
-            flash_text += 'но ссылка на картинку (или несколько): -> '
-            for link in wrong_links:
-                flash_text += link
-            flash_text += ' <- не открывается. Проерьте ее. '
-            flash(flash_text, 'negative')
-        elif len(wrong_video_links) != 0:
-            flash_text += 'Но при этом не обработалась ссылка/ки на видео: '
-            for link in wrong_video_links:
-                flash_text += link
-            flash(flash_text, 'negative')
-        else:
+        if len(wrong_links) == 0 and len(wrong_video_links) == 0 and len(wrong_music_links) == 0:
             flash(flash_text, 'warning')
-
+        else:
+            if len(wrong_links) != 0:
+                flash_text += 'но ссылка на картинку (или несколько): -> '
+                for link in wrong_links:
+                    flash_text += link
+                flash_text += ' <- не открывается. Проерьте ее. '
+            if len(wrong_video_links) != 0:
+                flash_text += 'Но при этом не обработалась ссылка/ки на видео: '
+                for link in wrong_video_links:
+                    flash_text += link
+            if len(wrong_music_links) != 0:
+                flash_text += 'Cсылка/ки на музыку не похожа на HTML-код для Яндекс.музыки, проверьте: '
+                for link in wrong_music_links:
+                    flash_text += link
+            flash(flash_text, 'negative')
+        
         return redirect(url_for('methodics.method', method_id=method_id))
 
     # Первоначальное открытие формы на редактирование

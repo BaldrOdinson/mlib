@@ -18,12 +18,6 @@
         </div>
       </div>
     </div>
-    <!-- <img align='center' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method_label_image)}}">
-    <br><br>
-    <div class="form-group" align='left'>
-      {{form.method_label_image.label(class='form-group')}}
-      {{form.method_label_image(class='form-control-file')}}
-    </div> -->
   </div>
   <div class="container">
     <h5>Заполните форму ниже, и нажмите Сохранить</h5>
@@ -42,7 +36,7 @@
     </div>
     <div class="form-group">
       {{form.description.label(class='form-control-label')}}
-      {{form.description(class='form-control form-control-lg')}}
+      {{form.description(class='form-control form-control-lg', rows="5")}}
     </div>
     <div class="form-group">
       {{form.consumables.label(class='form-control-label')}}
@@ -62,14 +56,18 @@
     </div>
     <div class="form-group">
       {{form.images.label(class='form-control-label')}}
-      {{form.images(class='form-control form-control-lg')}}
+      <small class="form-text text-muted">Добавьте ссылки на изображения. Каждая с новой строки.</small>
+      {{form.images(class='form-control form-control-lg', rows="4")}}
     </div>
     <div class="form-group">
       {{form.music.label(class='form-control-label')}}
+      <small class="form-text text-muted">Добавьте ссылки на <a href="https://music.yandex.ru/home" target="_blank">Yandex.Music</a>. Для этого выберите композицию или плей-лист. Нажмите <img src="/static/base/yandex_share_sign.PNG" height="20px"> (поделиться).
+        Выберите HTML-код. Скопируйте содержимое поля HTML-код и вставьте сюда. Каждое с новой строки.</small>
       {{form.music(class='form-control form-control-lg')}}
     </div>
     <div class="form-group">
       {{form.video.label(class='form-control-label')}}
+      <small class="form-text text-muted">Добавьте ссылки на <a href="https://www.youtube.com/" target="_blank">YouTube</a>. Каждая с новой строки.</small>
       {{form.video(class='form-control form-control-lg')}}
     </div>
     <div class="form-group">
@@ -91,13 +89,6 @@
       {{form.presentation(class='form-control-file')}}
     </div>
     {% endif %}
-
-    <!-- Прикрепленная презентация: {{curr_presentation}}
-    <a class='btn btn-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method_id)}}">Скачать</a>
-    <div class="form-group">
-      {{form.presentation.label(class='form-control-label')}}
-      {{form.presentation(class='form-control-file')}}
-    </div> -->
     <div class="form-group">
       {{form.tags.label(class='form-control-label')}}
       {{form.tags(class='form-control form-control-lg')}}

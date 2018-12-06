@@ -87,7 +87,9 @@
       <div class="card">
         <h5 class="card-header">Музыка:</h5>
         <div class="card-body">
-          {{method.music}}
+          {% for width, height, music_url in music_list %}
+              <iframe frameborder="0" style="border:none;width:{{width}};height:{{height}};" width="{{width}}" height="{{height}}" src="{{music_url}}"></iframe>
+          {% endfor %}
         </div>
       </div>
     {% endif %}

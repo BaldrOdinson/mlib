@@ -7,6 +7,7 @@ def text_format_for_html(text):
     Разбиваем полученный из базы текст по строкам, чтобы затем вывести в форме в отдельных <p>
     Иммитация переносов строк, которые иначе проебываются, а <pre> не поддерживает bootstrap styling
     '''
+    # print(f'text_format_for_html')
     with open('text_tmp.txt', 'w') as file:
         file.write(text)
     html_text_list=[]
@@ -41,11 +42,14 @@ def check_url_list(from_form, from_base):
     from_form = ''
     for char in from_form_list:
         from_form += char
-    from_base_list = [url.rstrip() for url in from_base]
-    from_base = ''
-    for char in from_base_list:
-        from_base += char
-    from_base = ('' + from_base).replace('\n', '')
+    if not from_base == None:
+        from_base_list = [url.rstrip() for url in from_base]
+        from_base = ''
+        for char in from_base_list:
+            from_base += char
+        from_base = ('' + from_base).replace('\n', '')
+    else:
+        from_base = ''
     # print(f'check result if {from_form == from_base}')
     # print(f'from form:\n {from_form}')
     # print(f'from base:\n {from_base}')
