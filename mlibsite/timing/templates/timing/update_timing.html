@@ -41,7 +41,7 @@
                     {{step.step_desc}}
                   </h5>
                   <p class='card-text'>Результат этапа: {{step.step_result}}</p>
-                  {% if method_author == current_user %}
+                  {% if method_author == current_user or current_user.username=="Administrator" %}
                   <br>
                   <div class="" align='right'>
                     <a class='btn btn-outline-warning' href="{{url_for('timing.step_update', step_id=step.id)}}">Изменить</a>
