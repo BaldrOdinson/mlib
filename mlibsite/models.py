@@ -83,7 +83,7 @@ class Categories(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     category_name = db.Column(db.String(256), nullable=False)
-    parrent_cat = db.Column(db.String(256), nullable=False, default='root')
+    parrent_cat = db.Column(db.Integer, nullable=False, default=0)
     # Relationships
     methodics = db.relationship('Methodics', backref='category_methodics', lazy=True)
 

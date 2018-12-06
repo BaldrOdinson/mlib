@@ -3,7 +3,7 @@
 from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, send_file, abort, Markup
 from flask_login import current_user, login_required
 from mlibsite import db
-from mlibsite.models import Methodics, MethodTiming, TimingSteps
+from mlibsite.models import Methodics, MethodTiming, TimingSteps, Categories
 from mlibsite.methodics.forms import MethodForm, UpdateMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from mlibsite.methodics.video_handler import check_video_links
@@ -53,7 +53,10 @@ def create_method():
         db.session.commit()
         flash('Методика добавлена', 'success')
         return redirect(url_for('core.index'))
-    return render_template('create_method.html', form=form)
+    # Первая загрузка
+    category = Categories.query.get(1)
+    return render_template('create_method.html', form=form,
+                                                category=category.category_name)
 
 
 ###### BLOG POST (VIEW) ######
@@ -217,6 +220,8 @@ def update(method_id):
             form.timing_id.data = timing.duration
         else:
             form.timing_id.data = method.timing_id
+        # Название категории
+        category = Categories.query.get(method.category)
 
         form.title.data = method.title
         form.short_desc.data = method.short_desc
@@ -227,7 +232,7 @@ def update(method_id):
         form.music.data = method.music
         form.video.data = method.video
         form.literature.data = method.literature
-        form.category.data = method.category
+        form.category.data = category.category_name
         form.tags.data = method.tags
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
@@ -237,21 +242,32 @@ def update(method_id):
                             method_id = method.id,
                             timing_id = form.timing_id.data,
                             form=form,
-                            curr_presentation = presentation_filename)
+                            curr_presentation = presentation_filename,
+                            category=category.category_name)
 
 
-###### DELETE ######
+###### DELETE METHOD ######
 @methodics.route('/<int:method_id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_method(method_id):
     method = Methodics.query.get_or_404(method_id)
     if ((method.author != current_user) and (current_user.username != 'Administrator')):
         abort(403)
+    # Удалем превьюшки картинок
+    del_meth_folder = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_images', 'method_'+str(method_id)))
+    shutil.rmtree(del_meth_folder, ignore_errors=True)
+    # Удаляем заглавную картинку для методики
+    del_meth_ava = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_ava', method.method_label_image))
+    os.remove(del_meth_ava)
+    # Удаляем файл презентации
+    if method.presentation:
+        filename = method.presentation
+        curr_folder_path = os.path.join('static', 'methodics_presentations')
+        directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
+        shutil.rmtree(directory, ignore_errors=True)
 
     db.session.delete(method)
     db.session.commit()
-    del_meth_folder = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_images', 'method_'+str(method_id)))
-    shutil.rmtree(del_meth_folder, ignore_errors=True)
     flash('Методика удалена', 'warning')
     return redirect(url_for('core.index'))
 

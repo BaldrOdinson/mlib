@@ -4,14 +4,14 @@
     <div class="jumbotron">
       <div align='center'>
         <h1>Методики, добавленные пользователем {{user.username}}</h1>
-        <img src="{{url_for('static', filename='profile_pics/'+user.profile_image)}}">
+        <img class="rounded-circle" src="{{url_for('static', filename='profile_pics/'+user.profile_image)}}">
       </div>
     </div>
 
 
   <div class="card-columns">
   {% for method in methodics.items %}
-        <div class="card">
+        <div class="card shadow">
           <img class="card-img-top" src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">{{method.title}}</h5>

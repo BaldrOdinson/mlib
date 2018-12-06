@@ -19,7 +19,7 @@ class UpdateUserForm(FlaskForm):
     phone_num = StringField('Номер телефона')
     address = StringField('Адрес')
     curr_job_place = StringField('Место работы')
-    picture = FileField('Загрузите картинку для своего профиля (jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
+    picture = FileField('Загрузите картинку/аватар для своего профиля (jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Сохранить')
 
     def check_email(self, field):
