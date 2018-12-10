@@ -69,23 +69,25 @@
     {% if timing_duration %}
       <div class="card">
         <h5 class="card-header">Продолжительность занятия: {{timing_duration}} мин.</h5>
-        <div class="card-body">
-          <p><strong>Этапы занятия:</strong></p>
-          <table class="table table-sm">
-            <tr class="table-info">
-              <th scope="col">Длительность</th>
-              <th scope="col">Описание</th>
-              <th scope="col">Результат этапа</th>
-            </tr>
-            {% for step in steps %}
-              <tr>
-                <td> {{ step.step_duration }} мин.</td>
-                <td> {{ step.step_desc }}</td>
-                <td> {{ step.step_result }}</td>
+        {% if step %}
+          <div class="card-body">
+            <p><strong>Этапы занятия:</strong></p>
+            <table class="table table-sm">
+              <tr class="table-info">
+                <th scope="col">Длительность</th>
+                <th scope="col">Описание</th>
+                <th scope="col">Результат этапа</th>
               </tr>
-            {% endfor %}
-          </table>
-        </div>
+              {% for step in steps %}
+                <tr>
+                  <td> {{ step.step_duration }} мин.</td>
+                  <td> {{ step.step_desc }}</td>
+                  <td> {{ step.step_result }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
 
@@ -133,6 +135,16 @@
       </div>
     {% endif %}
 
+    {% if (method.category != "" and method.category != None) %}
+      <div class="card">
+        <h5 class="card-header">Категория:</h5>
+        <div class="card-body">
+          {{category}}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- test dropdown -->
 
     {% if ((method.author == current_user) or (current_user.username == 'Administrator')) %}
       <br>

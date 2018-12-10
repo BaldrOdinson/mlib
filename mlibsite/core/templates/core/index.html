@@ -5,13 +5,39 @@
     <h1>Методическая библиотека</h1>
     <h6>mlib.<span style="color:green">online</span></h6>
 
+    <!-- Категории -->
+    <p></p>
+    <div class="dropright">
+      <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Категории
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {% for category_num, category_name, count in html_category_list %}
+          {% if category_num != 1 %}
+              <a class="dropdown-item" href="{{url_for('methodics.category_methodics', category=category_num)}}">
+                {{category_name}} &emsp;<span class="badge badge-pill badge-light">{{count}}</span>
+              </a>
+          {% endif %}
+        {% endfor %}
+        <div class="dropdown-divider"></div>
+        {% for category_num, category_name, count in html_category_list %}
+          {% if category_num == 1 %}
+            <a class="dropdown-item" href="{{url_for('methodics.category_methodics', category=category_num)}}">
+              {{category_name}} &emsp;<span class="badge badge-pill badge-light">{{count}}</span>
+            </a>
+          {% endif %}
+        {% endfor %}
+          <!-- <ul><a class="dropdown-item" href="{{url_for('methodics.dict_category', category='4')}}">Тест словаря</a></ul> -->
+      </div>
+    </div>
   </div>
+
 
 <!--  SHOW Methodics-->
   <div class="container">
     <div class="card-columns">
     {% for method in methodics.items %}
-          <div class="card shadow">
+          <div class="card shadow-sm">
             <img class="card-img-top" src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}" alt="Card image cap">
             <div class="card-body">
               <h5 class="card-title">{{method.title}}</h5>
@@ -20,7 +46,7 @@
               {% endfor %}
             </div>
             <div align='right'>
-              <a class='btn btn-primary' style="margin-right:6px;" href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
+              <a class='btn btn-primary btn-sm' style="margin-right:6px;" href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
             </div>
             <div class="" align='right' style="margin-right:5px">
               <footer class="footer">

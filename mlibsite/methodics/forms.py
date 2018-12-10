@@ -38,3 +38,9 @@ class UpdateMethodForm(FlaskForm):
     category = IntegerField('Категория', default=1)
     tags = StringField('Теги')
     submit = SubmitField('Сохранить')
+
+
+class AddCategoryForm(FlaskForm):
+    new_category_name = StringField('Название категории', validators=[DataRequired()])
+    parrent_cat = StringField('Родительская категория', validators=[DataRequired()])
+    submit = SubmitField('Сохранить')

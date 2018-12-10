@@ -95,7 +95,18 @@
     </div>
     <div class="form-group">
       {{form.category.label(class='form-control-label')}}
-      {{category}}
+      <select class="form-control" name="form_category">
+        <!-- <option selected value="{{category.id}}">{{category}}</option> -->
+        {% for cat_num, category_name, count in html_category_list %}
+            {% if cat_num == category.id%}
+              <option selected value={{cat_num}}>{{category_name}}</option>
+            {% else %}
+              <option value={{cat_num}}>{{category_name}}</option>
+            {% endif %}
+        {% endfor %}
+      </select>
+      <a href="{{url_for('methodics.category_setup')}}" target="_blank"><small>Добавить категорию</small></a>
+      <!-- {{category}} -->
       <!-- {{form.category(class='form-control form-control-lg')}} -->
     </div>
     <div class="form-group" align='right'>
