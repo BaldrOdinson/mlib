@@ -2,10 +2,10 @@
 {% block content %}
   <div class="jumbotron">
     <div align='center'>
-      <h1>Методики, добавленные пользователем {{user.username}}</h1>
-      <img class="rounded-circle" src="{{url_for('static', filename='profile_pics/'+user.profile_image)}}">
+      <h1>Методики категории: {{category.category_name}}</h1>
     </div>
   </div>
+
 
   <!--  SHOW Methodics-->
   <div class="container">
@@ -38,16 +38,17 @@
     </div>
   </div>
 
+
   <nav aria-label='Page Navigation example'>
     <ul class='pagination justify-content-center'>
       {% for page_num in methodics.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
         {% if methodics.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
           <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
-            <a class='page-link' href="{{url_for('users.user_methodics', username=user.username, page=page_num)}}">{{page_num}}</a>
+            <a class='page-link' href="{{url_for('methodics.category_methodics', category=category.id, page=page_num)}}">{{page_num}}</a>
           </li>
         {% else %}
           <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
-            <a class='page-link' href="{{url_for('users.user_methodics', username=user.username, page=page_num)}}">{{page_num}}</a>
+            <a class='page-link' href="{{url_for('methodics.category_methodics', category=category.id, page=page_num)}}">{{page_num}}</a>
           </li>
         {% endif %}
       {% endfor %}

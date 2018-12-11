@@ -41,7 +41,7 @@ def add_timing(method_id):
         method = Methodics.query.get_or_404(method_id)
         method.timing_id = timing.id
         db.session.commit()
-        return redirect(url_for('methodics.update', method_id=method_id))
+        return redirect(url_for('timing.edit_timing', method_id=method_id))
 
     return render_template('add_timing.html',
                             form=form,

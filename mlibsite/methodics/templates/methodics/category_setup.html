@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="jumbotron">
+    <div align='center'>
+      <h1>Редактирование дерева категорий</h1>
+    </div>
+    <p><br></p>
+    <div class="btn-group dropright">
+      <p>
+      <a title="Инструкция" class="btn btn-outline-info btn-sm" data-toggle="collapse" href="#collapseHelp" role="button" aria-expanded="false" aria-controls="collapseExample">
+        ?
+      </a>
+      </p>
+      <div class="collapse" id="collapseHelp">
+        <div class="card card-body">
+          Удалить (&#215;) можно категорию в которой нет ни одной методики.<br>
+          Удаляя категорию вы так же удаляете все подкатегории.<br>
+          Нажимая добавить (+) у какой либо категории, вы добавляете ей подкатегорию.<br>
+          Самый верний (+) создаст новую базовую категорию.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    {% for category_id, category_name, count in html_category_list %}
+      {% if category_id != 1 %}
+        {{category_name}}
+          <a title="Добавить подкатегорию" style="color:green; text-decoration:none;"
+                                            data-toggle="collapse" href="#collapseAddCat4_{{category_id}}" role="button"
+                                            aria-expanded="false" aria-controls="collapseExample">
+            <strong>+</strong>
+          </a>
+          <div class="collapse" id="collapseAddCat4_{{category_id}}">
+            <div class="card card-body">
+              <form class="form-group" method="post" enctype="multipart/form-data">
+                {{form.hidden_tag()}}
+                <div class="form-group">
+                  {{form.new_category_name.label(class='form-control-label')}}
+                  {{form.new_category_name(class='form-control form-control-lg', rows="1")}}
+                  <small class="form-text text-muted">Не создавайте одинаковых категорий</small>
+                </div>
+                {{form.parrent_cat(value=category_id, type='hidden')}}
+                <div class="form-group" align='right'>
+                  {{form.submit(class='btn btn-outline-info')}}
+                </div>
+              </form>
+            </div>
+          </div>
+        {% if count == 0 %}
+          <a title="Удалить категорию" href="{{url_for('methodics.delete_category', category_id=category_id)}}"  style="color:red; text-decoration:none;">
+            <strong>&#215;</strong>
+          </a>
+        {% endif %}
+        <br>
+      {% else %}
+        <a title="Добавить базовую категорию" style="color:green; text-decoration:none;"
+                                          data-toggle="collapse" href="#collapseAddCat4_{{category_id}}" role="button"
+                                          aria-expanded="false" aria-controls="collapseExample">
+          <strong>+</strong>
+        </a>
+        <div class="collapse" id="collapseAddCat4_{{category_id}}">
+          <div class="card card-body">
+            <form class="form-group" method="post" enctype="multipart/form-data">
+              {{form.hidden_tag()}}
+              <div class="form-group">
+                {{form.new_category_name.label(class='form-control-label')}}
+                {{form.new_category_name(class='form-control form-control-lg', rows="1")}}
+              </div>
+              {{form.parrent_cat(value=category_id, type='hidden')}}
+              <div class="form-group" align='right'>
+                {{form.submit(class='btn btn-outline-info')}}
+              </div>
+            </form>
+          </div>
+        </div>
+        <br>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+
+{% endblock %}

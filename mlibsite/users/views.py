@@ -9,6 +9,7 @@ from mlibsite import db
 from mlibsite.models import User, Methodics
 from mlibsite.users.forms import UpdateUserForm
 from mlibsite.users.picture_handler import add_profile_pic
+from mlibsite.methodics.text_formater import date_translate, text_format_for_html
 
 users = Blueprint('users', __name__, template_folder='templates/users')
 
@@ -77,7 +78,15 @@ def account():
 ##### Методики конкретного автора с выводом постранично #####
 @users.route('/<username>')
 def user_methodics(username):
+    per_page=6
     page = request.args.get('page', 1, type=int) # пригодится если страниц дохера, делаем разбивку по страницам
+    short_desc_html_list_dict = {}
     user = User.query.filter_by(username=username).first_or_404()
-    methodics = Methodics.query.filter_by(author=user).order_by(Methodics.publish_date.desc()).paginate(page=page, per_page=6) # Сортируем по уменьшающейся дате, выводим по 5 постов на страницу
-    return render_template('user_methodics.html', methodics=methodics, user=user)
+    methodics = Methodics.query.filter_by(author=user).order_by(Methodics.change_date.desc()).paginate(page=page, per_page=6) # Сортируем по уменьшающейся дате, выводим по 5 постов на страницу
+    methodics_whole = Methodics.query.filter_by(author=user).order_by(Methodics.change_date.desc())[page*per_page-per_page:page*per_page]
+    for method in methodics_whole:
+        short_desc_html_list_dict[method.id] = text_format_for_html(method.short_desc)
+    return render_template('user_methodics.html', methodics=methodics,
+                                                user=user,
+                                                date_translate=date_translate,
+                                                short_desc_dict=short_desc_html_list_dict)

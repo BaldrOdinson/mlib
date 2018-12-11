@@ -4,15 +4,14 @@ from flask import render_template, url_for, flash, request, redirect, Blueprint,
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import Methodics, MethodTiming, TimingSteps, Categories
-from mlibsite.methodics.forms import MethodForm, UpdateMethodForm
+from mlibsite.methodics.forms import MethodForm, UpdateMethodForm, AddCategoryForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
 from mlibsite.methodics.music_handler import take_music_url, check_music_link
 from datetime import datetime
-from mlibsite.methodics.text_formater import text_format_for_html, check_url_list, date_translate
-from flask_babel import format_date
-from babel import dates
+from mlibsite.methodics.text_formater import text_format_for_html, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
+from sqlalchemy import or_
 import os, shutil
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
@@ -21,7 +20,7 @@ methodics = Blueprint('methodics', __name__, template_folder='templates/methodic
 # Views
 
 # Create
-# Blog Post (view)
+# Method (view)
 # Update
 # Delete
 # Delete presentation
@@ -59,7 +58,7 @@ def create_method():
                                                 category=category.category_name)
 
 
-###### BLOG POST (VIEW) ######
+###### METHOD (VIEW) ######
 @methodics.route('/method_<int:method_id>')  # <int: - для того чтобы номер методики точно был integer
 def method(method_id):
     # Получаем из базы метод, тайминг занятия, этапы занятия
@@ -97,6 +96,8 @@ def method(method_id):
         steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
     else:
         timing_duration = None
+    # Название категории
+    category = Categories.query.get(method.category)
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
@@ -111,8 +112,91 @@ def method(method_id):
                             videos=video_html_links,
                             date_translate=date_translate,
                             timing_duration=timing_duration,
-                            steps=steps)
+                            steps=steps,
+                            category=category.category_name)
 
+
+##### CATEGORY METHODICS #####
+# Методики конкретной категории с выводом постранично
+@methodics.route('/category_<category>')
+def category_methodics(category):
+    # print(f'category: {category}')
+    per_page=6
+    page = request.args.get('page', 1, type=int) # пригодится если страниц дохера, делаем разбивку по страницам
+    short_desc_html_list_dict = {}
+    # Берем все категории, у каторых выбранный id в id или parrent_cat (родительской категории)
+    req_category = Categories.query.filter_by(id=category).first()
+    categories = Categories.query.filter(or_(Categories.id == category, Categories.parrent_cat == category))
+    categories_ids = [req_category.id]
+    # строим список со всеми выбранныйми id, затем по нему формируем SQL sequences
+    for cat in categories:
+        categories_ids.append(cat.id)
+    methodics = Methodics.query.filter(Methodics.category.in_(categories_ids)).order_by(Methodics.change_date.desc()).paginate(page=page, per_page=6)
+    methodics_whole = Methodics.query.filter(Methodics.category.in_(categories_ids)).order_by(Methodics.change_date.desc())[page*per_page-per_page:page*per_page]
+    for method in methodics_whole:
+        short_desc_html_list_dict[method.id] = text_format_for_html(method.short_desc)
+    return render_template('category_methodics.html', methodics=methodics,
+                                                    category=req_category,
+                                                    date_translate=date_translate,
+                                                    short_desc_dict=short_desc_html_list_dict)
+
+
+##### CATEGORY SETUP #####
+@methodics.route('/category_setup', methods=['GET', 'POST'])
+@login_required
+def category_setup():
+
+    form = AddCategoryForm()
+
+    if form.validate_on_submit():
+        # parrent_cat = request.args.get('parrent_cat', type=int)
+        category = Categories(category_name=form.new_category_name.data,
+                                parrent_cat=int(form.parrent_cat.data))
+
+        db.session.add(category)
+        db.session.commit()
+        html_category_list = get_html_category_list()
+        return render_template('category_setup.html',
+                                html_category_list=html_category_list,
+                                form=form)
+
+
+    html_category_list = get_html_category_list()
+    return render_template('category_setup.html',
+                            html_category_list=html_category_list,
+                            form=form)
+
+##### DELETE CATEGORY #####
+@methodics.route('/category_delete')
+@login_required
+def delete_category():
+
+    form = AddCategoryForm()
+
+    category_id = request.args.get('category_id', type=int)
+    child_categories = Categories.query.filter_by(parrent_cat=category_id)
+    for category in child_categories:
+        db.session.delete(category)
+    category = method = Categories.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    # html_category_list = get_html_category_list()
+    return redirect(url_for('methodics.category_setup'))
+
+
+
+
+
+##### !!!! FOR TEST REASON: METHODICS CATEGORY DICT TEST #####
+@methodics.route('/dict_test_<category>')
+def dict_category(category):
+    page = request.args.get('page', 1, type=int)
+    category_dict = create_category_dict()
+    req_category = Categories.query.filter_by(id=category).first()
+    methodics = Methodics.query.filter_by(category=req_category.id).order_by(Methodics.publish_date.desc()).paginate(page=page, per_page=6)
+    return render_template('category_methodics.html', methodics=methodics,
+                                                    category=req_category,
+                                                    date_translate=date_translate)
 
 ###### UPDATE ######
 @methodics.route('/<int:method_id>/update', methods=['GET', 'POST'])
@@ -173,6 +257,9 @@ def update(method_id):
         else:
             timing_id = None
 
+        # смотрим вбранную категорию
+        curr_category = int(request.form.get('form_category'))
+
         method.change_date = datetime.utcnow()
         method.title = form.title.data
         method.short_desc = form.short_desc.data
@@ -185,7 +272,7 @@ def update(method_id):
         method.music = music_data
         method.video = video_data
         method.literature = form.literature.data
-        method.category = form.category.data
+        method.category = curr_category
         method.tags = form.tags.data
 
         db.session.commit()
@@ -232,10 +319,11 @@ def update(method_id):
         form.music.data = method.music
         form.video.data = method.video
         form.literature.data = method.literature
-        form.category.data = category.category_name
+        form.category.data = category
         form.tags.data = method.tags
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
+    html_category_list = get_html_category_list()
     return render_template('update_method.html',
                             method_label_image=method.method_label_image,
                             title='Редактирование методики',
@@ -243,7 +331,8 @@ def update(method_id):
                             timing_id = form.timing_id.data,
                             form=form,
                             curr_presentation = presentation_filename,
-                            category=category.category_name)
+                            category=category,
+                            html_category_list=html_category_list)
 
 
 ###### DELETE METHOD ######

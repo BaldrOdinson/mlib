@@ -87,8 +87,9 @@ class Categories(db.Model):
     # Relationships
     methodics = db.relationship('Methodics', backref='category_methodics', lazy=True)
 
-    def __init__(self, category_name):
+    def __init__(self, category_name, parrent_cat):
         self.category_name = category_name
+        self.parrent_cat = parrent_cat
 
 
 ### Тайминг занятия ###

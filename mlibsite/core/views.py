@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from mlibsite.models import Methodics
 from flask import render_template, request, Blueprint
-from mlibsite.methodics.text_formater import text_format_for_html, date_translate
+from mlibsite.methodics.text_formater import text_format_for_html, date_translate, get_html_category_list
 
 core = Blueprint('core', __name__, template_folder='templates/core')
 
@@ -17,10 +17,12 @@ def index():
     methodics_whole = Methodics.query.order_by(Methodics.change_date.desc())[page*per_page-per_page:page*per_page]
     for method in methodics_whole:
         short_desc_html_list_dict[method.id] = text_format_for_html(method.short_desc)
+    html_category_list = get_html_category_list()
     return render_template('index.html',
                             short_desc_dict=short_desc_html_list_dict,
                             methodics=methodics,
-                            date_translate=date_translate)
+                            date_translate=date_translate,
+                            html_category_list=html_category_list)
 
 
 @core.route('/info')

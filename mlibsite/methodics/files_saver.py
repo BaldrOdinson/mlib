@@ -10,8 +10,6 @@ def add_method_presentation(presentation, method_id, method_presentation):
     Сохраняем презентацию
     """
     filename = presentation.filename
-    # timestamp = str(time()*1000).split('.')[0]
-    # ext_type = filename.split('.')[-1]
 
     # Путь для сохранения презентации
     curr_folder_path = os.path.join('static', 'methodics_presentations')
