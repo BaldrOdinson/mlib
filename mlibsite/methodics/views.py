@@ -94,6 +94,8 @@ def method(method_id):
     if timing:
         timing_duration = timing.duration
         steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
+        if len(list(steps)) == 0:
+            steps = None
     else:
         timing_duration = None
     # Название категории

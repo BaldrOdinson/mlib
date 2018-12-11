@@ -27,73 +27,92 @@
     </div>
   </div>
 
-    {% if (method.target != "" and method.target != None) %}
-      <div class="card">
-        <h5 class="card-header">Достигаемые цели:</h5>
-        <div class="card-body">
-          <p class="card-text">{{method.target}}</p>
-        </div>
+  {% if (method.target != "" and method.target != None) %}
+    <div class="card">
+      <h5 class="card-header">Достигаемые цели:</h5>
+      <div class="card-body">
+        <p class="card-text">{{method.target}}</p>
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (description != "" and method.description != None) %}
-      <div class="card">
-        <h5 class="card-header">Описание:</h5>
-        <div class="card-body">
-          {% for line in description %}
-              <p class="card-text">{{line}}</p>
-          {% endfor %}
-        </div>
+  {% if (description != "" and method.description != None) %}
+    <div class="card">
+      <h5 class="card-header">Описание:</h5>
+      <div class="card-body">
+        {% for line in description %}
+            <p class="card-text">{{line}}</p>
+        {% endfor %}
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (method.consumables != "" and method.consumables != None) %}
-      <div class="card">
-        <h5 class="card-header">Необходимые материалы:</h5>
-        <div class="card-body">
-          {{method.consumables}}
-        </div>
+  {% if (method.consumables != "" and method.consumables != None) %}
+    <div class="card">
+      <h5 class="card-header">Необходимые материалы:</h5>
+      <div class="card-body">
+        {{method.consumables}}
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (method.presentation != "" and method.presentation != None) %}
-      <div class="card">
-        <h5 class="card-header">Презентация:</h5>
-        <div class="card-body">
-          {{method.presentation}}
-          <a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method.id)}}">Скачать</a>
-        </div>
+  {% if (method.presentation != "" and method.presentation != None) %}
+    <div class="card">
+      <h5 class="card-header">Презентация:</h5>
+      <div class="card-body">
+        {{method.presentation}}
+        <a class='btn btn-outline-success' href="{{url_for('methodics.download_presentation', method_id=method.id)}}">Скачать</a>
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if timing_duration %}
-      <div class="card">
-        <h5 class="card-header">Продолжительность занятия: {{timing_duration}} мин.</h5>
-        {% if steps %}
-          <div class="card-body">
-            <p><strong>Этапы занятия:</strong></p>
-            <table class="table table-sm">
-              <tr class="table-info">
-                <th scope="col">Длительность</th>
-                <th scope="col">Описание</th>
-                <th scope="col">Результат этапа</th>
-              </tr>
-              {% for step in steps %}
-                <tr>
-                  <td> {{ step.step_duration }} мин.</td>
-                  <td> {{ step.step_desc }}</td>
-                  <td> {{ step.step_result }}</td>
+  {% if timing_duration %}
+    <div class="card">
+      <h5 class="card-header">Продолжительность занятия: {{timing_duration}} мин.</h5>
+    </div>
+    {% if steps != None %}
+      <div class="accordion" id="accordionSteps">
+        <!-- <div class="card-body"> -->
+        <div class="card">
+          <h5 class="card-header" id="headingSteps">
+            Этапы занятия:
+            <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
+              просмотреть
+            </button>
+          </h5>
+          <!-- <div class="card-header" id="headingSteps">
+            <h5 class="mb-0">Этапы занятия:
+              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
+                просмотреть
+              </button>
+            </h5>
+          </div> -->
+          <div id="collapseSteps" class="collapse" aria-labelledby="headingSteps" data-parent="#accordionSteps">
+            <div class="card-body">
+              <table class="table table-sm">
+                <tr class="table-info">
+                  <th scope="col">Длительность</th>
+                  <th scope="col">Описание</th>
+                  <th scope="col">Результат этапа</th>
                 </tr>
-              {% endfor %}
-            </table>
+                {% for step in steps %}
+                  <tr>
+                    <td> {{ step.step_duration }} мин.</td>
+                    <td> {{ step.step_desc }}</td>
+                    <td> {{ step.step_result }}</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
           </div>
-        {% endif %}
+        </div>
       </div>
     {% endif %}
+  {% endif %}
 
     {% if (method.images != "" and method.images != None) %}
       <div class="card">
-        <h5 class="card-header">Изображения:</h5>
+        <h5 class="card-header">Используемые изображения:</h5>
         <div class="card-body">
           {% for (link, thumb) in images_list %}
               <a href="{{ link }}">

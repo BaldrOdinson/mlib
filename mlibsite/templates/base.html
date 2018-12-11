@@ -10,18 +10,24 @@
   </head>
   <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <a class="navbar-brand" href="{{url_for('core.index')}}">M-Lib</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-
-      <div class="collapse navbar-collapse" id="navbarText">
+      <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2" id="navbarText">
+      <!-- <div class="collapse navbar-collapse" id="navbarText"> -->
         <ul class="navbar-nav mr-auto">
           <li class="nav-item"><a class="nav-link" href="{{url_for('core.info')}}">Информация</a></li>
           {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="{{url_for('users.account')}}">Профайл</a></li>
             <li class="nav-item"><a class="nav-link" href="{{url_for('methodics.create_method')}}">Добавить Методику</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarText">
+        <ul class="navbar-nav ml-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{{url_for('users.account')}}">{{current_user.username}}</a></li>
             <li class="nav-item"><a class="nav-link" href="{{url_for('users.logout')}}">Выход</a></li>
           {% else %}
             <li class="nav-item"><a class="nav-link" href="{{url_for('users.login')}}">Вход</a></li>
