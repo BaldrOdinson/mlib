@@ -166,24 +166,22 @@ def category_setup():
                             html_category_list=html_category_list,
                             form=form)
 
-##### ADD CATEGORY #####
-@methodics.route('/category_setup_add', methods=['GET', 'POST'])
+##### DELETE CATEGORY #####
+@methodics.route('/category_delete')
 @login_required
-def add_category():
+def delete_category():
 
     form = AddCategoryForm()
 
-    parrent_cat = request.args.get('parrent_cat', type=int)
-    if form.validate_on_submit():
-        category = Categories(category_name=form.category_name,
-                                parrent_cat=int(parrent_cat))
-
-        db.session.add(category)
-        db.session.commit()
-        html_category_list = get_html_category_list()
-        return render_template('category_setup.html',
-                                html_category_list=html_category_list,
-                                form=form)
+    category_id = request.args.get('category_id', type=int)
+    child_categories = Categories.query.filter_by(parrent_cat=category_id)
+    for category in child_categories:
+        db.session.delete(category)
+    category = method = Categories.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    # html_category_list = get_html_category_list()
+    return redirect(url_for('methodics.category_setup'))
 
 
 
