@@ -34,11 +34,13 @@
 
 
 <!--  SHOW Methodics-->
-  <div class="container">
+  <div class="container-fluid">
     <div class="card-columns">
     {% for method in methodics.items %}
           <div class="card shadow-sm">
-            <img class="card-img-top" src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}" alt="Card image cap">
+            <a href="{{url_for('methodics.method', method_id=method.id)}}">
+              <img class="card-img-top" src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}" alt="Card image cap">
+            </a>
             <div class="card-body">
               <h5 class="card-title">{{method.title}}</h5>
               {% for list in short_desc_dict[method.id] %}

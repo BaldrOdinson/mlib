@@ -1,10 +1,6 @@
 ToDo:
-Music
 Tags
-Categories
-Admin User
-Reset password
-Email confirmation
+Email confirmation translate
 upload images
 images for steps
 Real example photo

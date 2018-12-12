@@ -51,7 +51,8 @@ def create_method():
         db.session.add(method)
         db.session.commit()
         flash('Методика добавлена', 'success')
-        return redirect(url_for('core.index'))
+        method = Methodics.query.filter_by(user_id=current_user.id, title=form.title.data).first()
+        return redirect(url_for('methodics.update', method_id=method.id))
     # Первая загрузка
     category = Categories.query.get(1)
     return render_template('create_method.html', form=form,
@@ -184,9 +185,6 @@ def delete_category():
     db.session.commit()
     # html_category_list = get_html_category_list()
     return redirect(url_for('methodics.category_setup'))
-
-
-
 
 
 ##### !!!! FOR TEST REASON: METHODICS CATEGORY DICT TEST #####
