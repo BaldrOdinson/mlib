@@ -9,7 +9,7 @@ core = Blueprint('core', __name__, template_folder='templates/core')
 @core.route('/')
 def index():
     # pagination
-    per_page=6
+    per_page=9
     page = request.args.get('page', 1, type=int)
     short_desc_html_list_dict = {}
     # methodics = Methodics.query.order_by(Methodics.publish_date.desc()).paginate(page=page, per_page=per_page)
