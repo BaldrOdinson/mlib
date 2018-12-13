@@ -50,6 +50,7 @@ class Methodics(db.Model):
     publish_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     change_date = db.Column(db.DateTime)
     title = db.Column(db.String(256), nullable=False)
+    age_range = db.Column(db.String(20))
     short_desc = db.Column(db.Text, nullable=False)
     target = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)

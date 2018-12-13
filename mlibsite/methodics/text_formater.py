@@ -7,22 +7,34 @@ from sqlalchemy import text
 from flask import Markup
 from mlibsite.models import Methodics, Categories
 from sqlalchemy import or_
+from time import time
+from threading import Thread
 
 
+# Декоратор для многопоточности
+def thread(my_func):
+    def wrapper(*args, **kwargs):
+        my_thread = Thread(target=my_func, args=args, kwargs=kwargs)
+        my_thread.start()
+    return wrapper
+
+# @thread
 def text_format_for_html(text):
     '''
     Разбиваем полученный из базы текст по строкам, чтобы затем вывести в форме в отдельных <p>
     Иммитация переносов строк, которые иначе проебываются, а <pre> не поддерживает bootstrap styling
     '''
     # print(f'text_format_for_html')
-    with open('text_tmp.txt', 'w') as file:
+    timestamp = str(time()*1000).split('.')[0]
+    temp_filename = f'text_tmp_{timestamp}'
+    with open(temp_filename, 'w') as file:
         file.write(text)
     html_text_list=[]
-    with open('text_tmp.txt', 'r') as file:
+    with open(temp_filename, 'r') as file:
         for line in file.readlines():
             if line != '\n':
                 html_text_list.append(line)
-    os.remove('text_tmp.txt')
+    os.remove(temp_filename)
     # print(html_text_list)
     return html_text_list
 

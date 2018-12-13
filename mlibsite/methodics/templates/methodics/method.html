@@ -36,13 +36,39 @@
     </div>
   {% endif %}
 
-  {% if (description != "" and method.description != None) %}
+  {% if (method.age_range != "" and method.age_range != None) %}
     <div class="card">
-      <h5 class="card-header">Описание:</h5>
+      <h5 class="card-header">Возраст участников:</h5>
       <div class="card-body">
-        {% for line in description %}
-            <p class="card-text">{{line}}</p>
-        {% endfor %}
+        <p class="card-text">от {{age_list[0]}} до {{age_list[1]}} лет.</p>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (description != "" and method.description != None) %}
+    <div class="accordion" id="accordionDescription">
+      <div class="card">
+        <h5 class="card-header" id="headingDescription">
+          <table width="100%">
+            <tr>
+              <td>Описание:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseDescription" aria-expanded="True" aria-controls="collapseDescription">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseDescription" class="collapse show" aria-labelledby="headingDescription" data-parent="#accordionDescription">
+          <div class="card-body">
+            {% for line in description %}
+                <p class="card-text">{{line}}</p>
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
   {% endif %}
@@ -72,21 +98,13 @@
     </div>
     {% if steps != None %}
       <div class="accordion" id="accordionSteps">
-        <!-- <div class="card-body"> -->
         <div class="card">
           <h5 class="card-header" id="headingSteps">
             Этапы занятия:
-            <button class="btn btn-outline-info collapsed" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
+            <button class="btn btn-outline-info collapsed btn-sm" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
               просмотреть
             </button>
           </h5>
-          <!-- <div class="card-header" id="headingSteps">
-            <h5 class="mb-0">Этапы занятия:
-              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
-                просмотреть
-              </button>
-            </h5>
-          </div> -->
           <div id="collapseSteps" class="collapse" aria-labelledby="headingSteps" data-parent="#accordionSteps">
             <div class="card-body">
               <table class="table table-sm">
@@ -110,68 +128,119 @@
     {% endif %}
   {% endif %}
 
-    {% if (method.images != "" and method.images != None) %}
+  {% if (method.images != "" and method.images != None) %}
+    <div class="accordion" id="accordionImage">
       <div class="card">
-        <h5 class="card-header">Используемые изображения:</h5>
-        <div class="card-body">
-          {% for (link, thumb) in images_list %}
-              <a href="{{ link }}">
-                <img src="{{url_for('static', filename=''+thumb)}}" alt="" style="margin:3px; margin-top:3px; position: relative">
-              </a>
-          {% endfor %}
+        <h5 class="card-header" id="headingImage">
+          <table width="100%">
+            <tr>
+              <td>Используемые изображения:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseImage" aria-expanded="True" aria-controls="collapseImage">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseImage" class="collapse show" aria-labelledby="headingImage" data-parent="#accordionImage">
+          <div class="card-body">
+            {% for (link, thumb) in images_list %}
+                <a href="{{ link }}">
+                  <img src="{{url_for('static', filename=''+thumb)}}" alt="" style="margin:3px; margin-top:3px; position: relative">
+                </a>
+            {% endfor %}
+          </div>
         </div>
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (method.music != "" and method.music != None) %}
+  {% if (method.music != "" and method.music != None) %}
+    <div class="accordion" id="accordionMusic">
       <div class="card">
-        <h5 class="card-header">Музыка:</h5>
-        <div class="card-body">
-          {% for width, height, music_url in music_list %}
-              <iframe frameborder="0" style="border:none;width:{{width}};height:{{height}};" width="{{width}}" height="{{height}}" src="{{music_url}}"></iframe>
-          {% endfor %}
+        <h5 class="card-header" id="headingMusic">
+          <table width="100%">
+            <tr>
+              <td>Музыка:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseMusic" aria-expanded="True" aria-controls="collapseMusic">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseMusic" class="collapse show" aria-labelledby="headingMusic" data-parent="#accordionMusic">
+          <div class="card-body">
+            {% for width, height, music_url in music_list %}
+                <iframe frameborder="0" style="border:none;width:{{width}};height:{{height}};" width="{{width}}" height="{{height}}" src="{{music_url}}"></iframe>
+            {% endfor %}
+          </div>
         </div>
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (method.video != "" and method.video != None) %}
+  {% if (method.video != "" and method.video != None) %}
+    <div class="accordion" id="accordionVideo">
       <div class="card">
-        <h5 class="card-header">Видео:</h5>
-        <div class="card-body">
-          {% for video in videos %}
-              <iframe width="560" height="315" style="margin:3px; margin-top:3px; position: relative" src="{{video}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          {% endfor %}
+        <h5 class="card-header" id="headingVideo">
+          <table width="100%">
+            <tr>
+              <td>Видео:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseVideo" aria-expanded="True" aria-controls="collapseVideo">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseVideo" class="collapse show" aria-labelledby="headingVideo" data-parent="#accordionVideo">
+          <div class="card-body">
+            {% for video in videos %}
+                <iframe width="560" height="315" style="margin:3px; margin-top:3px; position: relative" src="{{video}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            {% endfor %}
+          </div>
         </div>
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (method.literature != "" and method.literature != None) %}
-      <div class="card">
-        <h5 class="card-header">Методическая литература:</h5>
-        <div class="card-body">
-          {{method.literature}}
-        </div>
+  {% if (method.literature != "" and method.literature != None) %}
+    <div class="card">
+      <h5 class="card-header">Методическая литература:</h5>
+      <div class="card-body">
+        {{method.literature}}
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    {% if (method.category != "" and method.category != None) %}
-      <div class="card">
-        <h5 class="card-header">Категория:</h5>
-        <div class="card-body">
-          {{category}}
-        </div>
+  {% if (method.category != "" and method.category != None) %}
+    <div class="card">
+      <h5 class="card-header">Категория:</h5>
+      <div class="card-body">
+        {{category}}
       </div>
-    {% endif %}
+    </div>
+  {% endif %}
 
-    <!-- test dropdown -->
+  <!-- test dropdown -->
 
-    {% if ((method.author == current_user) or (current_user.username == 'Administrator')) %}
-      <br>
-      <div class="" align='right'>
-        <a class='btn btn-warning' href="{{url_for('methodics.update', method_id=method.id)}}">Изменить</a>
-        <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
-      </div>
-    {% endif %}
+  {% if ((method.author == current_user) or (current_user.username == 'Administrator')) %}
+    <br>
+    <div class="" align='right'>
+      <a class='btn btn-warning' href="{{url_for('methodics.update', method_id=method.id)}}">Изменить</a>
+      <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+    </div>
+  {% endif %}
 
 
 
