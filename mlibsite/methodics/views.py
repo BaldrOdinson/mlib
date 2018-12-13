@@ -34,13 +34,14 @@ def create_method():
 
     if form.validate_on_submit():
         # Фрмируем Age_range для базовы
-        age_range = form.age_range_from + ':' + form.age_range_till
+        # age_range = form.age_range_from + ':' + form.age_range_till
         method = Methodics(user_id=current_user.id,
                            title=form.title.data,
                            short_desc=form.short_desc.data,
                            target=form.target.data,
                            description=form.description.data,
-                           age_range=age_range,
+                           age_from=form.age_range_from.data,
+                           age_till=form.age_range_till.data,
                            # consumables=form.consumables.data,
                            # timing_id=form.timing_id.data,
                            # presentation=form.presentation.data,
@@ -103,8 +104,11 @@ def method(method_id):
     else:
         timing_duration = None
     # Возраст участников
-    if method.age_range:
-        age_list = method.age_range.split(':')
+    if method.age_from:
+        # age_list = method.age_range.split(':')
+        age_list = []
+        age_list.append(method.age_from)
+        age_list.append(method.age_till)
     else:
         age_list = []
     # Название категории
@@ -268,15 +272,14 @@ def update(method_id):
 
         # смотрим вбранную категорию
         curr_category = int(request.form.get('form_category'))
-        # формируем age_range для базы
-        age_range = str(form.age_range_from.data) + ':' + str(form.age_range_till.data)
 
         method.change_date = datetime.utcnow()
         method.title = form.title.data
         method.short_desc = form.short_desc.data
         method.target = form.target.data
         method.description = form.description.data
-        method.age_range = age_range
+        method.age_from=form.age_range_from.data,
+        method.age_till=form.age_range_till.data,
         method.consumables = form.consumables.data
         method.timing_id = timing_id
         # method.presentation = form.presentation.data
@@ -321,15 +324,12 @@ def update(method_id):
             form.timing_id.data = method.timing_id
         # Название категории
         category = Categories.query.get(method.category)
-        # Возраст участников
-        if method.age_range:
-            age_list = method.age_range.split(':')
-            form.age_range_from.data = int(age_list[0])
-            form.age_range_till.data = int(age_list[1])
 
         form.title.data = method.title
         form.short_desc.data = method.short_desc
         form.target.data = method.target
+        form.age_range_from.data = method.age_from
+        form.age_range_till.data = method.age_till
         form.description.data = method.description
         form.consumables.data = method.consumables
         form.images.data = method.images
