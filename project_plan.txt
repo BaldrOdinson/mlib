@@ -1,5 +1,4 @@
 ToDo:
-возраст участников
 Tags
 Email confirmation translate
 upload images

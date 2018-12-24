@@ -2,15 +2,15 @@
 
 {% block message %}
 
-<p>Thank you for registering with {{ app_name }}.</p>
+<p>Спасибо за регистрацию на {{ app_name }}.</p>
 
 {% if user_manager.enable_confirm_email and not user.confirmed_at -%}
-<p>You will need to confirm your email next.</p>
+<p>Теперь вам следует подтвердить ваш email.</p>
 
-<p>If you initiated this registration, please click on the link below:<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ confirm_email_link }}">Confirm your email</a>.</p>
+<p>Для этого перейдите по ссылке ниже:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ confirm_email_link }}">Подтвердить email</a>.</p>
 
-<p>If you did not initiate this registration, you may safely ignore this email.</p>
+<p>Если вы нигде не регистрировались, просто не обращайте внимания на этот email.</p>
 {% endif %}
 
 {% endblock %}
