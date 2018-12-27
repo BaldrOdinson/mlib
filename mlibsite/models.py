@@ -66,9 +66,11 @@ class Methodics(db.Model):
     category = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False, default=1)
     tags = db.Column(db.Text)
 
-    def __init__(self, user_id, title, short_desc, target, description,  category, tags):
+    def __init__(self, user_id, title, age_from, age_till, short_desc, target, description, category, tags):
         self.user_id = user_id
         self.title = title
+        self.age_from = age_from
+        self.age_till = age_till
         self.short_desc = short_desc
         self.target = target
         self.description = description

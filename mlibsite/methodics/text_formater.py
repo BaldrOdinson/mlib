@@ -168,7 +168,7 @@ def get_html_category_list():
                 for cat in categories:
                     categories_ids.append(cat.id)
                 count_methodics = Methodics.query.filter(Methodics.category.in_(categories_ids)).count()
-                print(f'count_methodics for category {category[0]}: {count_methodics}')
+                # print(f'count_methodics for category {category[0]}: {count_methodics}')
                 # локальная корректировка количества табуляций
                 if tabs >= 1:
                 # print(f'{"&emsp;"*tabs} {category[0]} {category[1][0]}')
