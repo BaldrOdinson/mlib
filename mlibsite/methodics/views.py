@@ -222,9 +222,8 @@ def update(method_id):
     presentation_filename = method.presentation
 
     form = UpdateMethodForm()
-
+    # print(f'form errors:{form.errors}')
     if form.validate_on_submit():
-
         # Если пытаются изменить заглавную картинку
         if form.method_label_image.data:
             method_id = method.id
@@ -278,8 +277,8 @@ def update(method_id):
         method.short_desc = form.short_desc.data
         method.target = form.target.data
         method.description = form.description.data
-        method.age_from=form.age_range_from.data,
-        method.age_till=form.age_range_till.data,
+        method.age_from = form.age_range_from.data
+        method.age_till = form.age_range_till.data
         method.consumables = form.consumables.data
         method.timing_id = timing_id
         # method.presentation = form.presentation.data
@@ -363,8 +362,9 @@ def delete_method(method_id):
     del_meth_folder = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_images', 'method_'+str(method_id)))
     shutil.rmtree(del_meth_folder, ignore_errors=True)
     # Удаляем заглавную картинку для методики
-    del_meth_ava = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_ava', method.method_label_image))
-    os.remove(del_meth_ava)
+    if method.method_label_image != 'default_method.png':
+        del_meth_ava = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_ava', method.method_label_image))
+        os.remove(del_meth_ava)
     # Удаляем файл презентации
     if method.presentation:
         filename = method.presentation
