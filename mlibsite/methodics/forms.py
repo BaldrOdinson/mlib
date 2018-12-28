@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired
@@ -23,10 +24,14 @@ class MethodForm(FlaskForm):
     tags = StringField('Теги')
     submit = SubmitField('Сохранить')
 
+    def check_age_data_type(self, field):
+        if not field.data:
+            flash('Значение возраста не выглядит как правильное. Должны быть только цифры.', 'negative')
+
 
 class UpdateMethodForm(FlaskForm):
     title = StringField('Название методики', validators=[DataRequired()])
-    method_label_image = FileField('Для изменения заглавного изображения этой методики<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
+    method_label_image = FileField('Для изменения заглавного изображения этой методики<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Только изображения')])
     short_desc = TextAreaField('Короткое описание', validators={DataRequired()})
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
@@ -42,6 +47,10 @@ class UpdateMethodForm(FlaskForm):
     category = IntegerField('Категория', default=1)
     tags = StringField('Теги')
     submit = SubmitField('Сохранить')
+
+    def check_age_data_type(self, field):
+        if not field.data:
+            flash('Значение возраста не выглядит как правильное. Должны быть только цифры. Последние изменения предположительно не сохранились. Проверьте.', 'negative')
 
 
 class AddCategoryForm(FlaskForm):

@@ -59,6 +59,10 @@ def create_method():
         return redirect(url_for('methodics.update', method_id=method.id))
     # Первая загрузка
     category = Categories.query.get(1)
+    # Если первая загрузка формы поля age_range_from и age_range_till не проверяем.
+    if ((form.age_range_from.data == None or form.age_range_till.data == None) and
+        (form.title.data != None or form.short_desc.data != None)):
+        form.check_age_data_type(form.age_range_from)
     return render_template('create_method.html', form=form,
                                                 category=category.category_name)
 
@@ -220,6 +224,7 @@ def update(method_id):
         abort(403)  # Проверяем что изменения вносит автор или админ, иначе 403 (все в сад)
     # для показа названия презентации
     presentation_filename = method.presentation
+    category = Categories.query.get(method.category)
 
     form = UpdateMethodForm()
     # print(f'form errors:{form.errors}')
@@ -340,6 +345,13 @@ def update(method_id):
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
     html_category_list = get_html_category_list()
+    # Если первая загрузка формы поля age_range_from и age_range_till не проверяем.
+    if (form.age_range_from.data == None and
+        (form.title.data != None or form.short_desc.data != None)):
+        form.check_age_data_type(form.age_range_from)
+    elif (form.age_range_till.data == None and
+        (form.title.data != None or form.short_desc.data != None)):
+        form.check_age_data_type(form.age_range_till)
     return render_template('update_method.html',
                             method_label_image=method.method_label_image,
                             title='Редактирование методики',
