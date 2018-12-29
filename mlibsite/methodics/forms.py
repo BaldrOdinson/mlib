@@ -35,7 +35,7 @@ class UpdateMethodForm(FlaskForm):
     age_range_till = IntegerField('До', validators=[DataRequired('Поле максимального возраста участников должно содержать только цифры. <br>')])
     consumables = TextAreaField('Используемые материалы')
     timing_id = IntegerField('Длительность занятия ')
-    presentation = FileField('Для загрузки файла с презентацией (pdf, pptx)', validators=[FileAllowed(['pdf', 'pptx'], 'Презентация должна быть формата <strong>PowerPoint</strong> или <strong>PDF</strong> (расширение файла pptx или pdf). Проверьте загружаемый файл. <br>')])
+    presentation = FileField('Для загрузки файла с презентацией (pdf, pptx)', validators=[FileAllowed(['pdf', 'pptx', 'docx', 'txt'], 'Презентация должна быть формата <strong>PowerPoint</strong> или <strong>PDF</strong> (расширение файла pptx или pdf). <br>Текст пояснения презентации должен быть в формате Word (docx) или текстовый файл (txt). <br>Проверьте загружаемый файл. <br>')])
     images = TextAreaField('Картинки')
     music = TextAreaField('Музыка')
     video = TextAreaField('Видео')

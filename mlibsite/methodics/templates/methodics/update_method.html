@@ -75,24 +75,35 @@
       {{form.music.label(class='form-control-label')}}
       <small class="form-text text-muted">Добавьте ссылки на <a href="https://music.yandex.ru/home" target="_blank">Yandex.Music</a>. Для этого выберите композицию или плей-лист. Нажмите <img src="/static/base/yandex_share_sign.PNG" height="20px"> (поделиться).
         Выберите HTML-код. Скопируйте содержимое поля HTML-код и вставьте сюда. Каждое с новой строки.</small>
-      {{form.music(class='form-control form-control-lg')}}
+      {{form.music(class='form-control form-control-lg', rows="4")}}
     </div>
     <div class="form-group">
       {{form.video.label(class='form-control-label')}}
       <small class="form-text text-muted">Добавьте ссылки на <a href="https://www.youtube.com/" target="_blank">YouTube</a>. Каждая с новой строки.</small>
-      {{form.video(class='form-control form-control-lg')}}
+      {{form.video(class='form-control form-control-lg', rows="4")}}
     </div>
     <div class="form-group">
       {{form.literature.label(class='form-control-label')}}
       {{form.literature(class='form-control form-control-lg')}}
     </div>
     <!-- Блок работы с презентацией -->
-    {% if curr_presentation %}
-      Прикрепленная презентация:<br> {{curr_presentation}}
-      <a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method_id)}}">Скачать</a>
-      <a class='btn btn-outline-danger btn-sm' href="{{url_for('methodics.delete_presentation', method_id=method_id)}}">Удалить</a>
+    {% if presentations %}
+      <!-- Прикрепленные файлы презентации: -->
+      <table class="table table-sm">
+        <tr class="table-info">
+          <th scope="col">Прикрепленные файлы презентации:</th>
+          <th></th>
+        </tr>
+        {% for presentation in presentations %}
+          <tr>
+            <td> {{presentation}}</td>
+            <td align='center'> <a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method_id, presentation=presentation)}}">Скачать</a>
+            <a class='btn btn-outline-danger btn-sm' href="{{url_for('methodics.delete_presentation', method_id=method_id, presentation=presentation)}}">Удалить</a></td>
+          </tr>
+        {% endfor %}
+      </table>
       <div class="form-group">
-        Для замены презентации (pdf, pptx)
+        Для добавления еще одной презентации (pdf, pptx) или текста пояснения к презентации (docx, txt)
         {{form.presentation(class='form-control-file')}}
       </div>
     {% else %}

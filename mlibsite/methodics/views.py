@@ -12,7 +12,7 @@ from mlibsite.methodics.music_handler import take_music_url, check_music_link
 from datetime import datetime
 from mlibsite.methodics.text_formater import text_format_for_html, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
 from sqlalchemy import or_, text
-import os, shutil
+import os, shutil, json
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
 
@@ -125,6 +125,11 @@ def method(method_id):
     # Test for deleting
     timing_id = db.session.execute(text(f"select timing_id from methodics where id='{method_id}'")).first()[0]
     print(f'Timing ID: {timing_id}')
+    # Формируем список с файлами презентаций, достаем из базы список в JSON и переводим его в нормальный
+    presentations = []
+    if method.presentation:
+        for presentation in json.loads(method.presentation):
+            presentations.append(presentation)
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
@@ -132,6 +137,7 @@ def method(method_id):
                             short_desc=short_desc_html_list,
                             # images_links=image_html_links,
                             # images_thumb_links=thumb_links,
+                            presentations = presentations,
                             images_list=images_list,
                             music_list=music_url_list,
                             method_label_image=method.method_label_image,
@@ -231,7 +237,7 @@ def update(method_id):
     if ((method.author != current_user) and (current_user.username != 'Administrator')):
         abort(403)  # Проверяем что изменения вносит автор или админ, иначе 403 (все в сад)
     # для показа названия презентации
-    presentation_filename = method.presentation
+    # presentation_filename = method.presentation
     category = Categories.query.get(method.category)
 
     form = UpdateMethodForm()
@@ -243,11 +249,17 @@ def update(method_id):
             pic = add_method_pic(form.method_label_image.data, method_id, method.method_label_image)
             method.method_label_image = pic
 
-        # Если пытаются загрузить файл с ПРЕЗЕНТАЦИЕЙ
+        # Если пытаются загрузить файл с ПРЕЗЕНТАЦИЕЙ формируем общий список, переводим в форма JSON и сохраняем в базу
         if form.presentation.data:
             method_id = method.id
+            if method.presentation:
+                presentation_files_list = json.loads(method.presentation)
+            else:
+                presentation_files_list = []
             presentation_filename = add_method_presentation(form.presentation.data, method_id, method.presentation)
-            method.presentation = presentation_filename
+            presentation_files_list.append(presentation_filename)
+            json_presentations = json.dumps(presentation_files_list)
+            method.presentation = json_presentations
 
         # создание превьюшек КАРТИНОК по указанным ссылкам
         print(f'image processing for method {method.id}')
@@ -352,6 +364,11 @@ def update(method_id):
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
     html_category_list = get_html_category_list()
+    # Формируем список с файлами презентаций
+    presentations = []
+    if method.presentation:
+        for presentation in json.loads(method.presentation):
+            presentations.append(presentation)
     # Если форма заполненна с ошибками, а валидаторам плевать (например расширения файлов)
     print(f'form errors: {form.errors}')
     if form.errors:
@@ -367,9 +384,10 @@ def update(method_id):
                             method_id = method.id,
                             timing_id = form.timing_id.data,
                             form=form,
-                            curr_presentation = presentation_filename,
+                            # curr_presentation = presentation_filename,
                             category=category,
-                            html_category_list=html_category_list)
+                            html_category_list=html_category_list,
+                            presentations=presentations)
 
 
 ###### DELETE METHOD ######
@@ -386,16 +404,18 @@ def delete_method(method_id):
     if method.method_label_image != 'default_method.png':
         del_meth_ava = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_ava', method.method_label_image))
         os.remove(del_meth_ava)
-    # Удаляем файл презентации
+    # Удаляем файлы презентации
     if method.presentation:
-        filename = method.presentation
-        curr_folder_path = os.path.join('static', 'methodics_presentations')
-        directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
-        shutil.rmtree(directory, ignore_errors=True)
+        for presentation in json.loads(method.presentation):
+            filename = presentation
+            curr_folder_path = os.path.join('static', 'methodics_presentations')
+            directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
+            shutil.rmtree(directory, ignore_errors=True)
     # Определяем номер тайминга и удаляем его и его шаги
     timing_id = db.session.execute(text(f"select timing_id from methodics where id='{method_id}'")).first()[0]
-    db.session.execute(text(f"delete from timing_steps where method_timing_id='{timing_id}'"))
-    db.session.execute(text(f"delete from method_timing where id='{timing_id}'"))
+    if timing_id != None:
+        db.session.execute(text(f"delete from timing_steps where method_timing_id='{timing_id}'"))
+        db.session.execute(text(f"delete from method_timing where id='{timing_id}'"))
     # Удалние методики, после того как разобрались с констреинтами
     db.session.delete(method)
     db.session.commit()
@@ -409,8 +429,9 @@ def download_presentation(method_id):
     """
     Скачиваем презентацияю для выбранной методики
     """
-    method = Methodics.query.get_or_404(method_id)
-    filename = method.presentation
+    # method = Methodics.query.get_or_404(method_id)
+    presentation = request.args.get('presentation')
+    filename = presentation
     curr_folder_path = os.path.join('static', 'methodics_presentations')
     directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
     filepath = os.path.join(directory, filename)
@@ -424,14 +445,24 @@ def delete_presentation(method_id):
     Удаляем презентацияю для выбранной методики вместе с директорией
     """
     method = Methodics.query.get_or_404(method_id)
+    presentation = request.args.get('presentation')
     if ((method.author != current_user) and (current_user.username != 'Administrator')):
         abort(403)
-    filename = method.presentation
+    filename = presentation
     curr_folder_path = os.path.join('static', 'methodics_presentations')
     directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
-    shutil.rmtree(directory, ignore_errors=True)
-    method.presentation = None
-    db.session.commit()
+    curr_filepath = os.path.join(current_app.root_path, directory, filename)
+    os.remove(curr_filepath)
+    if len(os.listdir(directory)) == 0:
+        shutil.rmtree(directory, ignore_errors=True)
+        method.presentation = None
+        db.session.commit()
+    else:
+        if method.presentation:
+            presentations = json.loads(method.presentation)
+            presentations.remove(filename)
+            method.presentation = json.dumps(presentations)
+            db.session.commit()
     flash('Файл презентации удален', 'warning')
     # filepath = os.path.join(directory, filename)
     return redirect(url_for('methodics.update', method_id=method_id))

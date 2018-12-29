@@ -76,6 +76,7 @@ def check_url_list(from_form, from_base):
     # print(f'from base:\n {from_base}')
     return from_form == from_base
 
+
 def date_translate(date):
     return dates.format_date(date, locale='ru_RU')
 
@@ -96,7 +97,7 @@ def create_category_dict():
     # sub category
     def sub_cat_add(check_category_list):
         '''
-        Для выбранной категории проверяем наличие подкатегорий и вкладываем из в список
+        Для выбранной категории проверяем наличие подкатегорий и вкладываем их в список
         check_category_list: список словарей категорий для проверки
         '''
         for category in check_category_list:

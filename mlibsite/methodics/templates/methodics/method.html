@@ -86,8 +86,14 @@
     <div class="card">
       <h5 class="card-header">Презентация:</h5>
       <div class="card-body">
-        {{method.presentation}}
-        <a class='btn btn-outline-success' href="{{url_for('methodics.download_presentation', method_id=method.id)}}">Скачать</a>
+        <table class="table table-sm">
+          {% for presentation in presentations %}
+            <tr>
+              <td>{{presentation}}</td>
+              <td><a class='btn btn-outline-success' href="{{url_for('methodics.download_presentation', method_id=method.id, presentation=presentation)}}">Скачать</a></td>
+            </tr>
+          {% endfor %}
+        </table>
       </div>
     </div>
   {% endif %}

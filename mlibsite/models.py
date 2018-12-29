@@ -58,7 +58,7 @@ class Methodics(db.Model):
     consumables = db.Column(db.Text)
     timing_id = db.Column(db.Integer)
     method_label_image = db.Column(db.String(64), nullable=False, default='default_method.png')
-    presentation = db.Column(db.String(256))
+    presentation = db.Column(db.Text)
     images = db.Column(db.Text)
     music = db.Column(db.Text)
     video = db.Column(db.Text)
