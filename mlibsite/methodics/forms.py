@@ -11,8 +11,8 @@ class MethodForm(FlaskForm):
     short_desc = TextAreaField('Короткое описание', validators={DataRequired()})
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
-    age_range_from = IntegerField('От', validators=[DataRequired()])
-    age_range_till = IntegerField('До', validators=[DataRequired()])
+    age_range_from = IntegerField('От', validators=[DataRequired('Поле минимального возраста участников должно содержать только цифры. <br>')])
+    age_range_till = IntegerField('До', validators=[DataRequired('Поле максимального возраста участников должно содержать только цифры. <br>')])
     consumables = TextAreaField('Используемые материалы')
     timing_id = IntegerField('Ход занятия')
     presentation = StringField('Презентация')
@@ -24,10 +24,6 @@ class MethodForm(FlaskForm):
     tags = StringField('Теги')
     submit = SubmitField('Сохранить')
 
-    def check_age_data_type(self, field):
-        if not field.data:
-            flash('Значение возраста не выглядит как правильное. Должны быть только цифры.', 'negative')
-
 
 class UpdateMethodForm(FlaskForm):
     title = StringField('Название методики', validators=[DataRequired()])
@@ -35,8 +31,8 @@ class UpdateMethodForm(FlaskForm):
     short_desc = TextAreaField('Короткое описание', validators={DataRequired()})
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
-    age_range_from = IntegerField('От', validators=[DataRequired()])
-    age_range_till = IntegerField('До', validators=[DataRequired()])
+    age_range_from = IntegerField('От', validators=[DataRequired('Поле минимального возраста участников должно содержать только цифры. <br>')])
+    age_range_till = IntegerField('До', validators=[DataRequired('Поле максимального возраста участников должно содержать только цифры. <br>')])
     consumables = TextAreaField('Используемые материалы')
     timing_id = IntegerField('Длительность занятия ')
     presentation = FileField('Для загрузки файла с презентацией (pdf, pptx)', validators=[FileAllowed(['pdf', 'pptx'], 'Презентация должна быть формата <strong>PowerPoint</strong> или <strong>PDF</strong> (расширение файла pptx или pdf). Проверьте загружаемый файл. <br>')])
@@ -47,10 +43,6 @@ class UpdateMethodForm(FlaskForm):
     category = IntegerField('Категория', default=1)
     tags = StringField('Теги')
     submit = SubmitField('Сохранить')
-
-    def check_age_data_type(self, field):
-        if not field.data:
-            flash('Значение возраста не выглядит как правильное. Должны быть только цифры. Последние изменения предположительно не сохранились. Проверьте.', 'negative')
 
 
 class AddCategoryForm(FlaskForm):

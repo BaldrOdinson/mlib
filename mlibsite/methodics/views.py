@@ -11,7 +11,7 @@ from mlibsite.methodics.files_saver import add_method_presentation
 from mlibsite.methodics.music_handler import take_music_url, check_music_link
 from datetime import datetime
 from mlibsite.methodics.text_formater import text_format_for_html, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
-from sqlalchemy import or_
+from sqlalchemy import or_, text
 import os, shutil
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
@@ -59,10 +59,15 @@ def create_method():
         return redirect(url_for('methodics.update', method_id=method.id))
     # Первая загрузка
     category = Categories.query.get(1)
-    # Если первая загрузка формы поля age_range_from и age_range_till не проверяем.
-    if ((form.age_range_from.data == None or form.age_range_till.data == None) and
-        (form.title.data != None or form.short_desc.data != None)):
-        form.check_age_data_type(form.age_range_from)
+    # Если форма заполненна с ошибками, а валидаторам плевать (например расширения файлов)
+    print(f'form errors: {form.errors}')
+    if form.errors:
+        flash_text = 'Форма методики заполнена неверно. <br>'
+        for error in form.errors:
+            # print(form.errors[error])
+            flash_text += form.errors[error][0]
+        flash_text += 'К сожалению, последние изменения не сохранены. '
+        flash(Markup(flash_text), 'negative')
     return render_template('create_method.html', form=form,
                                                 category=category.category_name)
 
@@ -117,6 +122,9 @@ def method(method_id):
         age_list = []
     # Название категории
     category = Categories.query.get(method.category)
+    # Test for deleting
+    timing_id = db.session.execute(text(f"select timing_id from methodics where id='{method_id}'")).first()[0]
+    print(f'Timing ID: {timing_id}')
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
@@ -215,7 +223,7 @@ def dict_category(category):
                                                     category=req_category,
                                                     date_translate=date_translate)
 
-###### UPDATE ######
+###### UPDATE METHOD ######
 @methodics.route('/<int:method_id>/update', methods=['GET', 'POST'])
 @login_required
 def update(method_id):
@@ -296,25 +304,24 @@ def update(method_id):
 
         db.session.commit()
 
-        flash_text = 'Изменения и дополнения сохранены. '
+        flash_text = 'Изменения и дополнения сохранены.'
         # или при необходимости показываем ругань на битые ссылки
         if len(wrong_links) == 0 and len(wrong_video_links) == 0 and len(wrong_music_links) == 0:
             flash(flash_text, 'warning')
         else:
             if len(wrong_links) != 0:
-                flash_text += 'но ссылка на картинку (или несколько): -> '
+                flash_text += '<br>но ссылка на <strong>картинку</strong> (или несколько) не открывается. Проверьте правильность ссылки:<br> '
                 for link in wrong_links:
-                    flash_text += link
-                flash_text += ' <- не открывается. Проверьте ее. '
+                    flash_text += link + '<br>'
             if len(wrong_video_links) != 0:
-                flash_text += 'Но при этом не обработалась ссылка/ки на видео: '
+                flash_text += '<br>Не обработалась ссылка/ки на <strong>видео</strong>: <br>'
                 for link in wrong_video_links:
-                    flash_text += link
+                    flash_text += link + '<br>'
             if len(wrong_music_links) != 0:
-                flash_text += 'Cсылка/ки на музыку не похожа на HTML-код для Яндекс.музыки, проверьте: '
+                flash_text += '<br>Cсылка/ки на <strong>музыку</strong> не похожа на HTML-код для Яндекс.музыки, проверьте: <br>'
                 for link in wrong_music_links:
-                    flash_text += link
-            flash(flash_text, 'negative')
+                    flash_text += link+ '<br>'
+            flash(Markup(flash_text), 'negative')
 
         return redirect(url_for('methodics.method', method_id=method_id))
 
@@ -345,11 +352,6 @@ def update(method_id):
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
     html_category_list = get_html_category_list()
-    # Проверяем поля age_range_from и age_range_till на наличие значений.
-    if form.age_range_from.data == None:
-        form.check_age_data_type(form.age_range_from)
-    elif form.age_range_till.data == None:
-        form.check_age_data_type(form.age_range_till)
     # Если форма заполненна с ошибками, а валидаторам плевать (например расширения файлов)
     print(f'form errors: {form.errors}')
     if form.errors:
@@ -390,10 +392,14 @@ def delete_method(method_id):
         curr_folder_path = os.path.join('static', 'methodics_presentations')
         directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
         shutil.rmtree(directory, ignore_errors=True)
-
+    # Определяем номер тайминга и удаляем его и его шаги
+    timing_id = db.session.execute(text(f"select timing_id from methodics where id='{method_id}'")).first()[0]
+    db.session.execute(text(f"delete from timing_steps where method_timing_id='{timing_id}'"))
+    db.session.execute(text(f"delete from method_timing where id='{timing_id}'"))
+    # Удалние методики, после того как разобрались с констреинтами
     db.session.delete(method)
     db.session.commit()
-    flash('Методика удалена', 'warning')
+    flash('Методика удалена', 'success')
     return redirect(url_for('core.index'))
 
 
