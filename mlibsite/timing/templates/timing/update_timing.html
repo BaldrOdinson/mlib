@@ -11,6 +11,7 @@
     {{form.hidden_tag()}}
     <div class="form-group">
       {{form.duration.label(class='form-control-label')}}
+      <small class="form-text text-muted">Только цифры</small>
       {{form.duration(class='form-control form-control-lg')}}
     </div>
     {% if form.duration.error %}

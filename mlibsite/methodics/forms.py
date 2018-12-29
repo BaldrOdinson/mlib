@@ -31,7 +31,7 @@ class MethodForm(FlaskForm):
 
 class UpdateMethodForm(FlaskForm):
     title = StringField('Название методики', validators=[DataRequired()])
-    method_label_image = FileField('Для изменения заглавного изображения этой методики<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Только изображения')])
+    method_label_image = FileField('Для изменения заглавного изображения этой методики<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Формат файла аватара должен быть <strong>JPG</strong> или <strong>PNG</strong>. Проверьте расширение загружаемого файла. <br>')])
     short_desc = TextAreaField('Короткое описание', validators={DataRequired()})
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
@@ -39,7 +39,7 @@ class UpdateMethodForm(FlaskForm):
     age_range_till = IntegerField('До', validators=[DataRequired()])
     consumables = TextAreaField('Используемые материалы')
     timing_id = IntegerField('Длительность занятия ')
-    presentation = FileField('Для загрузки файла с презентацией (pdf, pptx)', validators=[FileAllowed(['pdf', 'pptx'])])
+    presentation = FileField('Для загрузки файла с презентацией (pdf, pptx)', validators=[FileAllowed(['pdf', 'pptx'], 'Презентация должна быть формата <strong>PowerPoint</strong> или <strong>PDF</strong> (расширение файла pptx или pdf). Проверьте загружаемый файл. <br>')])
     images = TextAreaField('Картинки')
     music = TextAreaField('Музыка')
     video = TextAreaField('Видео')

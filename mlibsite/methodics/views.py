@@ -345,13 +345,20 @@ def update(method_id):
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
     html_category_list = get_html_category_list()
-    # Если первая загрузка формы поля age_range_from и age_range_till не проверяем.
-    if (form.age_range_from.data == None and
-        (form.title.data != None or form.short_desc.data != None)):
+    # Проверяем поля age_range_from и age_range_till на наличие значений.
+    if form.age_range_from.data == None:
         form.check_age_data_type(form.age_range_from)
-    elif (form.age_range_till.data == None and
-        (form.title.data != None or form.short_desc.data != None)):
+    elif form.age_range_till.data == None:
         form.check_age_data_type(form.age_range_till)
+    # Если форма заполненна с ошибками, а валидаторам плевать (например расширения файлов)
+    print(f'form errors: {form.errors}')
+    if form.errors:
+        flash_text = 'Форма методики заполнена неверно. <br>'
+        for error in form.errors:
+            # print(form.errors[error])
+            flash_text += form.errors[error][0]
+        flash_text += 'К сожалению, последние изменения не сохранены. '
+        flash(Markup(flash_text), 'negative')
     return render_template('update_method.html',
                             method_label_image=method.method_label_image,
                             title='Редактирование методики',
