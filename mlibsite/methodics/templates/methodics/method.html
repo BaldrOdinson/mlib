@@ -162,9 +162,7 @@
         <div id="collapseImage" class="collapse show" aria-labelledby="headingImage" data-parent="#accordionImage">
           <div class="card-body">
             {% for (link, thumb) in images_list %}
-                <a href="{{ link }}">
-                  <img src="{{url_for('static', filename=''+thumb)}}" alt="" style="margin:3px; margin-top:3px; position: relative">
-                </a>
+                <a href="{{ link }}"><img src="{{url_for('static', filename=''+thumb)}}" alt="" style="margin:3px; margin-top:3px; position: relative"></a>
             {% endfor %}
           </div>
         </div>
