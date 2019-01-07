@@ -1,9 +1,9 @@
 ToDo:
 Tags
-Email confirmation translate
 upload images
 images for steps
 Real example photo
+Search (check this: https://github.com/jonaprieto/flask-ponywhoosh)
 view of linked images/video/audio with delete button
 
 
@@ -173,3 +173,5 @@ __tablename__ = 'members'
           view
           update
           delete
+
+126

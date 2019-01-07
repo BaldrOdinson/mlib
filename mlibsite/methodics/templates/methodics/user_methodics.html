@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div class="jumbotron">
-    <div align='center'>
-      <h1>Методики, добавленные пользователем {{user.username}}</h1>
-      <img class="rounded-circle" src="{{url_for('static', filename='profile_pics/'+user.profile_image)}}">
+  <br>
+  <div class="container-fluid">
+    <div class="jumbotron">
+      <div align='center'>
+        <h1>Методики, добавленные пользователем {{user.username}}</h1>
+        <img class="rounded-circle" src="{{url_for('static', filename='profile_pics/'+user.profile_image)}}">
+      </div>
     </div>
   </div>
-
   <!--  SHOW Methodics-->
-  <div class="container">
+  <div class="container-fluid">
     <div class="card-columns">
     {% for method in methodics.items %}
           <div class="card shadow-sm">

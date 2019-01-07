@@ -90,7 +90,7 @@
           {% for presentation in presentations %}
             <tr>
               <td>{{presentation}}</td>
-              <td><a class='btn btn-outline-success' href="{{url_for('methodics.download_presentation', method_id=method.id, presentation=presentation)}}">Скачать</a></td>
+              <td><a class='btn btn-outline-success btn-sm' href="{{url_for('methodics.download_presentation', method_id=method.id, presentation=presentation)}}">Скачать</a></td>
             </tr>
           {% endfor %}
         </table>
@@ -106,10 +106,18 @@
       <div class="accordion" id="accordionSteps">
         <div class="card">
           <h5 class="card-header" id="headingSteps">
-            Этапы занятия:
-            <button class="btn btn-outline-info collapsed btn-sm" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
-              просмотреть
-            </button>
+            <table width="100%">
+              <tr>
+                <td>Этапы занятия:</td>
+                <td>
+                  <div align="right">
+                    <button class="btn btn-outline-info collapsed btn-sm" type="button" data-toggle="collapse" data-target="#collapseSteps" aria-expanded="false" aria-controls="collapseSteps">
+                      просмотреть / скрыть
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </table>
           </h5>
           <div id="collapseSteps" class="collapse" aria-labelledby="headingSteps" data-parent="#accordionSteps">
             <div class="card-body">

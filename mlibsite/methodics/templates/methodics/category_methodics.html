@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-  <div class="jumbotron">
-    <div align='center'>
-      <h1>Методики категории: {{category.category_name}}</h1>
+  <br>
+  <div class="container-fluid">
+    <div class="jumbotron">
+      <div align='center'>
+        <h1>Методики категории: {{category.category_name}}</h1>
+      </div>
     </div>
   </div>
 
-
   <!--  SHOW Methodics-->
-  <div class="container">
+  <div class="container-fluid">
     <div class="card-columns">
     {% for method in methodics.items %}
           <div class="card shadow-sm">
