@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <table width='100%'>
+        <tr>
+          <td>
+            <h2>Результаты поика методики</h2>
+            {% if lesson_id %}
+                <h4>для занятия: <a class="text-body text-decoration-none" href="{{url_for('courses.lesson_view', lesson_id=lesson_id)}}">{{lesson.description}}</a></h4>
+            {% endif %}
+          </td>
+          <!-- {% if current_user.is_authenticated %}
+            <td>
+              <div class="" align='right'>
+                <a class='btn btn-outline-info' href="{{url_for('projects.create_project')}}">Создать проект</a>
+              </div>
+            </td>
+          {% endif %} -->
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+<!--  SHOW Students-->
+  {% if lesson_id %}
+    {% if method_set.items %}
+      {% for method in method_set.items %}
+        <table width='100%'>
+          <tr>
+            <td width='90px'>
+              <img width='70px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
+            </td>
+            <td align='left'>
+              <h5>{{method.title}}</h5>
+            </td>
+            <td align='right' width='190px'>
+              <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.method', method_id=method.id)}}">!</a>
+              <a class='btn btn-outline-info btn-sm' href="{{url_for('methodics.add_method_to_lesson', method_id=method.id, lesson_id=lesson.id)}}">Добавить в занятие</a>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              {{method.short_desc}}
+            </td>
+          </tr>
+        </table>
+        <table width='100%'>
+          <tr>
+            {% if method.age_from %}
+              <td width='120px'>
+                <strong>Возраст: от</strong> {{method.age_from}}
+              </td>
+            {% endif %}
+            {% if method.age_till %}
+              <td width='60px'>
+                <strong>до</strong> {{method.age_till}}
+              </td>
+            {% endif %}
+            {% if method.tags %}
+              <td>
+                <strong>Теги:</strong> {{method.tags}}
+              </td>
+            {% endif %}
+            <td align='right'>
+              <strong>Автор:</strong> {{method.author.username}}<br>
+              <strong>Обновлено:</strong> {{date_translate(method.change_date)}}
+            </td>
+          </tr>
+        </table>
+        <hr>
+      {% endfor %}
+    {% else %}
+      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
+    {% endif %}
+  {% endif %}
+
+
+<!--  Pagination-->
+  <nav aria-label='Page Navigation'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in method_set.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if method_set.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('methodics.selected_methods_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('methodics.selected_methods_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}

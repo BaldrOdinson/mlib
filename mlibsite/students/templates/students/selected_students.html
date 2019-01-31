@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <table width='100%'>
+        <tr>
+          <td>
+            <h2>Результаты поика участников</h2>
+            {% if course_id %}
+                <h4>для курса <a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course_id)}}">{{course.name}}</a></h4>
+            {% endif %}
+          </td>
+          <!-- {% if current_user.is_authenticated %}
+            <td>
+              <div class="" align='right'>
+                <a class='btn btn-outline-info' href="{{url_for('projects.create_project')}}">Создать проект</a>
+              </div>
+            </td>
+          {% endif %} -->
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+<!--  SHOW Students-->
+  {% if course_id %}
+    {% if student_set.items %}
+      {% for student in student_set.items %}
+        <table width='100%'>
+          <tr>
+            <td>
+              <img align='center' height='40px' src="{{url_for('static', filename = 'students_pics/students_ava/'+student.avatar)}}">
+            </td>
+            <td>
+              <h1 class="display-4">{{student.first_name}} {{student.last_name}}</h1>
+            </td>
+            <td align='right'>
+              <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}">!</a>
+              <a class='btn btn-outline-info btn-sm' href="{{url_for('students.add_student_to_list', course_id=course_id, student_id=student.id)}}">Добавить в список</a>
+            </td>
+          </tr>
+        </table>
+        <table width='100%'>
+          <tr>
+            {% if student.age %}
+              <td>
+                <strong>Возраст:</strong> {{student.age}}
+              </td>
+            {% endif %}
+            {% if student.phone_num %}
+              <td>
+                <strong>Телефон:</strong> {{student.phone_num}}
+              </td>
+            {% endif %}
+            {% if student.email %}
+              <td>
+                <strong>Email:</strong> {{student.email}}
+              </td>
+            {% endif %}
+            {% if student.address %}
+              <td>
+                <strong>Адрес:</strong> {{student.address}}
+              </td>
+            {% endif %}
+          </tr>
+        </table>
+        <hr>
+      {% endfor %}
+    {% else %}
+      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
+    {% endif %}
+  {% endif %}
+
+
+<!--  Pagination-->
+  <nav aria-label='Page Navigation'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in student_set.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if student_set.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('students.selected_students_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('students.selected_students_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}

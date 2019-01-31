@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from flask import flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, IntegerField
+from wtforms import StringField, SubmitField, TextAreaField, IntegerField, SelectField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed
 
@@ -49,3 +49,16 @@ class AddCategoryForm(FlaskForm):
     new_category_name = StringField('Название категории', validators=[DataRequired()])
     parrent_cat = StringField('Родительская категория', validators=[DataRequired()])
     submit = SubmitField('Сохранить')
+
+
+class SearchMethodForm(FlaskForm):
+    author = StringField('Автор методики в системе')
+    title = StringField('Название')
+    # age_from = StringField('Минимальный возраст') #, choices=[zip(range(5, 80), range(5, 80))])
+    # age_till = StringField('Максимальный возраст') #, choices=[zip(range(5, 80), range(5, 80))])
+    short_desc = TextAreaField('Короткое описание')
+    target = StringField('Цель')
+    consumables = TextAreaField('Используемые материалы')
+    category = IntegerField('Категория')
+    tags = StringField('Теги')
+    submit = SubmitField('Найти')

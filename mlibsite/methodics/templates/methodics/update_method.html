@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<br>
 <form class="form-group" method="post" enctype="multipart/form-data">
   {{form.hidden_tag()}}
   <div class="jumbotron" align="center">
@@ -19,7 +20,8 @@
       </div>
     </div>
   </div>
-  <div class="container">
+  
+  <div class="container-fluid">
     <h5>Заполните форму ниже, и нажмите Сохранить</h5>
     <div class="form-group">
       {{form.title.label(class='form-control-label')}}

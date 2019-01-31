@@ -24,19 +24,48 @@ def text_format_for_html(text):
     Разбиваем полученный из базы текст по строкам, чтобы затем вывести в форме в отдельных <p>
     Иммитация переносов строк, которые иначе проебываются, а <pre> не поддерживает bootstrap styling
     '''
-    # print(f'text_format_for_html')
-    timestamp = str(time()*1000).split('.')[0]
-    temp_filename = f'text_tmp_{timestamp}'
-    with open(temp_filename, 'w') as file:
-        file.write(text)
-    html_text_list=[]
-    with open(temp_filename, 'r') as file:
-        for line in file.readlines():
-            if line != '\n':
-                html_text_list.append(line)
-    os.remove(temp_filename)
-    # print(html_text_list)
-    return html_text_list
+    if text:
+        timestamp = str(time()*1000).split('.')[0]
+        temp_filename = f'text_tmp_{timestamp}'
+        with open(temp_filename, 'w') as file:
+            file.write(text)
+        html_text_list=[]
+        with open(temp_filename, 'r') as file:
+            for line in file.readlines():
+                if line != '\n':
+                    html_text_list.append(line)
+        os.remove(temp_filename)
+        # print(html_text_list)
+        return html_text_list
+    else:
+        return text
+
+def text_for_markup(text):
+    '''
+    Разбиваем полученный из базы текст по строкам, чтобы затем вывести в форме после преобразования через Markup
+    '''
+    if text:
+        timestamp = str(time()*1000).split('.')[0]
+        temp_filename = f'text_tmp_{timestamp}'
+        with open(temp_filename, 'w') as file:
+            file.write(text)
+        html_text=''
+        with open(temp_filename, 'r') as file:
+            double_break = False
+            for line in file.readlines():
+                # print(f'line: {line}')
+                if line == '\n' and not double_break:
+                    html_text += line+'<br>'
+                    double_break = True
+                elif line == '\n' and double_break:
+                    double_break = False
+                else:
+                    html_text += line
+                    double_break = False
+        os.remove(temp_filename)
+        return Markup(html_text)
+    else:
+        return text
 
 
 def text_from_list(data_list):

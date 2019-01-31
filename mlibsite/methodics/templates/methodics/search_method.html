@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron" align="center">
+    <h2>Поиск нужной методики</h2>
+    <img align='center' height='200px' src="{{url_for('static', filename='methodics_pics/method_ava/default_method.png')}}">
+    <br><br><p>Заполните что знаете и нажмите Найти</p>
+  </div>
+  <div class="container">
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div class="form-group">
+        {{form.author.label(class='form-control-label')}}
+        {{form.author(class='form-control form-control')}}
+      </div>
+      <div class="form-group">
+        {{form.title.label(class='form-control-label')}}
+        {{form.title(class='form-control form-control')}}
+      </div>
+      <!-- <table width='100%'>
+        <tr>
+          <td width='50%'>
+            <div class="form-group">
+              {{form.age_from.label(class='form-control-label')}}
+              {{form.age_from(class='form-control')}}
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              {{form.age_till.label(class='form-control-label')}}
+              {{form.age_till(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table> -->
+      <div class="form-group">
+        {{form.short_desc.label(class='form-control-label')}}
+        {{form.short_desc(class='form-control form-control')}}
+      </div>
+      <div class="form-group">
+        {{form.target.label(class='form-control-label')}}
+        {{form.target(class='form-control form-control')}}
+      </div>
+      <div class="form-group">
+        {{form.consumables.label(class='form-control-label')}}
+        {{form.consumables(class='form-control form-control')}}
+      </div>
+      <table width='100%'>
+        <tr>
+          <td width='50%'>
+            <div class="form-group">
+              <!-- Категории -->
+              <p></p>
+              <div class="dropright">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Категория
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  {% for category_num, category_name, count in html_category_list %}
+                    {% if category_num != 1 %}
+                      <a class="dropdown-item" href="{{url_for('methodics.search_method', category=category_num)}}">
+                        {{category_name}} &emsp;<span class="badge badge-pill badge-light">{{count}}</span>
+                      </a>
+                    {% endif %}
+                  {% endfor %}
+                  <div class="dropdown-divider"></div>
+                  {% for category_num, category_name, count in html_category_list %}
+                    {% if category_num == 1 %}
+                      <a class="dropdown-item" href="{{url_for('methodics.search_method', category=category_num)}}">
+                        {{category_name}} &emsp;<span class="badge badge-pill badge-light">{{count}}</span>
+                      </a>
+                    {% endif %}
+                  {% endfor %}
+                    <!-- <ul><a class="dropdown-item" href="{{url_for('methodics.dict_category', category='4')}}">Тест словаря</a></ul> -->
+                </div>
+              </div>
+              {% for category_num, category_name, count in html_category_list %}
+                {% if category_num == form.category %}
+                    {{category_name}}
+                {% endif %}
+              {% endfor %}
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              {{form.tags.label(class='form-control-label')}}
+              {{form.tags(class='form-control form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+{% endblock %}

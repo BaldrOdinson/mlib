@@ -1,21 +1,20 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, send_file, abort, Markup
+from flask import render_template, url_for, flash, request, session, redirect, Blueprint, current_app, send_file, abort, Markup
 from flask_login import current_user, login_required
 from mlibsite import db
-from mlibsite.models import Methodics, MethodTiming, TimingSteps, Categories
-from mlibsite.methodics.forms import MethodForm, UpdateMethodForm, AddCategoryForm
+from mlibsite.models import User, Methodics, MethodTiming, TimingSteps, Categories, Lessons
+from mlibsite.methodics.forms import MethodForm, UpdateMethodForm, AddCategoryForm, SearchMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
 from mlibsite.methodics.music_handler import take_music_url, check_music_link
 from datetime import datetime
-from mlibsite.methodics.text_formater import text_format_for_html, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
+from mlibsite.methodics.text_formater import text_format_for_html, text_for_markup, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
 from sqlalchemy import or_, text
 import os, shutil, json
 
 methodics = Blueprint('methodics', __name__, template_folder='templates/methodics')
-
 
 # Views
 
@@ -80,8 +79,8 @@ def method(method_id):
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
-    description_html_list=text_format_for_html(method.description)
-    short_desc_html_list=text_format_for_html(method.short_desc)
+    description_html=Markup(text_for_markup(method.description))
+    short_desc_html=Markup(text_for_markup(method.short_desc))
     # создание превьюшек картинок по указанным ссылкам
     # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
     # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
@@ -133,10 +132,8 @@ def method(method_id):
     return render_template('method.html',
                             title=method.title,
                             date=method.publish_date,
-                            description=description_html_list,
-                            short_desc=short_desc_html_list,
-                            # images_links=image_html_links,
-                            # images_thumb_links=thumb_links,
+                            description=description_html,
+                            short_desc=short_desc_html,
                             presentations = presentations,
                             images_list=images_list,
                             music_list=music_url_list,
@@ -466,3 +463,117 @@ def delete_presentation(method_id):
     flash('Файл презентации удален', 'warning')
     # filepath = os.path.join(directory, filename)
     return redirect(url_for('methodics.update', method_id=method_id))
+
+
+###### SELECT METHOD ######
+@methodics.route('/select_method/category_<int:category>', methods=['GET', 'POST'])  # <int: - для того чтобы номер методики точно был integer
+def search_method(category):
+    # Опрелеляем номер списка для текущего курса и остальные параметры
+    if session['lesson_id']:
+        lesson_id = session['lesson_id']
+        lesson = Lessons.query.filter_by(id=lesson_id).first()
+    # Достаем категорию для поиска
+    html_category_list = get_html_category_list()
+
+    form = SearchMethodForm()
+
+    if form.validate_on_submit():
+        # Формируем параметры поиска на основе указанных пользователем
+        selected_methods_dict = {}
+        if form.author.data:
+            selected_methods_dict['author'] = '%'+form.author.data+'%'
+        else: selected_methods_dict['author'] = '%'
+        if form.title.data:
+            selected_methods_dict['title'] = '%'+form.title.data+'%'
+        else: selected_methods_dict['title'] = '%'
+        if form.age_from.data:
+            selected_methods_dict['age_from'] = form.age_from.data
+        else: selected_methods_dict['age_from'] = "0"
+        if form.age_till.data:
+            selected_methods_dict['age_till'] = form.age_till.data
+        else: selected_methods_dict['age_till'] = "99"
+        if form.short_desc.data:
+            selected_methods_dict['short_desc'] = '%'+form.short_desc.data+'%'
+        else: selected_methods_dict['short_desc'] = '%'
+        if form.target.data:
+            selected_methods_dict['target'] = '%'+form.target.data+'%'
+        else: selected_methods_dict['target'] = '%'
+        if form.consumables.data:
+            selected_methods_dict['consumables'] = '%'+form.consumables.data+'%'
+        else: selected_methods_dict['consumables'] = '%'
+        if form.category.data:
+            selected_methods_dict['category'] = form.category.data
+        else: selected_methods_dict['category'] = category
+        if form.tags.data:
+            selected_methods_dict['tags'] = '%'+form.tags.data+'%'
+        else: selected_methods_dict['tags'] = '%'
+
+        print(f'selected_methods_dict: {selected_methods_dict}')
+        session['selected_methods_dict'] = selected_methods_dict
+        return redirect(url_for('methodics.selected_methods_list'))
+
+    # первоначальная загрузка формы поиска
+    elif request.method == 'GET':
+        form.category = category
+    # Если форма заполненна с ошибками, а валидаторам плевать
+    if form.errors:
+        flash_text = 'Форма поиска заполнена неверно. <br>'
+        print(f'form errors: {form.errors}')
+        for error in form.errors:
+            flash_text += form.errors[error][0]
+        # flash_text += '<br>К сожалению, последние изменения не сохранены. '
+        flash(Markup(flash_text), 'negative')
+    # Первоначальные поисковые параметры
+    if session['lesson_id']:
+        return render_template('search_method.html',
+                                lesson_id=lesson_id,
+                                html_category_list=html_category_list,
+                                form=form)
+    else:
+        return render_template('search_method.html',
+                                html_category_list,
+                                form=form)
+
+
+###### SELECTED METHODS LIST ######
+@methodics.route('/selected_methods')  # <int: - для того чтобы номер методики точно был integer
+def selected_methods_list():
+    # print('BEGIN of selected_students_list')
+    # selected_students = request.args.get('selected_students')
+    selected_methods_dict = session['selected_methods_dict']
+    print(f'selected_methods_dict: {selected_methods_dict}')
+    selected_methods = Methodics.query.filter(User.username.ilike(selected_methods_dict['author']),
+                                    Methodics.title.ilike(selected_methods_dict['title']),
+                                    # Methodics.age_from >= int(selected_methods_dict['age_from'],
+                                    # Methodics.age_till <= int(selected_methods_dict['age_till'])),
+                                    Methodics.short_desc.like(selected_methods_dict['short_desc']),
+                                    Methodics.target.ilike(selected_methods_dict['target']),
+                                    Methodics.consumables.ilike(selected_methods_dict['consumables']),
+                                    Methodics.category==selected_methods_dict['category'],
+                                    Methodics.tags.ilike(selected_methods_dict['tags']),
+                                    ).order_by(Methodics.change_date.desc())
+
+    # print(f'selected_methods: {selected_methods}')
+    # pagination
+    # Максимальное количество элементов на странице
+    per_page=15
+    page = request.args.get('page', 1, type=int)
+    method_set = selected_methods.paginate(page=page, per_page=per_page)
+    method_whole = selected_methods[page*per_page-per_page:page*per_page]
+    if session['lesson_id']:
+        lesson_id = session['lesson_id']
+        lesson = Lessons.query.get_or_404(lesson_id)
+        return render_template('selected_methods.html',
+                            method_set=method_set,
+                            lesson_id = lesson_id,
+                            lesson = lesson,
+                            date_translate=date_translate)
+
+
+###### ADD METHOD TO LESSON ######
+@methodics.route('/method_<int:method_id>/add_for_lesson<int:lesson_id>')  # <int: - для того чтобы номер методики точно был integer
+def add_method_to_lesson(method_id, lesson_id):
+    lesson = Lessons.query.get_or_404(lesson_id)
+    lesson.method_id = method_id
+    db.session.commit()
+    return redirect(url_for('courses.update_lesson', lesson_id=lesson.id))

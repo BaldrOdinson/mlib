@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app
 from flask_login import current_user, login_required
 from mlibsite import db

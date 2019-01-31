@@ -10,9 +10,8 @@
         <div class="col-lg">
           <h1>{{method.title}}</h1>
           <!-- Вывод короткого описания -->
-          {% for line in short_desc %}
-            <p>{{line}}</p>
-          {% endfor %}
+          {{short_desc}}
+          <br><br>
           <div align='right'>
             <h6 class="card-subtitle mb-2 text-muted">Автор:
             <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a></h6>
@@ -64,9 +63,7 @@
         </h5>
         <div id="collapseDescription" class="collapse show" aria-labelledby="headingDescription" data-parent="#accordionDescription">
           <div class="card-body">
-            {% for line in description %}
-                <p class="card-text">{{line}}</p>
-            {% endfor %}
+            {{description}}
           </div>
         </div>
       </div>

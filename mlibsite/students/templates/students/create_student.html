@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron" align="center">
+    <h2>Добавление участника</h2>
+    <img align='center' height='200px' src="{{url_for('static', filename='students_pics/students_ava/default_student.png')}}">
+    <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+    <h5><a class="text-body text-decoration-none" href="{{url_for('students.update_students_group_list', course_id=course.id)}}">{{student_group}}</a></h5>
+    <p>Заполните форму ниже и нажмите Сохранить</p>
+  </div>
+  <div class="container">
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div class="form-group">
+        {{form.first_name.label(class='form-control-label')}}
+        {{form.first_name(class='form-control form-control')}}
+      </div>
+      <div class="form-group">
+        {{form.last_name.label(class='form-control-label')}}
+        {{form.last_name(class='form-control form-control')}}
+      </div>
+      <div class="form-group">
+        {{form.age.label(class='form-control-label')}}
+        {{form.age(class='form-control form-control')}}
+      </div>
+
+      <p>Сохранив нового участника вы перейдёте к расширенному редактированию его профиля.</p>
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+{% endblock %}
