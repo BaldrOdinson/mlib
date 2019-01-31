@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
   <br>
-  <div class="jumbotron" align="center">
-    <h2>Редактирование списка участников курса</h2>
-    <table width='100%'>
-      <tr>
-        <td align='left'>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
           <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/project_courses/'+course_label_image)}}">
-        </td>
-        <td align='right'>
+        </div>
+        <div class="col-lg">
+          <h2>Редактирование списка участников курса</h2>
           <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course_id)}}">{{course_name}}</a></h5>
-          <h5>{{group_name}}</h5>
+          <h5><span class="text-muted">список: </span>{{group_name}}</h5>
           <div align='right'>
             <br>
             <a class='btn btn-outline-success btn-sm' href="{{url_for('students.create_student', course_id=course_id)}}">Создать и добавить участника</a>
             <a class='btn btn-outline-info btn-sm' href="{{url_for('students.search_student')}}">Найти и добавить участника</a>
           </div>
-        </td>
-      </tr>
-    </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="container-fluid">

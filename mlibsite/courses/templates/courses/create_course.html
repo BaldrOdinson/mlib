@@ -1,42 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
   <br>
-  <div class="jumbotron" align="center">
-    <h2>Создание курса занятий</h2>
-    <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
-    <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
-    <img align='center' src="{{url_for('static', filename='projects_pics/project_courses/default_course.png')}}">
-
-    <p>Заполните форму ниже и нажмите Сохранить</p>
+  <div class="jumbotron">
+    <div class="container">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' src="{{url_for('static', filename='projects_pics/project_courses/default_course.png')}}">
+        </div>
+        <div class="col-lg">
+          <h2>Создание курса занятий</h2>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">&nbsp;&nbsp;&nbsp;{{term.name}}</a></h5>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="container">
     <form class="form-group" method="post">
       {{form.hidden_tag()}}
-      <div class="form-group">
-        {{form.name.label(class='form-control-label')}}
-        {{form.name(class='form-control form-control')}}
+      <div align="right" class="text-muted">
+        <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
       </div>
       <div class="form-group">
-        {{form.description.label(class='form-control-label')}}
-        {{form.description(class='form-control form-control')}}
+        <strong>{{form.name.label(class='form-control-label')}}</strong>
+        {{form.name(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.description.label(class='form-control-label')}}</strong>
+        {{form.description(class='form-control')}}
       </div>
       <table width='100%'>
         <tr>
           <td width='50%'>
             <div class="form-group">
-              {{form.start_date.label(class='form-control-label')}}
-              {{form.start_date(class='form-control form-control')}}
+              <strong>{{form.start_date.label(class='form-control-label')}}</strong>
+              {{form.start_date(class='form-control')}}
             </div>
           </td>
           <td>
             <div class="form-group">
-              {{form.finish_date.label(class='form-control-label')}}
-              {{form.finish_date(class='form-control form-control')}}
+              <strong>{{form.finish_date.label(class='form-control-label')}}</strong>
+              {{form.finish_date(class='form-control')}}
             </div>
           </td>
         </tr>
       </table>
-      <p>Сохранив новый период проект вы перейдёте к его расширенному редактированию.</p>
+      <p>Сохранив новый курс занятий вы перейдёте к его расширенному редактированию.</p>
       <div class="form-group" align='right'>
         {{form.submit(class='btn btn-outline-info')}}
       </div>

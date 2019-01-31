@@ -35,7 +35,7 @@ class UpdateStudentForm(FlaskForm):
     email = StringField('Email', validators=[Optional(), Email()])
     address = StringField('Адрес')
     note = TextAreaField('Примечание')
-    avatar = FileField('Загрузите картинку/аватар для этого профиля (jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
+    avatar = FileField('Загрузите картинку/аватар<br>для этого профиля (jpg или png)', validators=[FileAllowed(['jpg', 'png'])])
     document_type = StringField('Тип документа')
     document_number = StringField('Номер документа')
     attach = FileField('Для загрузки дополнительного файла (pdf, pptx, docx, txt, jpg)', validators=[FileAllowed(['pdf', 'pptx', 'docx', 'txt', 'jpg'], 'Файл должен быть разрешенного формата. <br>Проверьте загружаемый файл. <br>')])

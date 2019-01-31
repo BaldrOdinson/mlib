@@ -27,7 +27,7 @@ class MethodForm(FlaskForm):
 
 class UpdateMethodForm(FlaskForm):
     title = StringField('Название методики', validators=[DataRequired()])
-    method_label_image = FileField('Для изменения заглавного изображения этой методики<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Формат файла аватара должен быть <strong>JPG</strong> или <strong>PNG</strong>. Проверьте расширение загружаемого файла. <br>')])
+    method_label_image = FileField('Для изменения заглавного изображения<br>этой методики (jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Формат файла аватара должен быть <strong>JPG</strong> или <strong>PNG</strong>. Проверьте расширение загружаемого файла. <br>')])
     short_desc = TextAreaField('Короткое описание', validators={DataRequired()})
     target = StringField('Цель', validators=[DataRequired()])
     description = TextAreaField('Полное описание', validators=[DataRequired()])
@@ -58,7 +58,7 @@ class SearchMethodForm(FlaskForm):
     # age_till = StringField('Максимальный возраст') #, choices=[zip(range(5, 80), range(5, 80))])
     short_desc = TextAreaField('Короткое описание')
     target = StringField('Цель')
-    consumables = TextAreaField('Используемые материалы')
+    consumables = TextAreaField('Необходимые материалы')
     category = IntegerField('Категория')
     tags = StringField('Теги')
     submit = SubmitField('Найти')

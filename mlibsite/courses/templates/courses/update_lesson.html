@@ -3,77 +3,94 @@
 <form class="form-group" method="post" enctype="multipart/form-data">
   {{form.hidden_tag()}}
   <br>
-  <div class="jumbotron" align="center">
-
-    <div class="container">
+  <div class="jumbotron">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-sm" align='left'>
-          <img align='center' height='200px' src="{{label_image}}">
+        <div class="col-auto" align='left'>
+          {% if method %}
+            <a href="{{url_for('methodics.method', method_id=method.id)}}">
+              <img align='center' height='200px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
+            </a>
+          {% else %}
+            <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/default_lesson.png')}}">
+          {% endif %}
         </div>
-        <div class="col-lg" align='center'>
-          <h2>Редактирование занятия курса</h2>
+        <div class="col-lg">
+          <h2>Редактирование занятия</h2>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">&nbsp;&nbsp;&nbsp;{{term.name}}</a></h5>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{course.name}}</a></h5>
         </div>
       </div>
     </div>
   </div>
 
   <div class="container">
+    <div align="right" class="text-muted">
+      <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+    </div>
     <div class="form-group">
-      {{form.description.label(class='form-control-label')}}
+      <strong>{{form.description.label(class='form-control-label')}}</strong>
       {{form.description(class='form-control form-control', rows="5")}}
     </div>
     <table width='100%'>
       <tr>
         <td width='40%'>
           <div class="form-group">
-            {{form.lesson_date.label(class='form-control-label')}}
+            <strong>{{form.lesson_date.label(class='form-control-label')}}</strong>
             {{form.lesson_date(class='form-control form-control')}}
           </div>
         </td>
         <td>
           <div class="form-group">
-            {{form.start_time.label(class='form-control-label')}}
+            <strong>{{form.start_time.label(class='form-control-label')}}</strong>
             {{form.start_time(class='form-control form-control')}}
           </div>
         </td>
         <td>
           <div class="form-group">
-            {{form.finish_time.label(class='form-control-label')}}
+            <strong>{{form.finish_time.label(class='form-control-label')}}</strong>
             {{form.finish_time(class='form-control form-control')}}
           </div>
         </td>
       </tr>
     </table>
     <div class="form-group">
-      {{form.method_id.label(class='form-control-label')}}
+      <strong>{{form.method_id.label(class='form-control-label')}}</strong>
       {% if method %}
-        {{method.title}}
-        <div align='right'>
-          <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.search_method', category=1)}}" title="Выбрать методику для занятия">Поменять методику</a>
-        </div>
+        <table width='100%'>
+          <tr>
+            <td>
+              <p>{{method.title}}</p>
+              <p>{{method.short_desc}}</p>
+            </td>
+            <td width='200px'>
+              <div align='right'>
+                <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.search_method', category=0)}}" title="Выбрать методику для занятия">Поменять методику</a>
+              </div>
+            </td>
+          </tr>
+        </table>
       {% else %}
-        <a class='btn btn-outline-danger btn-sm' href="{{url_for('methodics.search_method', category=1)}}" title="Выбрать методику для занятия">Выбрать методику</a>
+        <a class='btn btn-outline-danger btn-sm' href="{{url_for('methodics.search_method', category=0)}}" title="Выбрать методику для занятия">Выбрать методику</a>
       {% endif %}
 
       <!-- {{form.method_id(class='form-control form-control')}} -->
     </div>
     <div class="form-group">
-      {{form.tutors.label(class='form-control-label')}}
+      <strong>{{form.tutors.label(class='form-control-label')}}</strong>
       {{form.tutors(class='form-control form-control')}}
     </div>
     <div class="form-group">
-      {{form.absent_students_list.label(class='form-control-label')}}
+      <strong>{{form.absent_students_list.label(class='form-control-label')}}</strong>
       {{form.absent_students_list(class='form-control form-control')}}
     </div>
     <div class="form-group">
-      {{form.web_links.label(class='form-control-label')}}
+      <strong>{{form.web_links.label(class='form-control-label')}}</strong>
       {{form.web_links(class='form-control form-control')}}
     </div>
     <div class="form-group">
-      {{form.note.label(class='form-control-label')}}
+      <strong>{{form.note.label(class='form-control-label')}}</strong>
       {{form.note(class='form-control form-control')}}
     </div>
     <!-- Блок работы с прикрепленными файлами -->

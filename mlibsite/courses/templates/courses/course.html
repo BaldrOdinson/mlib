@@ -96,6 +96,7 @@
                   <th scope="col">Ведущие</th>
                   <th scope="col">Методика</th>
                   <th scope="col">Описание</th>
+                  <th scope="col"></th>
                 </tr>
               </thead>
               {% for num, lesson in zip(range(1, len(course_schedule)+1), course_schedule) %}
@@ -119,7 +120,18 @@
                   </td>
                   <td>
                     {% if methods_dict[lesson.method_id] %}
-                        {{methods_dict[lesson.method_id].title}}
+                      <table>
+                        <tr>
+                          <td>
+                            <a href="{{url_for('methodics.method', method_id=methods_dict[lesson.method_id].id)}}">
+                              <img width='120px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+methods_dict[lesson.method_id].method_label_image)}}" alt="Method label image">
+                            </a>
+                          </td>
+                          <td>
+                            {{methods_dict[lesson.method_id].title}}
+                          </td>
+                        </tr>
+                      </table>
                     {% endif %}
                   </td>
                   <td>
@@ -175,6 +187,7 @@
             <table width='100%' class="table table-sm">
               <tr>
                 <th scope="col">#</th>
+                <th scope="col"></th>
                 <th scope="col">Имя</th>
                 <th scope="col">Фамилия</th>
                 <th scope="col">Возраст</th>
@@ -182,6 +195,9 @@
               {% for num, student in zip(range(1, len(students_group_list)+1), students_group_list) %}
                 <tr>
                   <th scope="row">{{num}}</th>
+                  <td width='50px'>
+                    <img class="rounded-circle" align='center' height='30px' width='30px' src="{{url_for('static', filename = 'students_pics/students_ava/'+student.avatar)}}">
+                  </td>
                   <td>
                     {{student.first_name}}
                   </td>

@@ -1,6 +1,8 @@
 ToDo:
+search categories
 moredators list
 web links
+add student to list - проверка дубликатов
 Tags
 upload images
 images for steps

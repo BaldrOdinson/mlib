@@ -3,7 +3,7 @@
 from flask import render_template, url_for, flash, request, session, redirect, Blueprint, current_app, send_file, abort, Markup
 from flask_login import current_user, login_required
 from mlibsite import db
-from mlibsite.models import User, Methodics, MethodTiming, TimingSteps, Categories, Lessons
+from mlibsite.models import User, Methodics, MethodTiming, TimingSteps, Categories, Lessons, Courses, Term, Projects
 from mlibsite.methodics.forms import MethodForm, UpdateMethodForm, AddCategoryForm, SearchMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from mlibsite.methodics.video_handler import check_video_links
@@ -472,12 +472,29 @@ def search_method(category):
     if session['lesson_id']:
         lesson_id = session['lesson_id']
         lesson = Lessons.query.filter_by(id=lesson_id).first()
+        course = Courses.query.get_or_404(lesson.course_id)
+        term = Term.query.get_or_404(course.term_id)
+        project = Projects.query.get_or_404(term.project_id)
     # Достаем категорию для поиска
     html_category_list = get_html_category_list()
+    all_cat_num = Methodics.query.order_by(Methodics.change_date.desc()).count()
+    html_category_list.insert(0, (0, Markup('Любая категория'), all_cat_num))
+    print(f'HTML category list: {html_category_list}')
 
     form = SearchMethodForm()
 
     if form.validate_on_submit():
+        # Берем все категории, у каторых выбранный id в id или parrent_cat (родительской категории)
+        selected_category = int(request.form.get('form_category'))
+        if selected_category != 0:
+            req_category = Categories.query.filter_by(id=int(selected_category)).first()
+            categories = Categories.query.filter(or_(Categories.id == selected_category, Categories.parrent_cat == selected_category))
+            categories_ids = [req_category.id]
+            # строим список со всеми выбранныйми id, затем по нему формируем SQL sequences
+            for cat in categories:
+                categories_ids.append(cat.id)
+        else:
+            categories_ids = [0]
         # Формируем параметры поиска на основе указанных пользователем
         selected_methods_dict = {}
         if form.author.data:
@@ -486,12 +503,6 @@ def search_method(category):
         if form.title.data:
             selected_methods_dict['title'] = '%'+form.title.data+'%'
         else: selected_methods_dict['title'] = '%'
-        if form.age_from.data:
-            selected_methods_dict['age_from'] = form.age_from.data
-        else: selected_methods_dict['age_from'] = "0"
-        if form.age_till.data:
-            selected_methods_dict['age_till'] = form.age_till.data
-        else: selected_methods_dict['age_till'] = "99"
         if form.short_desc.data:
             selected_methods_dict['short_desc'] = '%'+form.short_desc.data+'%'
         else: selected_methods_dict['short_desc'] = '%'
@@ -501,9 +512,7 @@ def search_method(category):
         if form.consumables.data:
             selected_methods_dict['consumables'] = '%'+form.consumables.data+'%'
         else: selected_methods_dict['consumables'] = '%'
-        if form.category.data:
-            selected_methods_dict['category'] = form.category.data
-        else: selected_methods_dict['category'] = category
+        selected_methods_dict['category'] =  categories_ids
         if form.tags.data:
             selected_methods_dict['tags'] = '%'+form.tags.data+'%'
         else: selected_methods_dict['tags'] = '%'
@@ -514,7 +523,7 @@ def search_method(category):
 
     # первоначальная загрузка формы поиска
     elif request.method == 'GET':
-        form.category = category
+        category = Categories.query.get(category)
     # Если форма заполненна с ошибками, а валидаторам плевать
     if form.errors:
         flash_text = 'Форма поиска заполнена неверно. <br>'
@@ -527,6 +536,11 @@ def search_method(category):
     if session['lesson_id']:
         return render_template('search_method.html',
                                 lesson_id=lesson_id,
+                                lesson=lesson,
+                                course=course,
+                                term=term,
+                                project=project,
+                                category=category,
                                 html_category_list=html_category_list,
                                 form=form)
     else:
@@ -542,14 +556,26 @@ def selected_methods_list():
     # selected_students = request.args.get('selected_students')
     selected_methods_dict = session['selected_methods_dict']
     print(f'selected_methods_dict: {selected_methods_dict}')
-    selected_methods = Methodics.query.filter(User.username.ilike(selected_methods_dict['author']),
+    # Если не выбрана категория, т.е. выбрана с номером 0 (любая категория), не включаем поле категории в поисковый запрос
+    if selected_methods_dict['category'] == [0]:
+        selected_methods = Methodics.query.filter(Methodics.user_id.in_(User.query.with_entities(User.id).filter(User.username.ilike(selected_methods_dict['author']))),
+                                        Methodics.title.ilike(selected_methods_dict['title']),
+                                        # Methodics.age_from >= int(selected_methods_dict['age_from']),
+                                        # Methodics.age_till <= int(selected_methods_dict['age_till']),
+                                        Methodics.short_desc.like(selected_methods_dict['short_desc']),
+                                        Methodics.target.ilike(selected_methods_dict['target']),
+                                        Methodics.consumables.ilike(selected_methods_dict['consumables']),
+                                        Methodics.tags.ilike(selected_methods_dict['tags']),
+                                        ).order_by(Methodics.change_date.desc())
+    else:
+        selected_methods = Methodics.query.filter(Methodics.user_id.in_(User.query.with_entities(User.id).filter(User.username.ilike(selected_methods_dict['author']))),
                                     Methodics.title.ilike(selected_methods_dict['title']),
-                                    # Methodics.age_from >= int(selected_methods_dict['age_from'],
-                                    # Methodics.age_till <= int(selected_methods_dict['age_till'])),
+                                    # Methodics.age_from >= int(selected_methods_dict['age_from']),
+                                    # Methodics.age_till <= int(selected_methods_dict['age_till']),
                                     Methodics.short_desc.like(selected_methods_dict['short_desc']),
                                     Methodics.target.ilike(selected_methods_dict['target']),
                                     Methodics.consumables.ilike(selected_methods_dict['consumables']),
-                                    Methodics.category==selected_methods_dict['category'],
+                                    Methodics.category.in_(selected_methods_dict['category']),
                                     Methodics.tags.ilike(selected_methods_dict['tags']),
                                     ).order_by(Methodics.change_date.desc())
 

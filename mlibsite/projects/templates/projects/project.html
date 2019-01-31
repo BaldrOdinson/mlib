@@ -19,7 +19,7 @@
               <small class="form-text text-muted">Последнее обновление: {{date_translate(project.change_date)}}</small>
             {% endif %}
             <br>
-            <a class='btn btn-info btn-sm' href="{{url_for('projects.term_list', project_id=project.id)}}">Мероприятия</a>
+            <a class='btn btn-info' href="{{url_for('projects.term_list', project_id=project.id)}}">Мероприятия</a>
           </div>
         </div>
       </div>

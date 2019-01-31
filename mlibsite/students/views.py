@@ -113,6 +113,8 @@ def create_student(course_id):
         flash(Markup(flash_text), 'negative')
     return render_template('create_student.html',
                             form=form,
+                            term=term,
+                            project=project,
                             student_group=student_group.description,
                             student_group_id=student_group.id,
                             course=course)
@@ -310,6 +312,7 @@ def search_student():
         return render_template('search_student.html',
                                 project = project,
                                 term = term,
+                                course=course,
                                 form=form)
     else:
         return render_template('search_student.html')

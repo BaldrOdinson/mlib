@@ -100,9 +100,6 @@ def check_url_list(from_form, from_base):
         from_base = ('' + from_base).replace('\n', '')
     else:
         from_base = ''
-    # print(f'check result if {from_form == from_base}')
-    # print(f'from form:\n {from_form}')
-    # print(f'from base:\n {from_base}')
     return from_form == from_base
 
 

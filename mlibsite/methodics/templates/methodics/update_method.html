@@ -3,10 +3,10 @@
 <br>
 <form class="form-group" method="post" enctype="multipart/form-data">
   {{form.hidden_tag()}}
-  <div class="jumbotron" align="center">
+  <div class="jumbotron">
     <div class="container">
       <div class="row">
-        <div class="col-sm" align='left'>
+        <div class="col-auto" align='left'>
           <img align='center' height='200px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method_label_image)}}">
           <br><br>
           <div class="form-group" align='left'>
@@ -20,73 +20,72 @@
       </div>
     </div>
   </div>
-  
-  <div class="container-fluid">
-    <h5>Заполните форму ниже, и нажмите Сохранить</h5>
-    <div class="form-group">
-      {{form.title.label(class='form-control-label')}}
-      {{form.title(class='form-control form-control-lg')}}
-    </div>
-    <div class="form-group">
-      {{form.short_desc.label(class='form-control-label')}}
-      {{form.short_desc(class='form-control form-control-lg')}}
-    </div>
-    <div class="form-group">
 
+  <div class="container-fluid">
+    <div align="right" class="text-muted">
+      <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
     </div>
     <div class="form-group">
-      {{form.target.label(class='form-control-label')}}
-      {{form.target(class='form-control form-control-lg')}}
+      <strong>{{form.title.label(class='form-control-label')}}</strong>
+      {{form.title(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.short_desc.label(class='form-control-label')}}</strong>
+      {{form.short_desc(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.target.label(class='form-control-label')}}</strong>
+      {{form.target(class='form-control')}}
     </div>
     <div class="form-group">
       <div class="input-group">
         <div class="input-group-prepend">
           <span class="input-group-text">Возраст участников от и до</span>
         </div>
-        {{form.age_range_from(class='form-control form-control-lg')}}
-        {{form.age_range_till(class='form-control form-control-lg')}}
+        <strong>{{form.age_range_from(class='form-control form-control-lg')}}</strong>
+        {{form.age_range_till(class='form-control')}}
       </div>
       <small class="form-text text-muted">Только цифры</small>
     </div>
     <div class="form-group">
-      {{form.description.label(class='form-control-label')}}
-      {{form.description(class='form-control form-control-lg', rows="5")}}
+      <strong>{{form.description.label(class='form-control-label')}}</strong>
+      {{form.description(class='form-control', rows="5")}}
     </div>
     <div class="form-group">
-      {{form.consumables.label(class='form-control-label')}}
-      {{form.consumables(class='form-control form-control-lg')}}
+      <strong>{{form.consumables.label(class='form-control-label')}}</strong>
+      {{form.consumables(class='form-control')}}
     </div>
     <!-- TIMING -->
     <div class="form-group">
       {% if timing_id %}
-        {{form.timing_id.label(class='form-control-label')}}
+        <strong>{{form.timing_id.label(class='form-control-label')}}</strong>
         {{timing_id}} минут <br>
         <a class='btn btn-warning' href="{{url_for('timing.edit_timing', method_id=method_id)}}">Этапы занятия</a>
       {% else %}
-        {{form.timing_id.label(class='form-control-label')}}
+        <strong>{{form.timing_id.label(class='form-control-label')}}</strong>
         {{timing_id}}
         <a class='btn btn-success' href="{{url_for('timing.add_timing', method_id=method_id)}}">Добавить ход занятия</a>
       {% endif %}
     </div>
     <div class="form-group">
-      {{form.images.label(class='form-control-label')}}
+      <strong>{{form.images.label(class='form-control-label')}}</strong>
       <small class="form-text text-muted">Добавьте ссылки на изображения. Для этого на выбранном изображении кликните правой кнопкой мыши и выберите пункт "Копировать URL картинки", затем вставьте его в это поле. Каждый с новой строки.</small>
-      {{form.images(class='form-control form-control-lg', rows="4")}}
+      {{form.images(class='form-control', rows="4")}}
     </div>
     <div class="form-group">
-      {{form.music.label(class='form-control-label')}}
+      <strong>{{form.music.label(class='form-control-label')}}</strong>
       <small class="form-text text-muted">Добавьте ссылки на <a href="https://music.yandex.ru/home" target="_blank">Yandex.Music</a>. Для этого выберите композицию или плей-лист. Нажмите <img src="/static/base/yandex_share_sign.PNG" height="20px"> (поделиться).
         Выберите HTML-код. Скопируйте содержимое поля HTML-код и вставьте сюда. Каждое с новой строки.</small>
-      {{form.music(class='form-control form-control-lg', rows="4")}}
+      {{form.music(class='form-control', rows="4")}}
     </div>
     <div class="form-group">
-      {{form.video.label(class='form-control-label')}}
+      <strong>{{form.video.label(class='form-control-label')}}</strong>
       <small class="form-text text-muted">Добавьте ссылки на <a href="https://www.youtube.com/" target="_blank">YouTube</a>. Каждая с новой строки.</small>
-      {{form.video(class='form-control form-control-lg', rows="4")}}
+      {{form.video(class='form-control', rows="4")}}
     </div>
     <div class="form-group">
-      {{form.literature.label(class='form-control-label')}}
-      {{form.literature(class='form-control form-control-lg')}}
+      <strong>{{form.literature.label(class='form-control-label')}}</strong>
+      {{form.literature(class='form-control')}}
     </div>
     <!-- Блок работы с презентацией -->
     {% if presentations %}
@@ -115,11 +114,11 @@
     </div>
     {% endif %}
     <div class="form-group">
-      {{form.tags.label(class='form-control-label')}}
-      {{form.tags(class='form-control form-control-lg')}}
+      <strong>{{form.tags.label(class='form-control-label')}}</strong>
+      {{form.tags(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.category.label(class='form-control-label')}}
+      <strong>{{form.category.label(class='form-control-label')}}</strong>
       <select class="form-control" name="form_category">
         <!-- <option selected value="{{category.id}}">{{category}}</option> -->
         {% for cat_num, category_name, count in html_category_list %}
@@ -131,8 +130,6 @@
         {% endfor %}
       </select>
       <a href="{{url_for('methodics.category_setup')}}" target="_blank"><small>Добавить категорию</small></a>
-      <!-- {{category}} -->
-      <!-- {{form.category(class='form-control form-control-lg')}} -->
     </div>
     <div class="form-group" align='right'>
       {{form.submit(class='btn btn-outline-info')}}

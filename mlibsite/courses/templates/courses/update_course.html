@@ -3,12 +3,12 @@
 <form class="form-group" method="post" enctype="multipart/form-data">
   {{form.hidden_tag()}}
   <br>
-  <div class="jumbotron" align="center">
+  <div class="jumbotron">
 
     <div class="container">
       <div class="row">
-        <div class="col-sm" align='left'>
-          <img align='center' src="{{label_image}}">
+        <div class="col-auto" align='left'>
+          <img align='center' width='200px' src="{{label_image}}">
           <br><br>
           <div class="form-group" align='left'>
             {{form.label_image.label(class='form-group')}}
@@ -18,56 +18,61 @@
         <div class="col-lg">
           <h2>Редактирование курса занятий</h2>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project_name}}</a></h5>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term_name}}</a></h5>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">&nbsp;&nbsp;&nbsp;{{term_name}}</a></h5>
         </div>
       </div>
     </div>
   </div>
 
   <div class="container">
-    <div class="form-group">
-      {{form.name.label(class='form-control-label')}}
-      {{form.name(class='form-control form-control')}}
+    <div align='right' class="text-muted">
+      <h5>Заполните форму ниже, и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
     </div>
     <div class="form-group">
-      {{form.description.label(class='form-control-label')}}
-      {{form.description(class='form-control form-control', rows="5")}}
+      <strong>{{form.name.label(class='form-control-label')}}</strong>
+      {{form.name(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.description.label(class='form-control-label')}}</strong>
+      {{form.description(class='form-control', rows="5")}}
     </div>
     <table width='100%'>
       <tr>
         <td width='50%'>
           <div class="form-group">
-            {{form.start_date.label(class='form-control-label')}}
-            {{form.start_date(class='form-control form-control')}}
+            <strong>{{form.start_date.label(class='form-control-label')}}</strong>
+            {{form.start_date(class='form-control')}}
           </div>
         </td>
         <td>
           <div class="form-group">
-            {{form.finish_date.label(class='form-control-label')}}
-            {{form.finish_date(class='form-control form-control')}}
+            <strong>{{form.finish_date.label(class='form-control-label')}}</strong>
+            {{form.finish_date(class='form-control')}}
           </div>
         </td>
       </tr>
     </table>
     <div class="form-group">
-      {{form.contacts_info.label(class='form-control-label')}}
-      {{form.contacts_info(class='form-control form-control')}}
+      <strong>{{form.contacts_info.label(class='form-control-label')}}</strong>
+      {{form.contacts_info(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.address.label(class='form-control-label')}}
-      {{form.address(class='form-control form-control')}}
+      <strong>{{form.address.label(class='form-control-label')}}</strong>
+      {{form.address(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.tutors.label(class='form-control-label')}}
-      {{form.tutors(class='form-control form-control')}}
+      <strong>{{form.tutors.label(class='form-control-label')}}</strong>
+      {{form.tutors(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.web_links.label(class='form-control-label')}}
-      {{form.web_links(class='form-control form-control')}}
+
+      <strong>{{form.web_links.label(class='form-control-label')}}</strong>
+      <br><small class="text-muted">Каждую с новой строки</small>
+      {{form.web_links(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.note.label(class='form-control-label')}}
-      {{form.note(class='form-control form-control')}}
+      <strong>{{form.note.label(class='form-control-label')}}</strong>
+      {{form.note(class='form-control')}}
     </div>
     <!-- Блок работы с прикрепленными файлами -->
     {% if attachments %}

@@ -173,7 +173,7 @@ def course_view(course_id):
         for lesson in course_schedule:
             method_id = lesson.method_id
             method = Methodics.query.filter_by(id=method_id).first()
-            methods_dict['method_id'] = method
+            methods_dict[method_id] = method
     return render_template('course.html',
                             term = term,
                             project = project,
@@ -351,7 +351,7 @@ def update_lesson(lesson_id):
         lesson.lesson_date = form.lesson_date.data
         lesson.start_time = form.start_time.data
         lesson.finish_time = form.finish_time.data
-        lesson.method_id = form.method_id.data
+        # lesson.method_id = form.method_id.data
         lesson.tutors = form.tutors.data
         lesson.absent_students_list = form.absent_students_list.data
         lesson.web_links = form.web_links.data
@@ -512,7 +512,7 @@ def update_schedule(course_id):
         for lesson in course_schedule:
             method_id = lesson.method_id
             method = Methodics.query.filter_by(id=method_id).first()
-            methods_dict['method_id'] = method
+            methods_dict[method_id] = method
     return render_template('course_schedule.html',
                             course_schedule=course_schedule,
                             course=course,

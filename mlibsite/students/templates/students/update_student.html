@@ -1,44 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
-  <br>
   <form class="form-group" method="post" enctype="multipart/form-data">
     {{form.hidden_tag()}}
-    <div class="jumbotron" align="center">
-      <h2>Редактирование информации об участнике</h2>
-      <br>
-      <table width='100%'>
-        <tr>
-          <td>
+    <br>
+    <div class="jumbotron">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-auto" align='left'>
             <img align='center' height='200px' src="{{url_for('static', filename='students_pics/students_ava/default_student.png')}}">
-            <br>
             <div class="form-group" align='left'>
               {{form.avatar.label(class='form-group')}}
               {{form.avatar(class='form-control-file')}}
             </div>
-          </td>
-          <td>
-            <h4>Списки:</h4>
+          </div>
+          <div class="col-lg">
+            <h2>Редактирование информации об участнике</h2>
+            <br>
+            <h4 class="text-muted">Списки:</h4>
             {% for course, student_group in zip(students_courses, students_group) %}
               <h5><a class="text-body text-decoration-none" href="{{url_for('students.update_students_group_list', course_id=course.id)}}">{{student_group.description}}</a></h5>
             {% endfor %}
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+      </div>
     </div>
 
-  <div class="container">
+  <div class="container-fluid">
+    <div align="right" class="text-muted">
+      <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+    </div>
     <table width='100%'>
       <tr>
         <td width='50%'>
           <div class="form-group">
-            {{form.first_name.label(class='form-control-label')}}
-            {{form.first_name(class='form-control form-control')}}
+            <strong>{{form.first_name.label(class='form-control-label')}}</strong>
+            {{form.first_name(class='form-control')}}
           </div>
         </td>
         <td>
           <div class="form-group">
-            {{form.last_name.label(class='form-control-label')}}
-            {{form.last_name(class='form-control form-control')}}
+            <strong>{{form.last_name.label(class='form-control-label')}}</strong>
+            {{form.last_name(class='form-control')}}
           </div>
         </td>
       </tr>
@@ -47,20 +49,20 @@
       <tr>
         <td width='25%'>
           <div class="form-group">
-            {{form.age.label(class='form-control-label')}}
-            {{form.age(class='form-control form-control')}}
+            <strong>{{form.age.label(class='form-control-label')}}</strong>
+            {{form.age(class='form-control')}}
           </div>
         </td>
         <td width='25%'>
           <div class="form-group">
-            {{form.sex.label(class='form-control-label')}}
-            {{form.sex(class='form-control form-control')}}
+            <strong>{{form.sex.label(class='form-control-label')}}</strong>
+            {{form.sex(class='form-control')}}
           </div>
         </td>
         <td>
           <div class="form-group">
-            {{form.birthday.label(class='form-control-label')}}
-            {{form.birthday(class='form-control form-control')}}
+            <strong>{{form.birthday.label(class='form-control-label')}}</strong>
+            {{form.birthday(class='form-control')}}
           </div>
         </td>
       </tr>
@@ -69,25 +71,25 @@
       <tr>
         <td width='50%'>
           <div class="form-group">
-            {{form.phone_num.label(class='form-control-label')}}
-            {{form.phone_num(class='form-control form-control')}}
+            <strong>{{form.phone_num.label(class='form-control-label')}}</strong>
+            {{form.phone_num(class='form-control')}}
           </div>
         </td>
         <td>
           <div class="form-group">
-            {{form.email.label(class='form-control-label')}}
-            {{form.email(class='form-control form-control')}}
+            <strong>{{form.email.label(class='form-control-label')}}</strong>
+            {{form.email(class='form-control')}}
           </div>
         </td>
       </tr>
     </table>
     <div class="form-group">
-      {{form.address.label(class='form-control-label')}}
-      {{form.address(class='form-control form-control')}}
+      <strong>{{form.address.label(class='form-control-label')}}</strong>
+      {{form.address(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.note.label(class='form-control-label')}}
-      {{form.note(class='form-control form-control')}}
+      <strong>{{form.note.label(class='form-control-label')}}</strong>
+      {{form.note(class='form-control')}}
     </div>
     <!-- Блок работы с прикрепленными файлами -->
     {% if attachments %}
