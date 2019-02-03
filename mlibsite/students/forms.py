@@ -9,12 +9,12 @@ from flask_wtf.file import FileField, FileAllowed
 
 
 class AddStudentsGroupForm(FlaskForm):
-    description = TextAreaField('Описание группы', validators=[DataRequired()])
+    description = TextAreaField('Описание/название группы', validators=[DataRequired()])
     submit = SubmitField('Сохранить')
 
 
 class UpdateStudentsGroupForm(FlaskForm):
-    description = TextAreaField('Описание группы', validators=[DataRequired()])
+    description = TextAreaField('Описание/название группы', validators=[DataRequired()])
     submit = SubmitField('Сохранить')
 
 

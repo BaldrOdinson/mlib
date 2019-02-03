@@ -8,12 +8,12 @@
           <img align='center' height='200px' src="{{url_for('static', filename='methodics_pics/method_ava/default_method.png')}}">
         </div>
         <div class="col-lg">
-          <h2>Поиск нужной методики</h2>
+          <h2>Поиск методики для</h2>
           {% if lesson %}
             <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
-            <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">&nbsp;&nbsp;&nbsp;{{term.name}}</a></h5>
-            <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{course.name}}</a></h5>
-            <h5><a class="text-body text-decoration-none" href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{lesson.description}}</a></h5>
+            <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}">{{lesson.description}}</a></h5>
           {% endif %}
         </div>
       </div>

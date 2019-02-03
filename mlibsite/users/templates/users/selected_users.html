@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <table width='100%'>
+        <tr>
+          <td>
+            <h2>Результаты поика пользователей</h2>
+            {% if project_id %}
+                <h5>для настройки прав доступа к проекту <a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+            {% endif %}
+          </td>
+          <!-- {% if current_user.is_authenticated %}
+            <td>
+              <div class="" align='right'>
+                <a class='btn btn-outline-info' href="{{url_for('projects.create_project')}}">Создать проект</a>
+              </div>
+            </td>
+          {% endif %} -->
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+<!--  SHOW Students-->
+  {% if project_id %}
+    {% if user_set.items %}
+      {% for user in user_set.items %}
+        {% if user.username != 'Administrator' %}
+          <table width='100%'>
+            <tr>
+              <td>
+                <img align='center' height='40px' src="{{url_for('static', filename = 'profile_pics/'+user.profile_image)}}">
+              </td>
+              <td>
+                <h1 class="display-4">{{user.username}}</h1>
+              </td>
+              {% if user.first_name %}
+                <td>
+                  {{user.first_name}}
+                </td>
+              {% endif %}
+              {% if user.last_name %}
+                <td>
+                  {{user.last_name}}
+                </td>
+              {% endif %}
+              <td align='right'>
+                {% if project %}
+                  <a class='btn btn-outline-info btn-sm' href="{{url_for('users.create_user_role', user_id=user.id, item_id=project_id, item_type=2)}}">Добавить роль</a>
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+          <table width='100%'>
+            <tr>
+              {% if user.phone_num %}
+                <td>
+                  <strong>Телефон:</strong> {{user.phone_num}}
+                </td>
+              {% endif %}
+              {% if user.email %}
+                <td>
+                  <strong>Email:</strong> {{user.email}}
+                </td>
+              {% endif %}
+              {% if user.address %}
+                <td>
+                  <strong>Адрес:</strong> {{user.address}}
+                </td>
+              {% endif %}
+              {% if user.curr_job_place %}
+                <td>
+                  <strong>Место работы:</strong> {{user.curr_job_place}}
+                </td>
+              {% endif %}
+            </tr>
+          </table>
+          <hr>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
+    {% endif %}
+  {% endif %}
+
+
+<!--  Pagination-->
+  <nav aria-label='Page Navigation'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in user_set.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if user_set.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('users.selected_users_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('users.selected_users_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}

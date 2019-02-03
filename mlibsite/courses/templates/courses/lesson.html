@@ -17,8 +17,8 @@
         <div class="col-lg">
           <h2>{{lesson.description}}</h2>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">&nbsp;&nbsp;&nbsp;{{term.name}}</a></h5>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{course.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
           <br>
           <table>
             <tr>
@@ -26,14 +26,15 @@
                 Время занятия:
               </td>
               <td>
-                <strong>{{date_translate(lesson.lesson_date)}}</strong>
+                <strong>&nbsp;{{date_translate(lesson.lesson_date)}}</strong>
               </td>
             </tr>
             <tr>
-              <td>
+              <td align='right'>
+                c
               </td>
               <td>
-                с <strong>{{lesson.start_time.strftime('%H:%M')}}</strong> до <strong>{{lesson.finish_time.strftime('%H:%M')}}</strong>
+                <strong>&nbsp;{{lesson.start_time.strftime('%H:%M')}}</strong> до <strong>{{lesson.finish_time.strftime('%H:%M')}}</strong>
               </td>
             </tr>
           </table>

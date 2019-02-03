@@ -130,7 +130,7 @@
           {% for attachment in attachments %}
             <tr>
               <td>{{attachment}}</td>
-              <td><a class='btn btn-outline-success btn-sm' href="{{url_for('students.download_attachment', student_id=student.id, attachment=attachment)}}">Скачать</a></td>
+              <td align='right'><a class='btn btn-outline-success btn-sm' href="{{url_for('students.download_attachment', student_id=student.id, attachment=attachment)}}">Скачать</a></td>
             </tr>
           {% endfor %}
         </table>

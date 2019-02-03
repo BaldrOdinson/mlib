@@ -38,6 +38,7 @@
               <h1 class="display-4">{{student.first_name}} {{student.last_name}}</h1>
             </td>
             <td align='right'>
+              <a class='btn btn-outline-success btn-sm' href="{{url_for('students.student_view', student_id=student.id)}}">?</a>
               <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}">!</a>
               <a class='btn btn-outline-info btn-sm' href="{{url_for('students.add_student_to_list', course_id=course_id, student_id=student.id)}}">Добавить в список</a>
             </td>

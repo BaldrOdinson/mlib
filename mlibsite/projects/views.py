@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, Markup, abort, send_file
+from flask import render_template, url_for, flash, session, request, redirect, Blueprint, current_app, Markup, abort, send_file
 from flask_login import current_user, login_required
 from mlibsite import db
-from mlibsite.models import Projects, Term, Courses
-from mlibsite.methodics.text_formater import text_format_for_html, date_translate, text_for_markup
+from mlibsite.models import Projects, Term, Courses, UserRole, User
+from mlibsite.methodics.text_formater import text_format_for_html, date_translate, text_for_markup, text_for_links_markup
 from mlibsite.projects.forms import AddProjectForm, UpdateProjectForm, AddTermForm, UpdateTermForm
 from mlibsite.projects.picture_handler import add_project_pic, add_term_pic
 from mlibsite.projects.files_saver import add_attachment
@@ -64,6 +64,29 @@ def update_project(project_id):
     """
     project = Projects.query.get_or_404(project_id)
     form = UpdateProjectForm()
+
+    session['project_id'] = project.id
+    session.pop('method_id', None)
+
+    # Смотрим роли пользователей по проекту
+    project_admins = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==project.id, UserRole.role_type==1).all()
+    print(f'project_admins: {list(project.user_id for project in project_admins)}')
+    project_moders = db.session.query(UserRole.user_id).filter(UserRole.item_type==2, UserRole.item_id==project.id, UserRole.role_type==2).all()
+    print(f'project_moders: {project_moders}')
+    # print(f'project_moders: {list(project.user_id for project in project_moders)}')
+    project_readers = db.session.query(UserRole.user_id).filter(UserRole.item_type==2, UserRole.item_id==project.id, UserRole.role_type==3).all()
+    print(f'project_readers: {project_readers}')
+
+
+    # Берем из базы пользователей с какими нибудь правами по проекту
+    users_role_dict = {}
+    roles = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==project.id).all()
+    if roles:
+        for role in roles:
+            user = User.query.filter_by(id=role.user_id).first()
+            user_role = role.role_type
+            users_role_dict[user.id] = (user.username, user_role, role.id)
+    print(f'users_role_dict: {users_role_dict}')
 
     if form.validate_on_submit():
         # Если загружается картинка для Проекта
@@ -128,7 +151,8 @@ def update_project(project_id):
                             label_image=label_image,
                             project_id = project.id,
                             form=form,
-                            attachments=attachments)
+                            attachments=attachments,
+                            users_role_dict = users_role_dict)
 
 
 ###### PROJECT (VIEW) ######
@@ -150,7 +174,7 @@ def project_view(project_id):
     contacts_info_html=Markup(text_for_markup(project.contacts_info))
     address_html=Markup(text_for_markup(project.address))
     note_html=Markup(text_for_markup(project.note))
-    web_links_html=Markup(text_for_markup(project.web_links))
+    web_links_html=Markup(text_for_links_markup(project.web_links))
     # Формируем список с файлами презентаций, достаем из базы список в JSON и переводим его в нормальный
     attachments = []
     if project.attach:

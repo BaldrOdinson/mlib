@@ -9,8 +9,10 @@
         </div>
         <div class="col-lg">
           <h2>Редактирование списка участников курса</h2>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course_id)}}">{{course_name}}</a></h5>
-          <h5><span class="text-muted">список: </span>{{group_name}}</h5>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course_id)}}">{{course_name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-muted">список: </span>{{group_name}}</h5>
           <div align='right'>
             <br>
             <a class='btn btn-outline-success btn-sm' href="{{url_for('students.create_student', course_id=course_id)}}">Создать и добавить участника</a>
@@ -30,6 +32,7 @@
           <th scope="col">Имя</th>
           <th scope="col">Фамилия</th>
           <th scope="col">Возраст</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       {% for num, student in zip(range(1, len(students_group_list)+1), students_group_list) %}

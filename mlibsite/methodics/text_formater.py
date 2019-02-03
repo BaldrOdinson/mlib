@@ -68,6 +68,35 @@ def text_for_markup(text):
         return text
 
 
+def text_for_links_markup(text):
+    '''
+    Разбиваем полученный из базы текст ссылок по строкам, добавляем теги <a></a> чтобы затем вывести в форме после преобразования через Markup
+    '''
+    if text:
+        timestamp = str(time()*1000).split('.')[0]
+        temp_filename = f'text_tmp_{timestamp}'
+        with open(temp_filename, 'w') as file:
+            file.write(text)
+        html_text=''
+        with open(temp_filename, 'r') as file:
+            double_break = False
+            for line in file.readlines():
+                # print(f'line: {line}')
+                if line == '\n' and not double_break:
+                    html_text += '<a href="'+line+'">'+line+'</a><br>'
+                    double_break = True
+                elif line == '\n' and double_break:
+                    double_break = False
+                else:
+                    html_text += '<a href="'+line+'">'+line+'</a>'
+                    double_break = False
+        os.remove(temp_filename)
+        print(f'Links: {html_text}')
+        return Markup(html_text)
+    else:
+        return text
+
+
 def text_from_list(data_list):
     """
     Берем каждое значение из списка и объединяем в общий текст

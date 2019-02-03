@@ -19,7 +19,7 @@ class AddCourseForm(FlaskForm):
 class UpdateCourseForm(FlaskForm):
     name = StringField('Название курса', validators=[DataRequired()])
     description = TextAreaField('Описание курса')
-    label_image = FileField('Для изменения заглавного изображения этого проекта<br>(jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Формат файла аватара должен быть <strong>JPG</strong> или <strong>PNG</strong>. Проверьте расширение загружаемого файла. <br>')])
+    label_image = FileField('Для изменения заглавного изображения<br>этого проекта (jpg или png)', validators=[FileAllowed(['jpg', 'png'], 'Формат файла аватара должен быть <strong>JPG</strong> или <strong>PNG</strong>. Проверьте расширение загружаемого файла. <br>')])
     start_date = DateField('Дата начала', format='%Y-%m-%d', validators=[DataRequired()])
     finish_date = DateField('Дата завершения', format='%Y-%m-%d', validators=[DataRequired()])
     contacts_info = TextAreaField('Контакты')

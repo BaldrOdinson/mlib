@@ -71,166 +71,15 @@ def create_method():
                                                 category=category.category_name)
 
 
-###### METHOD (VIEW) ######
-@methodics.route('/method_<int:method_id>')  # <int: - для того чтобы номер методики точно был integer
-def method(method_id):
-    # Получаем из базы метод, тайминг занятия, этапы занятия
-    method = Methodics.query.get_or_404(method_id)
-    timing = MethodTiming.query.filter_by(method_id=method_id).first()
-    steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
-    # разделяем преформатированный текст на строки, так как переносы не обрабатываются
-    description_html=Markup(text_for_markup(method.description))
-    short_desc_html=Markup(text_for_markup(method.short_desc))
-    # создание превьюшек картинок по указанным ссылкам
-    # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
-    # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
-    if method.images:
-        image_html_links=text_format_for_html(method.images)
-        thumb_links=thumbnail_list(image_html_links, method.id)
-        images_list=img_tupal(image_html_links, thumb_links)
-    else:
-        images_list=[]
-    # ссылки на музыку
-    if method.music:
-        music_list = text_format_for_html(method.music)
-        music_url_list = take_music_url(music_list)
-    else:
-        music_url_list=[]
-    # формируем ссылку на видео
-    if method.video:
-        video_html_links=text_format_for_html(method.video)
-        print(video_html_links)
-    else:
-        video_html_links = []
-    # Проверяем наличие тайминга
-    timing = MethodTiming.query.filter_by(method_id=method_id).first()
-    if timing:
-        timing_duration = timing.duration
-        steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
-        if len(list(steps)) == 0:
-            steps = None
-    else:
-        timing_duration = None
-    # Возраст участников
-    if method.age_from:
-        # age_list = method.age_range.split(':')
-        age_list = []
-        age_list.append(method.age_from)
-        age_list.append(method.age_till)
-    else:
-        age_list = []
-    # Название категории
-    category = Categories.query.get(method.category)
-    # Test for deleting
-    timing_id = db.session.execute(text(f"select timing_id from methodics where id='{method_id}'")).first()[0]
-    print(f'Timing ID: {timing_id}')
-    # Формируем список с файлами презентаций, достаем из базы список в JSON и переводим его в нормальный
-    presentations = []
-    if method.presentation:
-        for presentation in json.loads(method.presentation):
-            presentations.append(presentation)
-    return render_template('method.html',
-                            title=method.title,
-                            date=method.publish_date,
-                            description=description_html,
-                            short_desc=short_desc_html,
-                            presentations = presentations,
-                            images_list=images_list,
-                            music_list=music_url_list,
-                            method_label_image=method.method_label_image,
-                            method=method,
-                            videos=video_html_links,
-                            date_translate=date_translate,
-                            timing_duration=timing_duration,
-                            steps=steps,
-                            category=category.category_name,
-                            age_list=age_list)
-
-
-##### CATEGORY METHODICS #####
-# Методики конкретной категории с выводом постранично
-@methodics.route('/category_<category>')
-def category_methodics(category):
-    # print(f'category: {category}')
-    per_page=6
-    page = request.args.get('page', 1, type=int) # пригодится если страниц дохера, делаем разбивку по страницам
-    short_desc_html_list_dict = {}
-    # Берем все категории, у каторых выбранный id в id или parrent_cat (родительской категории)
-    req_category = Categories.query.filter_by(id=category).first()
-    categories = Categories.query.filter(or_(Categories.id == category, Categories.parrent_cat == category))
-    categories_ids = [req_category.id]
-    # строим список со всеми выбранныйми id, затем по нему формируем SQL sequences
-    for cat in categories:
-        categories_ids.append(cat.id)
-    methodics = Methodics.query.filter(Methodics.category.in_(categories_ids)).order_by(Methodics.change_date.desc()).paginate(page=page, per_page=6)
-    methodics_whole = Methodics.query.filter(Methodics.category.in_(categories_ids)).order_by(Methodics.change_date.desc())[page*per_page-per_page:page*per_page]
-    for method in methodics_whole:
-        short_desc_html_list_dict[method.id] = text_format_for_html(method.short_desc)
-    return render_template('category_methodics.html', methodics=methodics,
-                                                    category=req_category,
-                                                    date_translate=date_translate,
-                                                    short_desc_dict=short_desc_html_list_dict)
-
-
-##### CATEGORY SETUP #####
-@methodics.route('/category_setup', methods=['GET', 'POST'])
-@login_required
-def category_setup():
-
-    form = AddCategoryForm()
-
-    if form.validate_on_submit():
-        # parrent_cat = request.args.get('parrent_cat', type=int)
-        category = Categories(category_name=form.new_category_name.data,
-                                parrent_cat=int(form.parrent_cat.data))
-
-        db.session.add(category)
-        db.session.commit()
-        html_category_list = get_html_category_list()
-        return render_template('category_setup.html',
-                                html_category_list=html_category_list,
-                                form=form)
-
-
-    html_category_list = get_html_category_list()
-    return render_template('category_setup.html',
-                            html_category_list=html_category_list,
-                            form=form)
-
-##### DELETE CATEGORY #####
-@methodics.route('/category_delete')
-@login_required
-def delete_category():
-
-    form = AddCategoryForm()
-
-    category_id = request.args.get('category_id', type=int)
-    child_categories = Categories.query.filter_by(parrent_cat=category_id)
-    for category in child_categories:
-        db.session.delete(category)
-    category = method = Categories.query.get_or_404(category_id)
-    db.session.delete(category)
-    db.session.commit()
-    # html_category_list = get_html_category_list()
-    return redirect(url_for('methodics.category_setup'))
-
-
-##### !!!! FOR TEST REASON: METHODICS CATEGORY DICT TEST #####
-@methodics.route('/dict_test_<category>')
-def dict_category(category):
-    page = request.args.get('page', 1, type=int)
-    category_dict = create_category_dict()
-    req_category = Categories.query.filter_by(id=category).first()
-    methodics = Methodics.query.filter_by(category=req_category.id).order_by(Methodics.publish_date.desc()).paginate(page=page, per_page=6)
-    return render_template('category_methodics.html', methodics=methodics,
-                                                    category=req_category,
-                                                    date_translate=date_translate)
-
 ###### UPDATE METHOD ######
 @methodics.route('/<int:method_id>/update', methods=['GET', 'POST'])
 @login_required
 def update(method_id):
     method = Methodics.query.get_or_404(method_id)
+
+    session['method_id'] = method.id
+    session.pop('project_id', None)
+
     if ((method.author != current_user) and (current_user.username != 'Administrator')):
         abort(403)  # Проверяем что изменения вносит автор или админ, иначе 403 (все в сад)
     # для показа названия презентации
@@ -387,6 +236,162 @@ def update(method_id):
                             presentations=presentations)
 
 
+###### METHOD (VIEW) ######
+@methodics.route('/method_<int:method_id>')  # <int: - для того чтобы номер методики точно был integer
+def method(method_id):
+    # Получаем из базы метод, тайминг занятия, этапы занятия
+    method = Methodics.query.get_or_404(method_id)
+    timing = MethodTiming.query.filter_by(method_id=method_id).first()
+    steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
+    # разделяем преформатированный текст на строки, так как переносы не обрабатываются
+    description_html=Markup(text_for_markup(method.description))
+    short_desc_html=Markup(text_for_markup(method.short_desc))
+    # создание превьюшек картинок по указанным ссылкам
+    # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
+    # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
+    if method.images:
+        image_html_links=text_format_for_html(method.images)
+        thumb_links=thumbnail_list(image_html_links, method.id)
+        images_list=img_tupal(image_html_links, thumb_links)
+    else:
+        images_list=[]
+    # ссылки на музыку
+    if method.music:
+        music_list = text_format_for_html(method.music)
+        music_url_list = take_music_url(music_list)
+    else:
+        music_url_list=[]
+    # формируем ссылку на видео
+    if method.video:
+        video_html_links=text_format_for_html(method.video)
+        print(video_html_links)
+    else:
+        video_html_links = []
+    # Проверяем наличие тайминга
+    timing = MethodTiming.query.filter_by(method_id=method_id).first()
+    if timing:
+        timing_duration = timing.duration
+        steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
+        if len(list(steps)) == 0:
+            steps = None
+    else:
+        timing_duration = None
+    # Возраст участников
+    if method.age_from:
+        # age_list = method.age_range.split(':')
+        age_list = []
+        age_list.append(method.age_from)
+        age_list.append(method.age_till)
+    else:
+        age_list = []
+    # Название категории
+    category = Categories.query.get(method.category)
+    # Test for deleting
+    timing_id = db.session.execute(text(f"select timing_id from methodics where id='{method_id}'")).first()[0]
+    print(f'Timing ID: {timing_id}')
+    # Формируем список с файлами презентаций, достаем из базы список в JSON и переводим его в нормальный
+    presentations = []
+    if method.presentation:
+        for presentation in json.loads(method.presentation):
+            presentations.append(presentation)
+    return render_template('method.html',
+                            title=method.title,
+                            date=method.publish_date,
+                            description=description_html,
+                            short_desc=short_desc_html,
+                            presentations = presentations,
+                            images_list=images_list,
+                            music_list=music_url_list,
+                            method_label_image=method.method_label_image,
+                            method=method,
+                            videos=video_html_links,
+                            date_translate=date_translate,
+                            timing_duration=timing_duration,
+                            steps=steps,
+                            category=category.category_name,
+                            age_list=age_list)
+
+
+##### CATEGORY METHODICS #####
+# Методики конкретной категории с выводом постранично
+@methodics.route('/category_<category>')
+def category_methodics(category):
+    # print(f'category: {category}')
+    per_page=6
+    page = request.args.get('page', 1, type=int) # пригодится если страниц дохера, делаем разбивку по страницам
+    short_desc_html_list_dict = {}
+    # Берем все категории, у каторых выбранный id в id или parrent_cat (родительской категории)
+    req_category = Categories.query.filter_by(id=category).first()
+    categories = Categories.query.filter(or_(Categories.id == category, Categories.parrent_cat == category))
+    categories_ids = [req_category.id]
+    # строим список со всеми выбранныйми id, затем по нему формируем SQL sequences
+    for cat in categories:
+        categories_ids.append(cat.id)
+    methodics = Methodics.query.filter(Methodics.category.in_(categories_ids)).order_by(Methodics.change_date.desc()).paginate(page=page, per_page=6)
+    methodics_whole = Methodics.query.filter(Methodics.category.in_(categories_ids)).order_by(Methodics.change_date.desc())[page*per_page-per_page:page*per_page]
+    for method in methodics_whole:
+        short_desc_html_list_dict[method.id] = text_format_for_html(method.short_desc)
+    return render_template('category_methodics.html', methodics=methodics,
+                                                    category=req_category,
+                                                    date_translate=date_translate,
+                                                    short_desc_dict=short_desc_html_list_dict)
+
+
+##### CATEGORY SETUP #####
+@methodics.route('/category_setup', methods=['GET', 'POST'])
+@login_required
+def category_setup():
+
+    form = AddCategoryForm()
+
+    if form.validate_on_submit():
+        # parrent_cat = request.args.get('parrent_cat', type=int)
+        category = Categories(category_name=form.new_category_name.data,
+                                parrent_cat=int(form.parrent_cat.data))
+
+        db.session.add(category)
+        db.session.commit()
+        html_category_list = get_html_category_list()
+        return render_template('category_setup.html',
+                                html_category_list=html_category_list,
+                                form=form)
+
+
+    html_category_list = get_html_category_list()
+    return render_template('category_setup.html',
+                            html_category_list=html_category_list,
+                            form=form)
+
+##### DELETE CATEGORY #####
+@methodics.route('/category_delete')
+@login_required
+def delete_category():
+
+    form = AddCategoryForm()
+
+    category_id = request.args.get('category_id', type=int)
+    child_categories = Categories.query.filter_by(parrent_cat=category_id)
+    for category in child_categories:
+        db.session.delete(category)
+    category = method = Categories.query.get_or_404(category_id)
+    db.session.delete(category)
+    db.session.commit()
+    # html_category_list = get_html_category_list()
+    return redirect(url_for('methodics.category_setup'))
+
+
+##### !!!! FOR TEST REASON: METHODICS CATEGORY DICT TEST #####
+@methodics.route('/dict_test_<category>')
+def dict_category(category):
+    page = request.args.get('page', 1, type=int)
+    category_dict = create_category_dict()
+    req_category = Categories.query.filter_by(id=category).first()
+    methodics = Methodics.query.filter_by(category=req_category.id).order_by(Methodics.publish_date.desc()).paginate(page=page, per_page=6)
+    return render_template('category_methodics.html', methodics=methodics,
+                                                    category=req_category,
+                                                    date_translate=date_translate)
+
+
 ###### DELETE METHOD ######
 @methodics.route('/<int:method_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -465,7 +470,7 @@ def delete_presentation(method_id):
     return redirect(url_for('methodics.update', method_id=method_id))
 
 
-###### SELECT METHOD ######
+###### SEARCH METHOD ######
 @methodics.route('/select_method/category_<int:category>', methods=['GET', 'POST'])  # <int: - для того чтобы номер методики точно был integer
 def search_method(category):
     # Опрелеляем номер списка для текущего курса и остальные параметры

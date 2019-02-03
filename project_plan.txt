@@ -1,8 +1,5 @@
 ToDo:
-search categories
 moredators list
-web links
-add student to list - проверка дубликатов
 Tags
 upload images
 images for steps
@@ -211,3 +208,24 @@ __tablename__ = 'students'
   create_date
   note
   attach
+
+
+Learning groups - привязка участника к группе
+__tablename__ = 'learning_groups'
+  id (PK)
+  group_id (FK students_groups.id)
+  student_id (FK students.id)
+  create_date
+
+
+UserRole - роли пользователей
+__tablename__ = 'user_role'
+  id (PK)
+  user_id (FK users.id)
+  item_id
+  item_type
+  item_type_desc (1 - method, 2 - project)
+  role_type
+  role_type_desc (1 - admin, 2 - moderator, 3 - full_view)
+  create_date
+  change_date

@@ -11,7 +11,7 @@
         <div class="col-lg">
           <h1>{{course.name}}</h1>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
-          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
           <br>
           <h5>
             <table width='100%'>
@@ -176,9 +176,11 @@
               <tr>
                 <td>
                   <strong>Группа:</strong> {{students_group_desc}}
+
                 </td>
                 <td>
                   <div align='right'>
+                    <a class='text-decoration-none' href="{{url_for('students.rename_students_group', course_id=course.id)}}"><small>Переименовать список группы&nbsp;&nbsp;&nbsp;</small></a>
                     <a class='btn btn-info' href="{{url_for('students.update_students_group_list', course_id=course.id)}}">Редактировать список</a>
                   </div>
                 </td>

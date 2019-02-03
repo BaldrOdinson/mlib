@@ -4,7 +4,7 @@ from flask import render_template, url_for, flash, session, request, redirect, B
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import Methodics, Courses, Lessons, Term, Projects, StudentsGroup, Learning_groups, Students
-from mlibsite.methodics.text_formater import text_format_for_html, date_translate, text_for_markup
+from mlibsite.methodics.text_formater import text_format_for_html, date_translate, text_for_markup, text_for_links_markup
 from mlibsite.courses.forms import AddCourseForm, UpdateCourseForm, AddLessonForm, UpdateLessonForm
 from mlibsite.courses.picture_handler import add_course_pic
 from mlibsite.courses.files_saver import add_attachment, add_lesson_attachment
@@ -151,7 +151,7 @@ def course_view(course_id):
     contacts_info_html=Markup(text_for_markup(course.contacts_info))
     address_html=Markup(text_for_markup(course.address))
     tutors_html=Markup(text_for_markup(course.tutors))
-    web_links_html=Markup(text_for_markup(course.web_links))
+    web_links_html=Markup(text_for_links_markup(course.web_links))
     note_html=Markup(text_for_markup(course.note))
     # Формируем список с файлами презентаций, достаем из базы список в JSON и переводим его в нормальный
     attachments = []
@@ -421,7 +421,7 @@ def lesson_view(lesson_id):
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
     description_html=Markup(text_for_markup(lesson.description))
     tutors_html=Markup(text_for_markup(lesson.tutors))
-    web_links_html=Markup(text_for_markup(lesson.web_links))
+    web_links_html=Markup(text_for_links_markup(lesson.web_links))
     note_html=Markup(text_for_markup(lesson.note))
     # Формируем список с файлами презентаций, достаем из базы список в JSON и переводим его в нормальный
     attachments = []

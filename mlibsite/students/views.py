@@ -20,7 +20,7 @@ students = Blueprint('students', __name__, template_folder='templates/students')
 @login_required
 def create_students_group(course_id):
     """
-    Создаем новую группу участников проекта
+    Создаем новую группу участников курса
     """
     course = Courses.query.get_or_404(course_id)
     term = term = Term.query.get_or_404(course.term_id)
@@ -44,7 +44,41 @@ def create_students_group(course_id):
                             form=form,
                             course_name=course.name,
                             course_id=course.id,
+                            term=term,
+                            project=project,
                             course_label_image=course.label_image)
+
+
+##### RENAME STUDENTS GROUP #####
+@students.route('/course_<int:course_id>/rename_students_group', methods=['GET', 'POST'])
+@login_required
+def rename_students_group(course_id):
+    """
+    Переименовываем группу участников курса
+    """
+    course = Courses.query.get_or_404(course_id)
+    term = term = Term.query.get_or_404(course.term_id)
+    project = Projects.query.get_or_404(term.project_id)
+    students_group = StudentsGroup.query.get_or_404(course.students_group_id)
+
+    form = UpdateStudentsGroupForm()
+
+    if form.validate_on_submit():
+        students_group.description = form.description.data
+
+        db.session.commit()
+        flash('Группа участников курса переименована', 'success')
+        return redirect(url_for('courses.course_view', course_id=course.id))
+    # Первая загрузка
+    form.description.data = students_group.description
+    return render_template('rename_students_group.html',
+                            form=form,
+                            course_name=course.name,
+                            course_id=course.id,
+                            term=term,
+                            project=project,
+                            course_label_image=course.label_image)
+
 
 
 ##### UPDATE STUDENTS GROUP LIST #####
@@ -52,10 +86,12 @@ def create_students_group(course_id):
 @login_required
 def update_students_group_list(course_id):
     """
-    Создаем новую группу участников проекта
+    Изменяем состав группы участников курса
     """
     session['course_id'] = course_id
     course = Courses.query.get_or_404(course_id)
+    term = term = Term.query.get_or_404(course.term_id)
+    project = Projects.query.get_or_404(term.project_id)
     students_group = StudentsGroup.query.get_or_404(course.students_group_id)
     students_group_list = []
     learning_group = Learning_groups.query.filter_by(group_id=course.students_group_id)
@@ -67,6 +103,8 @@ def update_students_group_list(course_id):
                             students_group_list=students_group_list,
                             course_id=course.id,
                             course_name=course.name,
+                            term=term,
+                            project=project,
                             course_label_image=course.label_image,
                             zip=zip,
                             len=len)
@@ -356,6 +394,9 @@ def selected_students_list():
 def add_student_to_list(course_id, student_id):
     course = Courses.query.get_or_404(course_id)
     group_id = course.students_group_id
+    if Learning_groups.query.filter_by(group_id=group_id, student_id=student_id).all():
+        flash('Выбранный участник уже итак в списке. Для добавления выберите кого-то другого.', 'negative')
+        return redirect(url_for('students.update_students_group_list', course_id=course.id))
     add_to_group = Learning_groups(group_id=group_id,
                                     student_id=student_id)
     db.session.add(add_to_group)

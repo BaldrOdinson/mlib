@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<br>
 <form class="form-group" method="post" enctype="multipart/form-data">
   {{form.hidden_tag()}}
   <div class="jumbotron">
@@ -45,16 +46,68 @@
         </td>
         <td>
           <div class="form-group">
-            <strong>{{form.moders_list.label(class='form-control-label')}}</strong>
-            {{form.moders_list(class='form-control')}}
+            <strong>{{form.address.label(class='form-control-label')}}</strong>
+            {{form.address(class='form-control')}}
           </div>
         </td>
       </tr>
     </table>
+<!-- Роли пользователей -->
     <div class="form-group">
-      <strong>{{form.address.label(class='form-control-label')}}</strong>
-      {{form.address(class='form-control')}}
+      <table width='100%'>
+        <tr>
+          <td>
+            <strong>{{form.moders_list.label(class='form-control-label')}}</strong>
+          </td>
+          <td>
+            <div align='right'>
+              <a class='btn btn-outline-info btn-sm' href="{{url_for('users.search_user')}}">Добавить</a>
+            </div>
+          </td>
+        </tr>
+      </table>
+      {% if users_role_dict %}
+        <table width='100%' class="table table-sm">
+          <thead class="table-info">
+            <tr>
+              <th>Имя пользователя</th>
+              <th>Роль</th>
+              <th>Описание</th>
+              <th></th>
+            </tr>
+          </thead>
+          {% for user_role in users_role_dict.items() %}
+            <tr>
+              <td>
+                {{user_role[1][0]}}
+              </td>
+              <td>
+                {% if user_role[1][1] == 1 %}
+                  Администратор
+                {% elif user_role[1][1] == 2 %}
+                  Модератор
+                {% elif user_role[1][1] == 3 %}
+                  Полный просмотр
+                {% endif %}
+              </td>
+              <td>
+                {% if user_role[1][1] == 1 %}
+                  Редактирование, Добавление, Удаление
+                {% elif user_role[1][1] == 2 %}
+                  Редактирование, Добавление
+                {% elif user_role[1][1] == 3 %}
+                  Просмотр всей информации
+                {% endif %}
+              </td>
+              <td align='right'>
+                <a class='btn btn-outline-danger btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=project_id, item_type=2)}}">Удалить роль</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
     </div>
+
     <div class="form-group">
       <strong>{{form.web_links.label(class='form-control-label')}}</strong>
       {{form.web_links(class='form-control')}}

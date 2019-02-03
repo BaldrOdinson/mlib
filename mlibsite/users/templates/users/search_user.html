@@ -5,14 +5,13 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-auto" align='left'>
-          <img align='center' height='200px' src="{{url_for('static', filename='students_pics/students_ava/default_student.png')}}">
+          <img align='center' height='200px' src="{{url_for('static', filename='profile_pics/default_profile.png')}}">
         </div>
         <div class="col-lg">
-          <h2>Поиск нужного участника</h2>
-          {% if course %}
+          <h2>Поиск нужного пользователя</h2>
+          {% if project %}
+          <h5>для настройки прав доступа к проекту</h5>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
-          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
-          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
           {% endif %}
         </div>
       </div>
@@ -26,22 +25,22 @@
       </div>
       <table width='100%'>
         <tr>
-          <td width='40%'>
+          <td width='30%'>
+            <div class="form-group">
+              <strong>{{form.username.label(class='form-control-label')}}</strong>
+              {{form.username(class='form-control')}}
+            </div>
+          </td>
+          <td width='35%'>
             <div class="form-group">
               <strong>{{form.first_name.label(class='form-control-label')}}</strong>
               {{form.first_name(class='form-control')}}
             </div>
           </td>
-          <td width='40%'>
+          <td width='35%'>
             <div class="form-group">
               <strong>{{form.last_name.label(class='form-control-label')}}</strong>
               {{form.last_name(class='form-control')}}
-            </div>
-          </td>
-          <td>
-            <div class="form-group">
-              <strong>{{form.age.label(class='form-control-label')}}</strong>
-              {{form.age(class='form-control')}}
             </div>
           </td>
         </tr>
@@ -65,6 +64,10 @@
       <div class="form-group">
         <strong>{{form.address.label(class='form-control-label')}}</strong>
         {{form.address(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.curr_job_place.label(class='form-control-label')}}</strong>
+        {{form.curr_job_place(class='form-control')}}
       </div>
 
 

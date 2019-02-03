@@ -38,6 +38,28 @@ db_adapter = SQLAlchemyAdapter(db, User)
 user_manager = UserManager(db_adapter, app)
 
 
+### Роли пользователей ###
+class UserRole(db.Model):
+
+    __tablename__ = 'user_role'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    item_id = db.Column(db.Integer, nullable=False)
+    item_type = db.Column(db.Integer, nullable=False)
+    item_type_desc = db.Column(db.String(256))
+    role_type = db.Column(db.Integer, nullable=False)
+    role_type_desc = db.Column(db.String(256))
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    change_date = db.Column(db.DateTime)
+
+    def __init__(self, user_id, item_id, item_type, role_type, item_type_desc, role_type_desc):
+        self.user_id = user_id
+        self.item_id = item_id
+        self.item_type = item_type
+        self.role_type = role_type
+        self.item_type_desc = item_type_desc
+        self.role_type_desc = role_type_desc
+
 ### Методики ###
 class Methodics(db.Model):
 
