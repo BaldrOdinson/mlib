@@ -3,12 +3,13 @@
 from flask import render_template, url_for, flash, request, redirect, session, Blueprint, current_app, Markup, abort, send_file
 from flask_login import current_user, login_required
 from mlibsite import db
-from mlibsite.models import Courses, Lessons, Term, Projects, Students, StudentsGroup, Learning_groups
+from mlibsite.models import Courses, Lessons, Term, Projects, Students, StudentsGroup, Learning_groups, UserRole
 from mlibsite.methodics.text_formater import text_format_for_html, date_translate, text_for_markup
 from mlibsite.students.forms import AddStudentForm, UpdateStudentForm, AddStudentsGroupForm, UpdateStudentsGroupForm, SearchStudentForm
 from mlibsite.students.picture_handler import add_student_pic
 from mlibsite.students.files_saver import add_attachment
 from mlibsite.students.db_query_func import student_projects_info_dict
+from mlibsite.users.user_roles import get_roles, user_role
 from sqlalchemy import text
 import json, os, shutil
 
@@ -25,6 +26,17 @@ def create_students_group(course_id):
     course = Courses.query.get_or_404(course_id)
     term = term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
 
     form = AddStudentsGroupForm()
 
@@ -61,6 +73,17 @@ def rename_students_group(course_id):
     project = Projects.query.get_or_404(term.project_id)
     students_group = StudentsGroup.query.get_or_404(course.students_group_id)
 
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     form = UpdateStudentsGroupForm()
 
     if form.validate_on_submit():
@@ -92,6 +115,18 @@ def update_students_group_list(course_id):
     course = Courses.query.get_or_404(course_id)
     term = term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     students_group = StudentsGroup.query.get_or_404(course.students_group_id)
     students_group_list = []
     learning_group = Learning_groups.query.filter_by(group_id=course.students_group_id)
@@ -122,6 +157,17 @@ def create_student(course_id):
     project = Projects.query.get_or_404(term.project_id)
     student_group = StudentsGroup.query.get_or_404(course.students_group_id)
 
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     form = AddStudentForm()
 
     if form.validate_on_submit():
@@ -135,7 +181,10 @@ def create_student(course_id):
         student = Students.query.filter_by(first_name=form.first_name.data, last_name=form.last_name.data).order_by(Students.create_date.desc()).first()
         group_id = course.students_group_id
         add_to_group = Learning_groups(group_id=group_id,
-                                        student_id=student.id)
+                                        student_id=student.id,
+                                        course_id=course.id,
+                                        term_id=term.id,
+                                        project_id=project.id)
         db.session.add(add_to_group)
         db.session.commit()
         return redirect(url_for('students.update_student', student_id=student.id))
@@ -167,6 +216,23 @@ def update_student(student_id):
     """
     student = Students.query.get_or_404(student_id)
     student_proj_info_dict = student_projects_info_dict(student_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Проверяем есть ли у пользователя хоть в одном проекте участника права подходящие для редактирования
+    students_projects=student_proj_info_dict['students_projects']
+    allow_flag = False
+    for project in students_projects:
+        # Смотрим роли пользователей по проекту
+        project_roles = get_roles(item_id=project.id, item_type=2)
+        # определяем роль пользователя
+        curr_user_role = user_role(project_roles, current_user.id)
+        # завершаем обработку если у пользователя не хватает прав
+        if ((curr_user_role in ['admin', 'moder'])
+                    or (current_user.username == 'Administrator')
+                    or (current_user.id == project.author_id)):
+            allow_flag = True
+    if not allow_flag:
+        abort(403)
 
     form = UpdateStudentForm()
 
@@ -250,7 +316,8 @@ def update_student(student_id):
                             students_projects=student_proj_info_dict['students_projects'],
                             document_dict = document_dict,
                             zip=zip,
-                            attachments=attachments)
+                            attachments=attachments,
+                            allow_flag=allow_flag)
 
 
 ###### STUDENT (VIEW) ######
@@ -259,13 +326,24 @@ def student_view(student_id):
     # Получаем из базы всю инфу свзанную со студентом
     student = Students.query.get_or_404(student_id)
     student_proj_info_dict = student_projects_info_dict(student_id)
-    # Формируем список модераторов
-    moder_stat = False
-    for project in student_proj_info_dict['students_projects']:
-        if project.moders_list:
-            moders_list = text_format_for_html(project.moders_list)
-            if current_user.id in moders_list or current_user.id == project.author_id:
-                moder_stat = True
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Проверяем есть ли у пользователя хоть в одном проекте участника права подходящие для просмотра
+    students_projects=student_proj_info_dict['students_projects']
+    allow_flag = False
+    for project in students_projects:
+        # Смотрим роли пользователей по проекту
+        project_roles = get_roles(item_id=project.id, item_type=2)
+        # определяем роль пользователя
+        curr_user_role = user_role(project_roles, current_user.id)
+        # завершаем обработку если у пользователя не хватает прав
+        if ((curr_user_role in ['admin', 'moder', 'reader'])
+                    or (current_user.username == 'Administrator')
+                    or (current_user.id == project.author_id)):
+            allow_flag = True
+    if not allow_flag:
+        abort(403)
+
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
     address_html=Markup(text_for_markup(student.address))
     note_html=Markup(text_for_markup(student.note))
@@ -281,7 +359,7 @@ def student_view(student_id):
                             students_terms = student_proj_info_dict['students_terms'],
                             students_projects=student_proj_info_dict['students_projects'],
                             attachments = attachments,
-                            moder_stat = moder_stat,
+                            allow_flag=allow_flag,
                             address = address_html,
                             note = note_html,
                             date_translate=date_translate,
@@ -359,6 +437,33 @@ def search_student():
 ###### SELECTED STUDENTS LIST ######
 @students.route('/selected_students')  # <int: - для того чтобы номер методики точно был integer
 def selected_students_list():
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Проверяем есть ли у пользователя хоть в одном проекте права подходящие для просмотра участников
+    user_projects_roles = UserRole.query.filter(UserRole.item_type==2, UserRole.user_id==current_user.id).all()
+    users_projects = list(users_project.item_id for users_project in user_projects_roles)
+    # созданные пользователем проекты
+    created_projects = Projects.query.filter(Projects.author_id==current_user.id).all()
+    for project in created_projects:
+        # список с номерами всех проектов
+        users_projects.append(project.id)
+    allow_flag = False
+    projects_list = []
+    for project_id in users_projects:
+        projects_list.append(project_id)
+        project = Projects.query.filter_by(id=project_id).first()
+        # Смотрим роли пользователей по проекту
+        project_roles = get_roles(item_id=project.id, item_type=2)
+        # определяем роль пользователя
+        curr_user_role = user_role(project_roles, current_user.id)
+        # завершаем обработку если у пользователя не хватает прав
+        if ((curr_user_role in ['admin', 'moder', 'reader'])
+                    or (current_user.username == 'Administrator')
+                    or (current_user.id == project.author_id)):
+            allow_flag = True
+    if not allow_flag:
+        abort(403)
+
     # print('BEGIN of selected_students_list')
     # selected_students = request.args.get('selected_students')
     selected_students_dict = session['selected_students_dict']
@@ -368,8 +473,8 @@ def selected_students_list():
                                     Students.email.like(selected_students_dict['email']),
                                     Students.address.ilike(selected_students_dict['address']),
                                     Students.age.ilike(selected_students_dict['age']),
-                                    # cast(Students.birthday, CHAR(16)).ilike(selected_students_dict['birthday']),
-                                    # Students.birthday == selected_students_dict['birthday'],
+                                    # Выбираются только студенты, на просмотр которых есть права
+                                    Students.id.in_(list(item.student_id for item in (Learning_groups.query.filter(Learning_groups.project_id.in_(users_projects)).all()))),
                                     ).order_by(Students.id.desc())
 
     print(f'selected_students: {selected_students}')
@@ -393,12 +498,17 @@ def selected_students_list():
 @students.route('/course_<int:course_id>/add_student_<int:student_id>')  # <int: - для того чтобы номер методики точно был integer
 def add_student_to_list(course_id, student_id):
     course = Courses.query.get_or_404(course_id)
+    term = term = Term.query.get_or_404(course.term_id)
+    project = Projects.query.get_or_404(term.project_id)
     group_id = course.students_group_id
     if Learning_groups.query.filter_by(group_id=group_id, student_id=student_id).all():
         flash('Выбранный участник уже итак в списке. Для добавления выберите кого-то другого.', 'negative')
         return redirect(url_for('students.update_students_group_list', course_id=course.id))
     add_to_group = Learning_groups(group_id=group_id,
-                                    student_id=student_id)
+                                    student_id=student_id,
+                                    course_id=course.id,
+                                    term_id=term.id,
+                                    project_id=project.id)
     db.session.add(add_to_group)
     db.session.commit()
     return redirect(url_for('students.update_students_group_list', course_id=course.id))

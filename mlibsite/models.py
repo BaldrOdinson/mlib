@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from mlibsite import db, app
 from flask_user import UserMixin, SQLAlchemyAdapter, UserManager
+from flask_login import current_user
 from datetime import datetime
 
 
@@ -188,6 +189,7 @@ class Term(db.Model):
     __tablename__ = 'term'
 
     id = db.Column(db.Integer, primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
     name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -201,6 +203,7 @@ class Term(db.Model):
         self.description = description
         self.start_date = start_date
         self.finish_date = finish_date
+        self.created_by = current_user.id
 
 
 ### Курс занятий ###
@@ -208,6 +211,7 @@ class Courses(db.Model):
     __tablename__ = 'courses'
 
     id = db.Column(db.Integer, primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
     term_id = db.Column(db.Integer, db.ForeignKey('term.id'))
     name = db.Column(db.String(256), nullable=False)
@@ -232,6 +236,7 @@ class Courses(db.Model):
         self.description = description
         self.start_date = start_date
         self.finish_date = finish_date
+        self.created_by = current_user.id
 
 
 ### Занятие ###
@@ -239,6 +244,7 @@ class Lessons(db.Model):
     __tablename__ = 'lessons'
 
     id = db.Column(db.Integer, primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     description = db.Column(db.Text, nullable=False)
     label_image = db.Column(db.String(128), nullable=False, default='default_lesson.png')
@@ -260,6 +266,7 @@ class Lessons(db.Model):
         self.lesson_date = lesson_date
         self.start_time = start_time
         self.finish_time = finish_time
+        self.created_by = current_user.id
 
 
 ### Группы студентов ###
@@ -267,7 +274,7 @@ class StudentsGroup(db.Model):
     __tablename__ = 'students_group'
 
     id = db.Column(db.Integer, primary_key=True)
-    students_list = db.Column(db.Text)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     description = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     moders_list = db.Column(db.Text)
@@ -277,6 +284,7 @@ class StudentsGroup(db.Model):
     def __init__(self, description, author_id):
         self.description = description
         self.author_id = author_id
+        self.created_by = current_user.id
 
 
 ### Студенты ###
@@ -284,6 +292,7 @@ class Students(db.Model):
     __tablename__ = 'students'
 
     id = db.Column(db.Integer, primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     first_name = db.Column(db.String(256), nullable=False)
     last_name = db.Column(db.String(256), nullable=False)
     age = db.Column(db.String(32))
@@ -306,6 +315,7 @@ class Students(db.Model):
         self.phone_num = ''
         self.email = ''
         self.address = ''
+        self.created_by = current_user.id
 
 
 
@@ -314,10 +324,18 @@ class Learning_groups(db.Model):
     __tablename__ = 'learning_groups'
 
     id = db.Column(db.Integer, primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('students_group.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
+    term_id = db.Column(db.Integer, db.ForeignKey('term.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
     create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, group_id, student_id):
+    def __init__(self, group_id, student_id, course_id, term_id, project_id):
         self.group_id = group_id
         self.student_id = student_id
+        self.created_by = current_user.id
+        self.course_id = course_id
+        self.term_id = term_id
+        self.project_id = project_id

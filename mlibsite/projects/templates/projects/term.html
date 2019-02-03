@@ -24,7 +24,7 @@
               </tr>
             </table>
           </h5>
-          {% if ((project.author_id == current_user) or (current_user.username == 'Administrator') or moder_stat) %}
+          {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
             <br>
             <div class="" align='right'>
               <a class='btn btn-outline-warning btn-sm' href="{{url_for('projects.update_term', term_id=term.id)}}">Изменить</a>
@@ -70,7 +70,9 @@
           <td>Список курсов:</td>
           <td>
             <div align='right'>
-              <a class='btn btn-success btn-sm' href="{{url_for('courses.create_course', term_id=term.id)}}">Создать курс</a>
+              {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+                <a class='btn btn-success btn-sm' href="{{url_for('courses.create_course', term_id=term.id)}}">Создать курс</a>
+              {% endif %}
             </div>
           </td>
         </tr>

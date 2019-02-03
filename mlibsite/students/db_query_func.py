@@ -1,6 +1,11 @@
 from mlibsite.models import Courses, Lessons, Term, Projects, Students, StudentsGroup, Learning_groups
 
 def student_projects_info_dict(student_id):
+    '''
+    Вынимаем из базы всю известную о участнике информацию,
+    контактные данные, в каких активностях замечен,
+    группа, курс, период, проект
+    '''
     student = Students.query.get_or_404(student_id)
     # Выясняем группы данного студента
     learning_groups = Learning_groups.query.filter_by(student_id=student.id).all()

@@ -236,16 +236,31 @@ def create_user_role(user_id):
             role_type_desc = 'moder'
         elif selected_role_type == 3:
             role_type_desc = 'full_view'
-        user_role = UserRole(user_id=user_id,
-                    item_id = item_id,
-                    item_type = item_type,
-                    item_type_desc = item_type_desc,
-                    role_type = selected_role_type,
-                    role_type_desc = role_type_desc)
 
-        db.session.add(user_role)
-        db.session.commit()
-        flash('Пользователю добавлена выбранна роль', 'success')
+        # Производим необходимые манипуляции с ролью, создаем или изменяем, проверяем на дубликаты
+        same_role = UserRole.query.filter(UserRole.user_id==user_id, UserRole.item_type==item_type, UserRole.item_id==item_id, UserRole.role_type==selected_role_type).first()
+        current_role = UserRole.query.filter(UserRole.user_id==user_id, UserRole.item_type==item_type, UserRole.item_id==item_id).first()
+        # Если для выбранного пользователя уже есть такая же роль для данного проекта/методики
+        if same_role:
+            flash('У выбранного пользователя уже есть такая роль. Проверьте указанные вами параметры', 'warning')
+        # Если у пользователя уже есть другая роль для данного проекта/методики
+        elif current_role:
+            current_role.role_type = selected_role_type
+            current_role.role_type_desc = role_type_desc
+            db.session.commit()
+            flash('Роль пользователя изменена', 'success')
+        # Если никакой роли нет, то создаем новую запись
+        else:
+            user_role = UserRole(user_id=user_id,
+                        item_id = item_id,
+                        item_type = item_type,
+                        item_type_desc = item_type_desc,
+                        role_type = selected_role_type,
+                        role_type_desc = role_type_desc)
+
+            db.session.add(user_role)
+            db.session.commit()
+            flash('Пользователю добавлена выбранна роль', 'success')
         if item_type == 2:
             return redirect(url_for('projects.update_project', project_id=project.id))
         if item_type == 1:

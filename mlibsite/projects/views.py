@@ -8,6 +8,7 @@ from mlibsite.methodics.text_formater import text_format_for_html, date_translat
 from mlibsite.projects.forms import AddProjectForm, UpdateProjectForm, AddTermForm, UpdateTermForm
 from mlibsite.projects.picture_handler import add_project_pic, add_term_pic
 from mlibsite.projects.files_saver import add_attachment
+from mlibsite.users.user_roles import get_roles, user_role
 from datetime import datetime
 import json, os, shutil
 
@@ -69,24 +70,23 @@ def update_project(project_id):
     session.pop('method_id', None)
 
     # Смотрим роли пользователей по проекту
-    project_admins = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==project.id, UserRole.role_type==1).all()
-    print(f'project_admins: {list(project.user_id for project in project_admins)}')
-    project_moders = db.session.query(UserRole.user_id).filter(UserRole.item_type==2, UserRole.item_id==project.id, UserRole.role_type==2).all()
-    print(f'project_moders: {project_moders}')
-    # print(f'project_moders: {list(project.user_id for project in project_moders)}')
-    project_readers = db.session.query(UserRole.user_id).filter(UserRole.item_type==2, UserRole.item_id==project.id, UserRole.role_type==3).all()
-    print(f'project_readers: {project_readers}')
-
-
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
     # Берем из базы пользователей с какими нибудь правами по проекту
     users_role_dict = {}
     roles = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==project.id).all()
     if roles:
         for role in roles:
             user = User.query.filter_by(id=role.user_id).first()
-            user_role = role.role_type
-            users_role_dict[user.id] = (user.username, user_role, role.id)
-    print(f'users_role_dict: {users_role_dict}')
+            users_role = role.role_type
+            users_role_dict[user.id] = (user.username, users_role, role.id)
+    # print(f'users_role_dict: {users_role_dict}')
 
     if form.validate_on_submit():
         # Если загружается картинка для Проекта
@@ -150,9 +150,12 @@ def update_project(project_id):
     return render_template('update_project.html',
                             label_image=label_image,
                             project_id = project.id,
+                            project=project,
+                            curr_user_role = curr_user_role,
                             form=form,
                             attachments=attachments,
                             users_role_dict = users_role_dict)
+
 
 
 ###### PROJECT (VIEW) ######
@@ -160,13 +163,14 @@ def update_project(project_id):
 def project_view(project_id):
     # Получаем из базы метод, тайминг занятия, этапы занятия
     project = Projects.query.get_or_404(project_id)
-    # Формируем список модераторов
-    moder_stat = False
-    if project.moders_list:
-        moders_list = text_format_for_html(project.moders_list)
-        if current_user.id in moders_list:
-            moder_stat = True
-    # print(f'Moder: {moder_stat}\nModers_list: {moders_list}\nUser_id: {current_user.id}')
+
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    if current_user.is_authenticated:
+        curr_user_role = user_role(project_roles, current_user.id)
+    else:
+        curr_user_role = ''
 
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
     description_html=Markup(text_for_markup(project.description))
@@ -189,7 +193,7 @@ def project_view(project_id):
                             note = note_html,
                             web_links = web_links_html,
                             attachments = attachments,
-                            moder_stat = moder_stat,
+                            curr_user_role = curr_user_role,
                             label_image=project.label_image,
                             date_translate=date_translate)
 
@@ -199,14 +203,18 @@ def project_view(project_id):
 @login_required
 def delete_project(project_id):
     project = Projects.query.get_or_404(project_id)
-    # Формируем список модераторов
-    moder_stat = False
-    if project.moders_list:
-        moders_list = text_format_for_html(project.moders_list)
-        if current_user.id in moders_list:
-            moder_stat = True
-    if ((project.author_id != current_user) and (current_user.username != 'Administrator') and not moder_stat):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
         abort(403)
+
     # Удаляем заглавную картинку для проекта
     if project.label_image != 'default_project.png':
         del_project_ava = os.path.join(current_app.root_path, os.path.join('static', 'projects_pics', 'project_ava', project.label_image))
@@ -245,15 +253,19 @@ def delete_attachment(project_id):
     Удаляем прикрепленный файл для выбранного проекта
     """
     project = Projects.query.get_or_404(project_id)
-    # Формируем список модераторов
-    moder_stat = False
-    if project.moders_list:
-        moders_list = text_format_for_html(project.moders_list)
-        if current_user.id in moders_list:
-            moder_stat = True
-    attachment = request.args.get('attachment')
-    if ((project.author_id != current_user) and (current_user.username != 'Administrator') and not moder_stat):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
         abort(403)
+
+    attachment = request.args.get('attachment')
     filename = attachment
     curr_folder_path = os.path.join('static', 'project_attachments')
     directory = os.path.join(current_app.root_path, curr_folder_path, 'project_'+str(project_id))
@@ -283,6 +295,16 @@ def term_list(project_id):
     Показываем список периодов занятий в проекте (семестры, четверти, смены)
     '''
     project = Projects.query.get_or_404(project_id)
+
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    if current_user.is_authenticated:
+        curr_user_role = user_role(project_roles, current_user.id)
+    else:
+        curr_user_role = ''
+    # print(f'curr user role: {curr_user_role}')
+
     # pagination
     # Максимальное количество элементов на странице
     per_page=15
@@ -298,7 +320,9 @@ def term_list(project_id):
                             term_set=term_set,
                             project_name = project.name,
                             project_id = project.id,
+                            project=project,
                             label_image = project.label_image,
+                            curr_user_role = curr_user_role,
                             date_translate=date_translate)
 
 ##### ADD TERM #####
@@ -309,6 +333,18 @@ def create_term(project_id):
     Создаем новый период занятий для проекта
     """
     project = Projects.query.get_or_404(project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     form = AddTermForm()
 
     if form.validate_on_submit():
@@ -339,6 +375,18 @@ def update_term(term_id):
     """
     term = Term.query.get_or_404(term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     form = UpdateTermForm()
 
     if form.validate_on_submit():
@@ -374,6 +422,8 @@ def update_term(term_id):
     return render_template('update_term.html',
                             label_image=label_image,
                             project_name = project.name,
+                            project=project,
+                            curr_user_role = curr_user_role,
                             form=form)
 
 
@@ -382,6 +432,15 @@ def update_term(term_id):
 def term_view(term_id):
     term = Term.query.get_or_404(term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    if current_user.is_authenticated:
+        curr_user_role = user_role(project_roles, current_user.id)
+    else:
+        curr_user_role = ''
+
     # COURSES with pagination
     per_page=10
     page = request.args.get('page', 1, type=int)
@@ -398,6 +457,7 @@ def term_view(term_id):
     return render_template('term.html',
                             term = term,
                             project = project,
+                            curr_user_role = curr_user_role,
                             description = description_html,
                             date_translate=date_translate,
                             courses = courses,
@@ -411,6 +471,18 @@ def term_view(term_id):
 def delete_term(term_id):
     term = Term.query.get_or_404(term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     # Формируем список модераторов
     moder_stat = False
     if project.moders_list:

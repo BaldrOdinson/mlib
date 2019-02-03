@@ -117,7 +117,7 @@
     </div>
   {% endif %}
 
-  {% if ((project.author_id == current_user) or (current_user.username == 'Administrator') or moder_stat) %}
+  {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
     <br>
     <div class="" align='right'>
       <a class='btn btn-warning' href="{{url_for('projects.update_project', project_id=project.id)}}">Изменить</a>

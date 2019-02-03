@@ -12,6 +12,8 @@
           <h2>Периоды занятий</h2>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project_id)}}">{{project_name}}</a></h5>
           {% if current_user.is_authenticated %}
+          {% endif %}
+          {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
             <div align='right'>
               <a class='btn btn-outline-info' href="{{url_for('projects.create_term', project_id=project_id)}}">Создать период занятий</a>
             </div>

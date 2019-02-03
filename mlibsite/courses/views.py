@@ -8,6 +8,7 @@ from mlibsite.methodics.text_formater import text_format_for_html, date_translat
 from mlibsite.courses.forms import AddCourseForm, UpdateCourseForm, AddLessonForm, UpdateLessonForm
 from mlibsite.courses.picture_handler import add_course_pic
 from mlibsite.courses.files_saver import add_attachment, add_lesson_attachment
+from mlibsite.users.user_roles import get_roles, user_role
 from datetime import datetime
 import json, os, shutil
 
@@ -23,6 +24,17 @@ def create_course(term_id):
     """
     term = term = Term.query.get_or_404(term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
 
     form = AddCourseForm()
 
@@ -45,6 +57,7 @@ def create_course(term_id):
                             term_name = term.name,
                             project_name = project.name,
                             project=project,
+                            curr_user_role=curr_user_role,
                             term=term)
 
 
@@ -58,6 +71,18 @@ def update_course(course_id):
     course = Courses.query.get_or_404(course_id)
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     form = UpdateCourseForm()
 
     if form.validate_on_submit():
@@ -123,6 +148,7 @@ def update_course(course_id):
                             term_name = term.name,
                             form=form,
                             project=project,
+                            curr_user_role=curr_user_role,
                             term=term,
                             course=course,
                             attachments=attachments)
@@ -135,6 +161,16 @@ def course_view(course_id):
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
     course_schedule = Lessons.query.filter_by(course_id=course.id).order_by(Lessons.lesson_date).all()
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    if current_user.is_authenticated:
+        curr_user_role = user_role(project_roles, current_user.id)
+    else:
+        curr_user_role = ''
+
     if course.students_group_id:
         students_group = StudentsGroup.query.get(course.students_group_id)
         student_group_desc=students_group.description
@@ -177,6 +213,7 @@ def course_view(course_id):
     return render_template('course.html',
                             term = term,
                             project = project,
+                            curr_user_role=curr_user_role,
                             course = course,
                             course_schedule=course_schedule,
                             methods_dict=methods_dict,
@@ -202,14 +239,17 @@ def delete_course(course_id):
     course = Courses.query.get_or_404(course_id)
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
-    # Формируем список модераторов
-    moder_stat = False
-    if project.moders_list:
-        moders_list = text_format_for_html(project.moders_list)
-        if current_user.id in moders_list:
-            moder_stat = True
-    if ((project.author_id != current_user) and (current_user.username != 'Administrator') and not moder_stat):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')):
         abort(403)
+
     # Удаляем заглавную картинку для проекта
     if course.label_image != 'default_course.png':
         del_course_ava = os.path.join(current_app.root_path, os.path.join('static', 'projects_pics', 'project_courses', course.label_image))
@@ -246,6 +286,7 @@ def download_attachment(course_id):
 
 ##### DELETE COURSE ATTACHMENT #####
 @courses.route('/course_<int:course_id>/attachment_delete')
+@login_required
 def delete_attachment(course_id):
     """
     Удаляем прикрепленный файл для выбранного проекта
