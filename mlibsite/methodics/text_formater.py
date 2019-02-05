@@ -57,8 +57,9 @@ def text_for_markup(text):
                 if line == '\n' and not double_break:
                     html_text += line+'<br>'
                     double_break = True
-                elif line == '\n' and double_break:
-                    double_break = False
+                # закомментарено 2 строки для unix
+                # elif line == '\n' and double_break:
+                #     double_break = False
                 else:
                     html_text += line
                     double_break = False
@@ -85,8 +86,9 @@ def text_for_links_markup(text):
                 if line == '\n' and not double_break:
                     html_text += '<a href="'+line+'">'+line+'</a><br>'
                     double_break = True
-                elif line == '\n' and double_break:
-                    double_break = False
+                # закомментарено 2 строки для unix
+                # elif line == '\n' and double_break:
+                #     double_break = False
                 else:
                     html_text += '<a href="'+line+'">'+line+'</a>'
                     double_break = False

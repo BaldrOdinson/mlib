@@ -9,17 +9,12 @@
           <td>
             <h2>Результаты поика пользователей</h2>
             {% if project_id %}
-              <h5>для настройки прав доступа к проекту <a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+              <h5>для настройки прав доступа к проекту: <a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
             {% elif method_id %}
-              <h5>для настройки прав доступа к методике <a class="text-body text-decoration-none" href="{{url_for('methodics.method', method_id=method.id)}}">{{method.title}}</a></h5>
+              <h5>для настройки прав доступа к методике: <a class="text-body text-decoration-none" href="{{url_for('methodics.method', method_id=method.id)}}">{{method.title}}</a></h5>
             {% endif %}
           </td>
           <!-- {% if current_user.is_authenticated %}
-            <td>
-              <div class="" align='right'>
-                <a class='btn btn-outline-info' href="{{url_for('projects.create_project')}}">Создать проект</a>
-              </div>
-            </td>
           {% endif %} -->
         </tr>
       </table>
