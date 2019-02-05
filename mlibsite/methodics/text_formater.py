@@ -51,18 +51,21 @@ def text_for_markup(text):
             file.write(text)
         html_text=''
         with open(temp_filename, 'r') as file:
-            double_break = False
+            # double_break = False
+            # for line in file.readlines():
+            #     # print(f'line: {line}')
+            #     if line == '\n' and not double_break:
+            #         html_text += line+'<br>'
+            #         double_break = True
+            #     # закомментарено 2 строки для unix
+            #     elif line == '\n' and double_break:
+            #         double_break = False
+            #     else:
+            #         html_text += line
+            #         double_break = False
             for line in file.readlines():
-                # print(f'line: {line}')
-                if line == '\n' and not double_break:
-                    html_text += line+'<br>'
-                    double_break = True
-                # закомментарено 2 строки для unix
-                # elif line == '\n' and double_break:
-                #     double_break = False
-                else:
-                    html_text += line
-                    double_break = False
+                html_text += line + '<br>'
+            html_text = html_text[:-4]
         os.remove(temp_filename)
         return Markup(html_text)
     else:
@@ -87,8 +90,8 @@ def text_for_links_markup(text):
                     html_text += '<a href="'+line+'">'+line+'</a><br>'
                     double_break = True
                 # закомментарено 2 строки для unix
-                # elif line == '\n' and double_break:
-                #     double_break = False
+                elif line == '\n' and double_break:
+                    double_break = False
                 else:
                     html_text += '<a href="'+line+'">'+line+'</a>'
                     double_break = False
