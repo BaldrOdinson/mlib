@@ -63,7 +63,11 @@
         <a class='btn btn-warning' href="{{url_for('timing.edit_timing', method_id=method_id)}}">Этапы занятия</a>
       {% else %}
         <strong>{{form.timing_id.label(class='form-control-label')}}</strong>
-        {{timing_id}}
+        {% if timing_id %}
+          {{timing_id}}
+        {% else %}
+          <span class="text-danger">не указана</span>
+        {% endif %}
         <a class='btn btn-success' href="{{url_for('timing.add_timing', method_id=method_id)}}">Добавить ход занятия</a>
       {% endif %}
     </div>
@@ -113,6 +117,65 @@
       {{form.presentation(class='form-control-file')}}
     </div>
     {% endif %}
+    <!-- Роли пользователей -->
+    <div class="form-group">
+      <table width='100%'>
+        <tr>
+          <td>
+            <strong>Роли доступа</strong>
+          </td>
+          <td>
+            {% if ((method.author == current_user) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+              <div align='right'>
+                <a class='btn btn-outline-info btn-sm' href="{{url_for('users.search_user')}}">Добавить</a>
+              </div>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+      {% if users_role_dict %}
+        <table width='100%' class="table table-sm">
+          <thead class="table-info">
+            <tr>
+              <th>Имя пользователя</th>
+              <th>Роль</th>
+              <th>Описание</th>
+              <th></th>
+            </tr>
+          </thead>
+          {% for user_role in users_role_dict.items() %}
+            <tr>
+              <td>
+                {{user_role[1][0]}}
+              </td>
+              <td>
+                {% if user_role[1][1] == 1 %}
+                  Администратор
+                {% elif user_role[1][1] == 2 %}
+                  Модератор
+                {% elif user_role[1][1] == 3 %}
+                  Полный просмотр
+                {% endif %}
+              </td>
+              <td>
+                {% if user_role[1][1] == 1 %}
+                  Редактирование, Добавление, Удаление
+                {% elif user_role[1][1] == 2 %}
+                  Редактирование, Добавление
+                {% elif user_role[1][1] == 3 %}
+                  Просмотр всей информации
+                {% endif %}
+              </td>
+              {% if ((method.author == current_user) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+                <td align='right'>
+                  <a class='btn btn-outline-danger btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=method_id, item_type=1)}}">Удалить роль</a>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </div>
     <div class="form-group">
       <strong>{{form.tags.label(class='form-control-label')}}</strong>
       {{form.tags(class='form-control')}}

@@ -58,6 +58,7 @@ def create_students_group(course_id):
                             course_id=course.id,
                             term=term,
                             project=project,
+                            curr_user_role=curr_user_role,
                             course_label_image=course.label_image)
 
 
@@ -100,6 +101,7 @@ def rename_students_group(course_id):
                             course_id=course.id,
                             term=term,
                             project=project,
+                            curr_user_role=curr_user_role,
                             course_label_image=course.label_image)
 
 
@@ -140,6 +142,7 @@ def update_students_group_list(course_id):
                             course_name=course.name,
                             term=term,
                             project=project,
+                            curr_user_role=curr_user_role,
                             course_label_image=course.label_image,
                             zip=zip,
                             len=len)
@@ -202,6 +205,7 @@ def create_student(course_id):
                             form=form,
                             term=term,
                             project=project,
+                            curr_user_role=curr_user_role,
                             student_group=student_group.description,
                             student_group_id=student_group.id,
                             course=course)
@@ -220,6 +224,7 @@ def update_student(student_id):
     ##### РОЛЬ ДОСТУПА #####
     # Проверяем есть ли у пользователя хоть в одном проекте участника права подходящие для редактирования
     students_projects=student_proj_info_dict['students_projects']
+    # В форму отправляем просто флаг доступа к информации
     allow_flag = False
     for project in students_projects:
         # Смотрим роли пользователей по проекту
@@ -330,6 +335,7 @@ def student_view(student_id):
     ##### РОЛЬ ДОСТУПА #####
     # Проверяем есть ли у пользователя хоть в одном проекте участника права подходящие для просмотра
     students_projects=student_proj_info_dict['students_projects']
+    # В форму отправляем просто флаг доступа к информации
     allow_flag = False
     for project in students_projects:
         # Смотрим роли пользователей по проекту
@@ -491,6 +497,7 @@ def selected_students_list():
                             student_set=student_set,
                             course_id = course_id,
                             course = course,
+                            allow_flag=allow_flag,
                             date_translate=date_translate)
 
 
@@ -501,6 +508,18 @@ def add_student_to_list(course_id, student_id):
     term = term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
     group_id = course.students_group_id
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     if Learning_groups.query.filter_by(group_id=group_id, student_id=student_id).all():
         flash('Выбранный участник уже итак в списке. Для добавления выберите кого-то другого.', 'negative')
         return redirect(url_for('students.update_students_group_list', course_id=course.id))
@@ -520,15 +539,33 @@ def add_student_to_list(course_id, student_id):
 def delete_student(student_id):
     student = Students.query.get_or_404(student_id)
     student_proj_info_dict = student_projects_info_dict(student_id)
-    # Формируем список модераторов
-    moder_stat = False
-    for project in student_proj_info_dict['students_projects']:
-        if project.moders_list:
-            moders_list = text_format_for_html(project.moders_list)
-            if current_user.id in moders_list or current_user.id == project.author_id:
-                moder_stat = True
-    if ((current_user.username != 'Administrator') and not moder_stat):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Проверяем есть ли у пользователя хоть в одном проекте права подходящие для просмотра участников
+    user_projects_roles = UserRole.query.filter(UserRole.item_type==2, UserRole.user_id==current_user.id).all()
+    users_projects = list(users_project.item_id for users_project in user_projects_roles)
+    # созданные пользователем проекты
+    created_projects = Projects.query.filter(Projects.author_id==current_user.id).all()
+    for project in created_projects:
+        # список с номерами всех проектов
+        users_projects.append(project.id)
+    allow_flag = False
+    projects_list = []
+    for project_id in users_projects:
+        projects_list.append(project_id)
+        project = Projects.query.filter_by(id=project_id).first()
+        # Смотрим роли пользователей по проекту
+        project_roles = get_roles(item_id=project.id, item_type=2)
+        # определяем роль пользователя
+        curr_user_role = user_role(project_roles, current_user.id)
+        # завершаем обработку если у пользователя не хватает прав
+        if ((curr_user_role in ['admin'])
+                    or (current_user.username == 'Administrator')
+                    or (current_user.id == project.author_id)):
+            allow_flag = True
+    if not allow_flag:
         abort(403)
+
     # Удаляем заглавную картинку для проекта
     if student.avatar != 'default_student.png':
         del_student_ava = os.path.join(current_app.root_path, os.path.join('static', 'students_pics', 'students_ava', students.avatar))
@@ -560,6 +597,20 @@ def delete_student(student_id):
 def delete_from_list_student(student_id):
     group_id = request.args.get('group_id')
     course = Courses.query.filter_by(students_group_id=group_id).first()
+    term = term = Term.query.get_or_404(course.term_id)
+    project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     db.session.execute(text(f"delete from learning_groups where student_id='{student_id}' and group_id='{group_id}'"))
     db.session.commit()
     return redirect(url_for('students.update_students_group_list', course_id=course.id))
@@ -586,16 +637,34 @@ def delete_attachment(student_id):
     """
     student = Students.query.get_or_404(student_id)
     student_proj_info_dict = student_projects_info_dict(student_id)
-    # Формируем список модераторов
-    moder_stat = False
-    for project in student_proj_info_dict['students_projects']:
-        if project.moders_list:
-            moders_list = text_format_for_html(project.moders_list)
-            if current_user.id in moders_list or current_user.id == project.author_id:
-                moder_stat = True
-    attachment = request.args.get('attachment')
-    if ((current_user.username != 'Administrator') and not moder_stat):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Проверяем есть ли у пользователя хоть в одном проекте права подходящие для просмотра участников
+    user_projects_roles = UserRole.query.filter(UserRole.item_type==2, UserRole.user_id==current_user.id).all()
+    users_projects = list(users_project.item_id for users_project in user_projects_roles)
+    # созданные пользователем проекты
+    created_projects = Projects.query.filter(Projects.author_id==current_user.id).all()
+    for project in created_projects:
+        # список с номерами всех проектов
+        users_projects.append(project.id)
+    allow_flag = False
+    projects_list = []
+    for project_id in users_projects:
+        projects_list.append(project_id)
+        project = Projects.query.filter_by(id=project_id).first()
+        # Смотрим роли пользователей по проекту
+        project_roles = get_roles(item_id=project.id, item_type=2)
+        # определяем роль пользователя
+        curr_user_role = user_role(project_roles, current_user.id)
+        # завершаем обработку если у пользователя не хватает прав
+        if ((curr_user_role in ['admin'])
+                    or (current_user.username == 'Administrator')
+                    or (current_user.id == project.author_id)):
+            allow_flag = True
+    if not allow_flag:
         abort(403)
+
+    attachment = request.args.get('attachment')
     filename = attachment
     curr_folder_path = os.path.join('static', 'student_attachments')
     directory = os.path.join(current_app.root_path, curr_folder_path, 'student_'+str(student_id))

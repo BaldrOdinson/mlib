@@ -140,13 +140,15 @@ class TimingSteps(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     method_timing_id = db.Column(db.Integer, db.ForeignKey('method_timing.id'), nullable=False)
+    step_seq_number = db.Column(db.String(256))
     step_duration = db.Column(db.Integer, nullable=False)
     step_desc = db.Column(db.Text, nullable=False)
     step_result = db.Column(db.Text, nullable=False)
     step_label_image = db.Column(db.String(64), nullable=False, default='default_step.png')
 
-    def __init__(self, method_timing_id, step_duration, step_desc, step_result):
+    def __init__(self, method_timing_id, step_duration, step_desc, step_result, step_seq_number=''):
         self.method_timing_id = method_timing_id
+        self.step_seq_number = step_seq_number
         self.step_duration = step_duration
         self.step_desc = step_desc
         self.step_result = step_result

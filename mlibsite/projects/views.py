@@ -69,6 +69,7 @@ def update_project(project_id):
     session['project_id'] = project.id
     session.pop('method_id', None)
 
+    ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту
     project_roles = get_roles(item_id=project.id, item_type=2)
     # определяем роль пользователя
@@ -164,6 +165,7 @@ def project_view(project_id):
     # Получаем из базы метод, тайминг занятия, этапы занятия
     project = Projects.query.get_or_404(project_id)
 
+    ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту
     project_roles = get_roles(item_id=project.id, item_type=2)
     # определяем роль пользователя
@@ -433,6 +435,7 @@ def term_view(term_id):
     term = Term.query.get_or_404(term_id)
     project = Projects.query.get_or_404(term.project_id)
 
+    ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту
     project_roles = get_roles(item_id=project.id, item_type=2)
     # определяем роль пользователя

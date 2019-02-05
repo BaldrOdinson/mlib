@@ -187,7 +187,7 @@
                 <td>
                   <div align='right'>
                     {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
-                      <a class='text-decoration-none' href="{{url_for('students.rename_students_group', course_id=course.id)}}"><small>Переименовать список группы&nbsp;&nbsp;&nbsp;</small></a>
+                      <a class='text-decoration-none' href="{{url_for('students.rename_students_group', course_id=course.id)}}"><small>Переименовать список группы</small></a>&nbsp;&nbsp;&nbsp;
                       <a class='btn btn-info' href="{{url_for('students.update_students_group_list', course_id=course.id)}}">Редактировать список</a>
                     {% endif %}
                   </div>
@@ -202,6 +202,7 @@
                 <th scope="col">Фамилия</th>
                 <th scope="col">Возраст</th>
               </tr>
+              <!-- Добавляем порядковые номера элементам списка -->
               {% for num, student in zip(range(1, len(students_group_list)+1), students_group_list) %}
                 <tr>
                   <th scope="row">{{num}}</th>
@@ -217,13 +218,18 @@
                   <td>
                     {{student.age}}
                   </td>
-                  {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder', 'reader'])) %}
-                    <td align='right'>
+                  <td align='right'>
+                    {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder', 'reader'])) %}
                       <a class='btn btn-outline-success btn-sm' href="{{url_for('students.student_view', student_id=student.id)}}" title="Просмотр">
                         ?
                       </a>
-                    </td>
-                  {% endif %}
+                    {% endif %}
+                    {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+                      <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}" title="Измененить">
+                        !
+                      </a>
+                    {% endif %}
+                  </td>
                 </tr>
               {% endfor %}
             </table>

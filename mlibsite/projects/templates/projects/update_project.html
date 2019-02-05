@@ -60,9 +60,11 @@
             <strong>{{form.moders_list.label(class='form-control-label')}}</strong>
           </td>
           <td>
-            <div align='right'>
-              <a class='btn btn-outline-info btn-sm' href="{{url_for('users.search_user')}}">Добавить</a>
-            </div>
+            {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+              <div align='right'>
+                <a class='btn btn-outline-info btn-sm' href="{{url_for('users.search_user')}}">Добавить</a>
+              </div>
+            {% endif %}
           </td>
         </tr>
       </table>
@@ -99,9 +101,15 @@
                   Просмотр всей информации
                 {% endif %}
               </td>
-              <td align='right'>
-                <a class='btn btn-outline-danger btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=project_id, item_type=2)}}">Удалить роль</a>
-              </td>
+              {% if user_role[1][0] ==  current_user.username %}
+                <td align='right'>
+                  <a class='btn btn-outline-secondary btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=project_id, item_type=2)}}">Удалить роль</a>
+                </td>
+              {% elif ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+                <td align='right'>
+                  <a class='btn btn-outline-danger btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=project_id, item_type=2)}}">Удалить роль</a>
+                </td>
+              {% endif %}
             </tr>
           {% endfor %}
         </table>
@@ -147,5 +155,6 @@
     </div>
   </div>
 </form>
+
 
 {% endblock %}

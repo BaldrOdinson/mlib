@@ -38,7 +38,7 @@
               </td>
             </tr>
           </table>
-          {% if ((project.author_id == current_user) or (current_user.username == 'Administrator') or moder_stat) %}
+          {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
             <br>
             <div class="" align='right'>
               <a class='btn btn-outline-warning btn-sm' href="{{url_for('courses.update_lesson', lesson_id=lesson.id)}}">Изменить</a>

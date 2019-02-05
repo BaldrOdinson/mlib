@@ -10,17 +10,21 @@
   <form class="form-group" method="post">
     {{form.hidden_tag()}}
     <div class="form-group">
-      {{form.step_duration.label(class='form-control-label')}}
+      <strong>{{form.step_seq_number.label(class='form-control-label')}}</strong>
+      {{form.step_seq_number(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.step_duration.label(class='form-control-label')}}</strong>
       <small class="form-text text-muted">Только цифры</small>
-      {{form.step_duration(class='form-control form-control-lg')}}
+      {{form.step_duration(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.step_desc.label(class='form-control-label')}}
-      {{form.step_desc(class='form-control form-control-lg')}}
+      <strong>{{form.step_desc.label(class='form-control-label')}}</strong>
+      {{form.step_desc(class='form-control')}}
     </div>
     <div class="form-group">
-      {{form.step_result.label(class='form-control-label')}}
-      {{form.step_result(class='form-control form-control-lg')}}
+      <strong>{{form.step_result.label(class='form-control-label')}}</strong>
+      {{form.step_result(class='form-control')}}
     </div>
     <div class="form-group" align='right'>
       {{form.submit(class='btn btn-outline-info')}}

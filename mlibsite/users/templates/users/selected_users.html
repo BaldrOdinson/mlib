@@ -9,7 +9,9 @@
           <td>
             <h2>Результаты поика пользователей</h2>
             {% if project_id %}
-                <h5>для настройки прав доступа к проекту <a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+              <h5>для настройки прав доступа к проекту <a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+            {% elif method_id %}
+              <h5>для настройки прав доступа к методике <a class="text-body text-decoration-none" href="{{url_for('methodics.method', method_id=method.id)}}">{{method.title}}</a></h5>
             {% endif %}
           </td>
           <!-- {% if current_user.is_authenticated %}
@@ -26,7 +28,7 @@
 
 
 <!--  SHOW Students-->
-  {% if project_id %}
+  {% if project_id or method_id%}
     {% if user_set.items %}
       {% for user in user_set.items %}
         {% if user.username != 'Administrator' %}
@@ -51,6 +53,8 @@
               <td align='right'>
                 {% if project %}
                   <a class='btn btn-outline-info btn-sm' href="{{url_for('users.create_user_role', user_id=user.id, item_id=project_id, item_type=2)}}">Добавить роль</a>
+                {% elif method %}
+                  <a class='btn btn-outline-info btn-sm' href="{{url_for('users.create_user_role', user_id=user.id, item_id=method_id, item_type=1)}}">Добавить роль</a>
                 {% endif %}
               </td>
             </tr>

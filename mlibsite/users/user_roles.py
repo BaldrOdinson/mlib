@@ -5,9 +5,9 @@ def get_roles(item_id, item_type):
     Смотрим роли пользователей по проекту
     '''
     roles_dict = {}
-    item_admins = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==item_id, UserRole.role_type==1).all()
-    item_moders = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==item_id, UserRole.role_type==2).all()
-    item_readers = UserRole.query.filter(UserRole.item_type==2, UserRole.item_id==item_id, UserRole.role_type==3).all()
+    item_admins = UserRole.query.filter(UserRole.item_type==item_type, UserRole.item_id==item_id, UserRole.role_type==1).all()
+    item_moders = UserRole.query.filter(UserRole.item_type==item_type, UserRole.item_id==item_id, UserRole.role_type==2).all()
+    item_readers = UserRole.query.filter(UserRole.item_type==item_type, UserRole.item_id==item_id, UserRole.role_type==3).all()
     roles_dict['admins'] = list(project.user_id for project in item_admins)
     roles_dict['moders'] = list(project.user_id for project in item_moders)
     roles_dict['readers'] = list(project.user_id for project in item_readers)

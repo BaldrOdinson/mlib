@@ -1,29 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
+<br>
 <div class="jumbotron" align="center">
   <h2>Ход занятия</h2>
-  <p>При необходимости измените длительность занятия, добавьте <strong>по порядку</strong> необходимое количество этапов и нажмите Сохранить</p>
+  <h5><a class="text-body text-decoration-none" href="{{url_for('methodics.update', method_id=method.id)}}">{{method.title}}</a></h5>
 </div>
 
 
-<div class="container">
+<div class="container-fluid">
   <form class="form-group" method="post">
     {{form.hidden_tag()}}
+    <div align='right'>
+      При необходимости измените длительность занятия, добавьте необходимое количество этапов, указав порядковый номер каждого, и нажмите {{form.submit(class='btn btn-outline-info')}}
+    </div>
+    <br>
     <div class="form-group">
-      {{form.duration.label(class='form-control-label')}}
+      <strong>{{form.duration.label(class='form-control-label')}}</strong>
       <small class="form-text text-muted">Только цифры</small>
-      {{form.duration(class='form-control form-control-lg')}}
+      {{form.duration(class='form-control')}}
     </div>
     {% if form.duration.error %}
         <ul class="errors">{% for error in form.duration.errors %}<li>{{ error }}</li>{% endfor %}</ul>
     {% endif %}
 
-    <div class="form-group" align='right'>
-      {{form.submit(class='btn btn-outline-info')}}
-    </div>
-    <h5>Этапы занятия</h5>
     <!-- Цикл с привязанными этапами -->
-    <div class="container">
+    <div class="container-fluid">
+      <h5>Этапы занятия</h5>
       {% for step in steps %}
         <div class="card text-center">
           <div class="card-header">
@@ -44,9 +46,9 @@
                   <p class='card-text'>Результат этапа: {{step.step_result}}</p>
                   {% if method_author == current_user or current_user.username=="Administrator" %}
                   <br>
-                  <div class="" align='right'>
-                    <a class='btn btn-outline-warning' href="{{url_for('timing.step_update', step_id=step.id)}}">Изменить</a>
-                    <button type="button" class='btn btn-outline-danger' data-toggle='modal' data-target='#del_modal{{step.id}}'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+                  <div align='right'>
+                    <a class='btn btn-outline-warning btn-sm' href="{{url_for('timing.step_update', step_id=step.id)}}">Изменить</a>
+                    <button type="button" class='btn btn-outline-danger btn-sm' data-toggle='modal' data-target='#del_modal{{step.id}}'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
                   </div>
                   <div class="modal" tabindex="-1" role="dialog" id='del_modal{{step.id}}'>   <!--  id='del_modal' это тоже имя что и в настройке кнопки data-target='#del_modal'-->
                     <div class="modal-dialog" role="document">

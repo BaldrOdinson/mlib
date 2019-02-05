@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, url_for, flash, request, session, redirect, Blueprint, current_app, send_file, abort, Markup
 from flask_login import current_user, login_required
+from datetime import datetime
+from wtforms import ValidationError
 from mlibsite import db
-from mlibsite.models import User, Methodics, MethodTiming, TimingSteps, Categories, Lessons, Courses, Term, Projects
+from mlibsite.models import User, Methodics, MethodTiming, TimingSteps, Categories, Lessons, Courses, Term, Projects, UserRole
 from mlibsite.methodics.forms import MethodForm, UpdateMethodForm, AddCategoryForm, SearchMethodForm
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
 from mlibsite.methodics.music_handler import take_music_url, check_music_link
-from datetime import datetime
+from mlibsite.users.user_roles import get_roles, user_role
 from mlibsite.methodics.text_formater import text_format_for_html, text_for_markup, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
 from sqlalchemy import or_, text
 import os, shutil, json
@@ -29,11 +31,23 @@ methodics = Blueprint('methodics', __name__, template_folder='templates/methodic
 @methodics.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_method():
+    category = Categories.query.get(1)
+
     form = MethodForm()
 
+    # Если штатные валидаторы считают что все нормально
+    flash_text = ''
     if form.validate_on_submit():
-        # Фрмируем Age_range для базовы
-        # age_range = form.age_range_from + ':' + form.age_range_till
+        # Делаем дополнительные проверки из класса формы
+        try:
+            # Проверка того что минимальный возраст меньше максимального
+            form.check_age_range(form.age_range_from.data, form.age_range_till.data)
+        except ValidationError:
+            flash_text += 'Ошибка. Минимальный возраст участников не может быть больше максимального.'
+            flash(Markup(flash_text), 'negative')
+            return render_template('create_method.html', form=form,
+                                                        category=category.category_name)
+
         method = Methodics(user_id=current_user.id,
                            title=form.title.data,
                            short_desc=form.short_desc.data,
@@ -56,15 +70,16 @@ def create_method():
         flash('Методика добавлена', 'success')
         method = Methodics.query.filter_by(user_id=current_user.id, title=form.title.data).first()
         return redirect(url_for('methodics.update', method_id=method.id))
+
     # Первая загрузка
-    category = Categories.query.get(1)
     # Если форма заполненна с ошибками, а валидаторам плевать (например расширения файлов)
     print(f'form errors: {form.errors}')
+
     if form.errors:
-        flash_text = 'Форма методики заполнена неверно. <br>'
+        flash_text += 'Форма методики заполнена неверно. <br>'
         for error in form.errors:
             # print(form.errors[error])
-            flash_text += form.errors[error][0]
+            flash_text += form.errors[error][0]+'<br>'
         flash_text += 'К сожалению, последние изменения не сохранены. '
         flash(Markup(flash_text), 'negative')
     return render_template('create_method.html', form=form,
@@ -80,15 +95,66 @@ def update(method_id):
     session['method_id'] = method.id
     session.pop('project_id', None)
 
-    if ((method.author != current_user) and (current_user.username != 'Administrator')):
-        abort(403)  # Проверяем что изменения вносит автор или админ, иначе 403 (все в сад)
-    # для показа названия презентации
-    # presentation_filename = method.presentation
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
+        abort(403)
+    # Берем из базы пользователей с какими нибудь правами по методике
+    users_role_dict = {}
+    roles = UserRole.query.filter(UserRole.item_type==1, UserRole.item_id==method.id).all()
+    if roles:
+        for role in roles:
+            user = User.query.filter_by(id=role.user_id).first()
+            users_role = role.role_type
+            users_role_dict[user.id] = (user.username, users_role, role.id)
+
+
+    # текущая категория и список всех категорий
     category = Categories.query.get(method.category)
+    html_category_list = get_html_category_list()
+
+    # Формируем список с файлами презентаций
+    presentations = []
+    if method.presentation:
+        for presentation in json.loads(method.presentation):
+            presentations.append(presentation)
+
+    # проверка на наличие тайминга занятия
+    timing_exist = MethodTiming.query.filter_by(method_id=method_id).first()
+    if timing_exist:
+        timing_id = timing_exist.id
+    else:
+        timing_id = None
 
     form = UpdateMethodForm()
+
     # print(f'form errors:{form.errors}')
+    # если основные проверки пройденны и форма счетается заполненной
     if form.validate_on_submit():
+        # Делаем дополнительные проверки из класса формы
+        try:
+            # Проверка того что минимальный возраст меньше максимального
+            form.check_age_range(form.age_range_from.data, form.age_range_till.data)
+        except ValidationError:
+            flash('Ошибка. Минимальный возраст участников не может быть больше максимального.', 'negative')
+            return render_template('update_method.html',
+                                    method_label_image=method.method_label_image,
+                                    title='Редактирование методики',
+                                    method_id = method.id,
+                                    users_role_dict=users_role_dict,
+                                    curr_user_role=curr_user_role,
+                                    timing_id = form.timing_id.data,
+                                    form=form,
+                                    # curr_presentation = presentation_filename,
+                                    category=category,
+                                    html_category_list=html_category_list,
+                                    presentations=presentations)
         # Если пытаются изменить заглавную картинку
         if form.method_label_image.data:
             method_id = method.id
@@ -133,12 +199,7 @@ def update(method_id):
             video_html_links=text_format_for_html(form.video.data)
             wrong_video_links, video_data = check_video_links(video_html_links, method_id)
 
-        # проверка на наличие тайминга
-        timing_exist = MethodTiming.query.filter_by(method_id=method_id).first()
-        if timing_exist:
-            timing_id = timing_exist.id
-        else:
-            timing_id = None
+
 
         # смотрим вбранную категорию
         curr_category = int(request.form.get('form_category'))
@@ -165,7 +226,7 @@ def update(method_id):
         flash_text = 'Изменения и дополнения сохранены.'
         # или при необходимости показываем ругань на битые ссылки
         if len(wrong_links) == 0 and len(wrong_video_links) == 0 and len(wrong_music_links) == 0:
-            flash(flash_text, 'warning')
+            flash(flash_text, 'success')
         else:
             if len(wrong_links) != 0:
                 flash_text += '<br>но ссылка на <strong>картинку</strong> (или несколько) не открывается. Проверьте правильность ссылки:<br> '
@@ -209,25 +270,23 @@ def update(method_id):
         form.tags.data = method.tags
 
     method_label_image = url_for('static', filename = 'methodics_pics/method_ava'+method.method_label_image)
-    html_category_list = get_html_category_list()
-    # Формируем список с файлами презентаций
-    presentations = []
-    if method.presentation:
-        for presentation in json.loads(method.presentation):
-            presentations.append(presentation)
+
     # Если форма заполненна с ошибками, а валидаторам плевать (например расширения файлов)
     print(f'form errors: {form.errors}')
     if form.errors:
         flash_text = 'Форма методики заполнена неверно. <br>'
         for error in form.errors:
             # print(form.errors[error])
-            flash_text += form.errors[error][0]
+            flash_text += form.errors[error][0]+'<br>'
         flash_text += 'К сожалению, последние изменения не сохранены. '
         flash(Markup(flash_text), 'negative')
     return render_template('update_method.html',
                             method_label_image=method.method_label_image,
                             title='Редактирование методики',
                             method_id = method.id,
+                            method=method,
+                            users_role_dict=users_role_dict,
+                            curr_user_role=curr_user_role,
                             timing_id = form.timing_id.data,
                             form=form,
                             # curr_presentation = presentation_filename,
@@ -243,9 +302,20 @@ def method(method_id):
     method = Methodics.query.get_or_404(method_id)
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    if current_user.is_authenticated:
+        curr_user_role = user_role(method_roles, current_user.id)
+    else:
+        curr_user_role = ''
+
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
     description_html=Markup(text_for_markup(method.description))
     short_desc_html=Markup(text_for_markup(method.short_desc))
+    literature_html=Markup(text_for_markup(method.literature))
     # создание превьюшек картинок по указанным ссылкам
     # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
     # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
@@ -271,7 +341,7 @@ def method(method_id):
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     if timing:
         timing_duration = timing.duration
-        steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
+        steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('step_seq_number')
         if len(list(steps)) == 0:
             steps = None
     else:
@@ -304,7 +374,9 @@ def method(method_id):
                             music_list=music_url_list,
                             method_label_image=method.method_label_image,
                             method=method,
+                            curr_user_role=curr_user_role,
                             videos=video_html_links,
+                            literature=literature_html,
                             date_translate=date_translate,
                             timing_duration=timing_duration,
                             steps=steps,
@@ -397,8 +469,18 @@ def dict_category(category):
 @login_required
 def delete_method(method_id):
     method = Methodics.query.get_or_404(method_id)
-    if ((method.author != current_user) and (current_user.username != 'Administrator')):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
         abort(403)
+
     # Удалем превьюшки картинок
     del_meth_folder = os.path.join(current_app.root_path, os.path.join('static', 'methodics_pics', 'method_images', 'method_'+str(method_id)))
     shutil.rmtree(del_meth_folder, ignore_errors=True)
@@ -447,9 +529,19 @@ def delete_presentation(method_id):
     Удаляем презентацияю для выбранной методики вместе с директорией
     """
     method = Methodics.query.get_or_404(method_id)
-    presentation = request.args.get('presentation')
-    if ((method.author != current_user) and (current_user.username != 'Administrator')):
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
         abort(403)
+
+    presentation = request.args.get('presentation')
     filename = presentation
     curr_folder_path = os.path.join('static', 'methodics_presentations')
     directory = os.path.join(current_app.root_path, curr_folder_path, 'method_'+str(method_id))
@@ -605,6 +697,21 @@ def selected_methods_list():
 @methodics.route('/method_<int:method_id>/add_for_lesson<int:lesson_id>')  # <int: - для того чтобы номер методики точно был integer
 def add_method_to_lesson(method_id, lesson_id):
     lesson = Lessons.query.get_or_404(lesson_id)
+    course = Courses.query.get_or_404(lesson.course_id)
+    term = Term.query.get_or_404(course.term_id)
+    project = Projects.query.get_or_404(term.project_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по проекту
+    project_roles = get_roles(item_id=project.id, item_type=2)
+    # определяем роль пользователя
+    curr_user_role = user_role(project_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user.id == project.author_id)):
+        abort(403)
+
     lesson.method_id = method_id
     db.session.commit()
     return redirect(url_for('courses.update_lesson', lesson_id=lesson.id))

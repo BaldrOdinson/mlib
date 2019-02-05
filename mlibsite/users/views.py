@@ -98,12 +98,12 @@ def user_methodics(username):
 @login_required
 def search_user():
     # Опрелеляем номер списка для текущего курса и остальные параметры
-    if session['project_id']:
-        project_id = session['project_id']
-        project = Projects.query.get_or_404(project_id)
-    elif session['method_id']:
-        method_id = session['method_id']
-        method = Methodics.query.get_or_404(method_id)
+    if 'project_id' in session:
+            project_id = session['project_id']
+            project = Projects.query.get_or_404(project_id)
+    elif 'method_id' in session:
+            method_id = session['method_id']
+            method = Methodics.query.get_or_404(method_id)
 
     form = SearchUserForm()
 
@@ -148,17 +148,17 @@ def search_user():
         # flash_text += '<br>К сожалению, последние изменения не сохранены. '
         flash(Markup(flash_text), 'negative')
     # Первоначальные поисковые параметры
-    if session['project_id']:
-        return render_template('search_user.html',
-                                project=project,
-                                form=form)
-    if session['method_id']:
-        return render_template('search_user.html',
-                                method=method,
-                                form=form)
+    if 'project_id' in session:
+            return render_template('search_user.html',
+                                    project=project,
+                                    form=form)
+    elif 'method_id' in session:
+                return render_template('search_user.html',
+                                        method=method,
+                                        form=form)
     else:
-        return render_template('search_user.html',
-                                form=form)
+            return render_template('search_user.html',
+                                    form=form)
 
 
 ###### SELECTED USERS LIST ######
@@ -167,17 +167,6 @@ def search_user():
 def selected_users_list():
     selected_users_dict = session['selected_users_dict']
     print(f'selected_users_dict: {selected_users_dict}')
-    # Если не выбрана категория, т.е. выбрана с номером 0 (любая категория), не включаем поле категории в поисковый запрос
-
-    # selected_users = User.query.filter(
-    #                         User.email.ilike(selected_users_dict['email']),
-    #                         User.username.ilike(selected_users_dict['username']),
-    #                         User.first_name.ilike(selected_users_dict['first_name']),
-    #                         User.last_name.ilike(selected_users_dict['last_name']),
-    #                         User.phone_num.ilike(selected_users_dict['phone_num']),
-    #                         User.address.ilike(selected_users_dict['address']),
-    #                         User.curr_job_place.ilike(selected_users_dict['curr_job_place'])
-    #                         ).order_by(User.username)
 
     selected_users = User.query.filter(
                             or_(User.email.ilike(selected_users_dict['email']), (User.email==None)),
@@ -196,13 +185,21 @@ def selected_users_list():
     page = request.args.get('page', 1, type=int)
     user_set = selected_users.paginate(page=page, per_page=per_page)
     user_whole = selected_users[page*per_page-per_page:page*per_page]
-    if session['project_id']:
+    if 'project_id' in session:
         project_id = session['project_id']
         project = Projects.query.get_or_404(project_id)
         return render_template('selected_users.html',
                             user_set=user_set,
                             project_id = project_id,
                             project = project,
+                            date_translate=date_translate)
+    elif 'method_id' in session:
+        method_id = session['method_id']
+        method = Methodics.query.get_or_404(method_id)
+        return render_template('selected_users.html',
+                            user_set=user_set,
+                            method_id = method_id,
+                            method = method,
                             date_translate=date_translate)
 
 
@@ -221,7 +218,7 @@ def create_user_role(user_id):
         project = Projects.query.get_or_404(item_id)
         item_type_desc = 'project'
         item_name = project.name
-    elif item_type == 2:
+    elif item_type == 1:
         method = Methodics.query.get_or_404(item_id)
         item_type_desc = 'method'
         item_name = method.title
@@ -264,7 +261,7 @@ def create_user_role(user_id):
         if item_type == 2:
             return redirect(url_for('projects.update_project', project_id=project.id))
         if item_type == 1:
-            return redirect(url_for('methodics.update_method', method_id=method.id))
+            return redirect(url_for('methodics.update', method_id=method.id))
     # Первая загрузка
     return render_template('select_role.html',
                                 user=user,
@@ -287,4 +284,4 @@ def delete_user_role(role_id):
     if item_type == 2:
         return redirect(url_for('projects.update_project', project_id=item_id))
     elif item_type == 1:
-        return redirect(url_for('methodics.update_method', method_id=item_id))
+        return redirect(url_for('methodics.update', method_id=item_id))
