@@ -463,25 +463,35 @@ def selected_students_list():
         # определяем роль пользователя
         curr_user_role = user_role(project_roles, current_user.id)
         # завершаем обработку если у пользователя не хватает прав
-        if ((curr_user_role in ['admin', 'moder', 'reader'])
-                    or (current_user.username == 'Administrator')
-                    or (current_user.id == project.author_id)):
+        if curr_user_role in ['admin', 'moder', 'reader']:
             allow_flag = True
+    if ((current_user.username == 'Administrator')
+        or (current_user.id == project.author_id)):
+        allow_flag = True
     if not allow_flag:
         abort(403)
 
     # print('BEGIN of selected_students_list')
     # selected_students = request.args.get('selected_students')
     selected_students_dict = session['selected_students_dict']
-    selected_students = Students.query.filter(Students.first_name.ilike(selected_students_dict['first_name']),
-                                    Students.last_name.ilike(selected_students_dict['last_name']),
-                                    Students.phone_num.like(selected_students_dict['phone_num']),
-                                    Students.email.like(selected_students_dict['email']),
-                                    Students.address.ilike(selected_students_dict['address']),
-                                    Students.age.ilike(selected_students_dict['age']),
-                                    # Выбираются только студенты, на просмотр которых есть права
-                                    Students.id.in_(list(item.student_id for item in (Learning_groups.query.filter(Learning_groups.project_id.in_(users_projects)).all()))),
-                                    ).order_by(Students.id.desc())
+    if current_user.username != 'Administrator':
+        selected_students = Students.query.filter(Students.first_name.ilike(selected_students_dict['first_name']),
+                                        Students.last_name.ilike(selected_students_dict['last_name']),
+                                        Students.phone_num.like(selected_students_dict['phone_num']),
+                                        Students.email.like(selected_students_dict['email']),
+                                        Students.address.ilike(selected_students_dict['address']),
+                                        Students.age.ilike(selected_students_dict['age']),
+                                        # Выбираются только студенты, на просмотр которых есть права
+                                        Students.id.in_(list(item.student_id for item in (Learning_groups.query.filter(Learning_groups.project_id.in_(users_projects)).all()))),
+                                        ).order_by(Students.id.desc())
+    else:
+        selected_students = Students.query.filter(Students.first_name.ilike(selected_students_dict['first_name']),
+                                        Students.last_name.ilike(selected_students_dict['last_name']),
+                                        Students.phone_num.like(selected_students_dict['phone_num']),
+                                        Students.email.like(selected_students_dict['email']),
+                                        Students.address.ilike(selected_students_dict['address']),
+                                        Students.age.ilike(selected_students_dict['age']),
+                                        ).order_by(Students.id.desc())
 
     print(f'selected_students: {selected_students}')
     # pagination
