@@ -30,7 +30,7 @@ class UpdateStudentForm(FlaskForm):
     last_name = StringField('Фамилия', validators=[DataRequired()])
     age = StringField('Возраст')
     birthday = DateField('Дата рождения', format='%Y-%m-%d', validators=[Optional(),])
-    sex = SelectField('Пол', choices=[('', ''), ('m', 'Мужской'), ('f', 'Женский')])
+    sex = SelectField('Пол', choices=[('', ''), ('m', 'Мужской'), ('f', 'Женский')], validators=[DataRequired()])
     phone_num = StringField('Номер телефона')
     email = StringField('Email', validators=[Optional(), Email()])
     address = StringField('Адрес')
