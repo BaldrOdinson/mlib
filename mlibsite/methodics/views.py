@@ -302,6 +302,7 @@ def method(method_id):
     method = Methodics.query.get_or_404(method_id)
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
+    print(f'Система: {os.name}')
 
     ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту

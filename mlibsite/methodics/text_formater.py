@@ -43,6 +43,7 @@ def text_format_for_html(text):
 def text_for_markup(text):
     '''
     Разбиваем полученный из базы текст по строкам, чтобы затем вывести в форме после преобразования через Markup
+    Есть различия для Windows  и  Unix
     '''
     if text:
         timestamp = str(time()*1000).split('.')[0]
@@ -51,21 +52,24 @@ def text_for_markup(text):
             file.write(text)
         html_text=''
         with open(temp_filename, 'r') as file:
-            # double_break = False
-            # for line in file.readlines():
-            #     # print(f'line: {line}')
-            #     if line == '\n' and not double_break:
-            #         html_text += line+'<br>'
-            #         double_break = True
-            #     # закомментарено 2 строки для unix
-            #     elif line == '\n' and double_break:
-            #         double_break = False
-            #     else:
-            #         html_text += line
-            #         double_break = False
-            for line in file.readlines():
-                html_text += line + '<br>'
-            html_text = html_text[:-4]
+            # Windows
+            if os.name == 'nt':
+                double_break = False
+                for line in file.readlines():
+                    # print(f'line: {line}')
+                    if line == '\n' and not double_break:
+                        html_text += line+'<br>'
+                        double_break = True
+                    elif line == '\n' and double_break:
+                        double_break = False
+                    else:
+                        html_text += line
+                        double_break = False
+            # UNIX (не Windows)
+            else:
+                for line in file.readlines():
+                    html_text += line + '<br>'
+                html_text = html_text[:-4]
         os.remove(temp_filename)
         return Markup(html_text)
     else:
@@ -75,6 +79,7 @@ def text_for_markup(text):
 def text_for_links_markup(text):
     '''
     Разбиваем полученный из базы текст ссылок по строкам, добавляем теги <a></a> чтобы затем вывести в форме после преобразования через Markup
+    Есть различия для Windows  и  Unix
     '''
     if text:
         timestamp = str(time()*1000).split('.')[0]
@@ -83,18 +88,24 @@ def text_for_links_markup(text):
             file.write(text)
         html_text=''
         with open(temp_filename, 'r') as file:
-            double_break = False
-            for line in file.readlines():
-                # print(f'line: {line}')
-                if line == '\n' and not double_break:
+            # Windows
+            if os.name == 'nt':
+                double_break = False
+                for line in file.readlines():
+                    # print(f'line: {line}')
+                    if line == '\n' and not double_break:
+                        html_text += '<a href="'+line+'">'+line+'</a><br>'
+                        double_break = True
+                    elif line == '\n' and double_break:
+                        double_break = False
+                    else:
+                        html_text += '<a href="'+line+'">'+line+'</a>'
+                        double_break = False
+            # UNIX (не Windows)
+            else:
+                for line in file.readlines():
                     html_text += '<a href="'+line+'">'+line+'</a><br>'
-                    double_break = True
-                # закомментарено 2 строки для unix
-                elif line == '\n' and double_break:
-                    double_break = False
-                else:
-                    html_text += '<a href="'+line+'">'+line+'</a>'
-                    double_break = False
+                html_text = html_text[:-4]
         os.remove(temp_filename)
         print(f'Links: {html_text}')
         return Markup(html_text)
