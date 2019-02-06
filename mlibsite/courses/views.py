@@ -364,7 +364,10 @@ def create_lesson(course_id):
         db.session.add(lesson)
         db.session.commit()
         flash('Занятие создано', 'success')
-        lesson = Lessons.query.filter_by(course_id=course_id, description=form.description.data).first()
+        if not form.start_time.data:
+            lesson = Lessons.query.filter_by(course_id=course_id, description=form.description.data, lesson_date = form.lesson_date.data).first()
+        else:
+            lesson = Lessons.query.filter_by(course_id=course_id, description=form.description.data, lesson_date = form.lesson_date.data, start_time = form.start_time.data).first()
         return redirect(url_for('courses.update_lesson', lesson_id=lesson.id))
     # Первая загрузка
     return render_template('create_lesson.html',

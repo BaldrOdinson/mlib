@@ -483,7 +483,7 @@ def selected_students_list():
                                         Students.age.ilike(selected_students_dict['age']),
                                         # Выбираются только студенты, на просмотр которых есть права
                                         Students.id.in_(list(item.student_id for item in (Learning_groups.query.filter(Learning_groups.project_id.in_(users_projects)).all()))),
-                                        ).order_by(Students.id.desc())
+                                        ).order_by(Students.last_name.asc())
     else:
         selected_students = Students.query.filter(Students.first_name.ilike(selected_students_dict['first_name']),
                                         Students.last_name.ilike(selected_students_dict['last_name']),
@@ -491,7 +491,7 @@ def selected_students_list():
                                         Students.email.like(selected_students_dict['email']),
                                         Students.address.ilike(selected_students_dict['address']),
                                         Students.age.ilike(selected_students_dict['age']),
-                                        ).order_by(Students.id.desc())
+                                        ).order_by(Students.last_name.asc())
 
     print(f'selected_students: {selected_students}')
     # pagination
