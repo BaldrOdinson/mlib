@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<form class="form-group" method="post" enctype="multipart/form-data">
+  {{form.hidden_tag()}}
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{label_image}}">
+          <br><br>
+          <div class="form-group" align='left'>
+            {{form.label_image.label(class='form-group')}}
+            {{form.label_image(class='form-control-file')}}
+          </div>
+        </div>
+        <div class="col-lg">
+          <h2>Редактирование проекта</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div align='right' class="text-muted">
+      <h5>Заполните форму ниже, и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+    </div>
+    <div class="form-group">
+      <strong>{{form.name.label(class='form-control-label')}}</strong>
+      {{form.name(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.short_desc.label(class='form-control-label')}}</strong>
+      {{form.short_desc(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.description.label(class='form-control-label')}}</strong>
+      {{form.description(class='form-control', rows="5")}}
+    </div>
+    <table width='100%'>
+      <tr>
+        <td width='50%'>
+          <div class="form-group">
+            <strong>{{form.contacts_info.label(class='form-control-label')}}</strong>
+            {{form.contacts_info(class='form-control')}}
+          </div>
+        </td>
+        <td>
+          <div class="form-group">
+            <strong>{{form.address.label(class='form-control-label')}}</strong>
+            {{form.address(class='form-control')}}
+          </div>
+        </td>
+      </tr>
+    </table>
+<!-- Роли пользователей -->
+    <div class="form-group">
+      <table width='100%'>
+        <tr>
+          <td>
+            <strong>{{form.moders_list.label(class='form-control-label')}}</strong>
+          </td>
+          <td>
+            {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+              <div align='right'>
+                <a class='btn btn-outline-info btn-sm' href="{{url_for('users.search_user')}}">Добавить</a>
+              </div>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+      {% if users_role_dict %}
+        <table width='100%' class="table table-sm">
+          <thead class="table-info">
+            <tr>
+              <th>Имя пользователя</th>
+              <th>Роль</th>
+              <th>Описание</th>
+              <th></th>
+            </tr>
+          </thead>
+          {% for user_role in users_role_dict.items() %}
+            <tr>
+              <td>
+                {{user_role[1][0]}}
+              </td>
+              <td>
+                {% if user_role[1][1] == 1 %}
+                  Администратор
+                {% elif user_role[1][1] == 2 %}
+                  Модератор
+                {% elif user_role[1][1] == 3 %}
+                  Полный просмотр
+                {% endif %}
+              </td>
+              <td>
+                {% if user_role[1][1] == 1 %}
+                  Редактирование, Добавление, Удаление
+                {% elif user_role[1][1] == 2 %}
+                  Редактирование, Добавление
+                {% elif user_role[1][1] == 3 %}
+                  Просмотр всей информации
+                {% endif %}
+              </td>
+              {% if user_role[1][0] ==  current_user.username %}
+                <td align='right'>
+                  <a class='btn btn-outline-secondary btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=project_id, item_type=2)}}">Удалить роль</a>
+                </td>
+              {% elif ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+                <td align='right'>
+                  <a class='btn btn-outline-danger btn-sm' href="{{url_for('users.delete_user_role', role_id=user_role[1][2], item_id=project_id, item_type=2)}}">Удалить роль</a>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <strong>{{form.web_links.label(class='form-control-label')}}</strong>
+      {{form.web_links(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.note.label(class='form-control-label')}}</strong>
+      {{form.note(class='form-control')}}
+    </div>
+    <!-- Блок работы с прикрепленными файлами -->
+    {% if attachments %}
+      <!-- Прикрепленные файлы: -->
+      <table class="table table-sm">
+        <tr class="table-info">
+          <th scope="col">Прикрепленные файлы:</th>
+          <th></th>
+        </tr>
+        {% for attachment in attachments %}
+          <tr>
+            <td> {{attachment}}</td>
+            <td align='center'> <a class='btn btn-outline-success btn-sm' href="{{url_for('projects.download_attachment', project_id=project_id, attachment=attachment)}}">Скачать</a>
+            <a class='btn btn-outline-danger btn-sm' href="{{url_for('projects.delete_attachment', project_id=project_id, attachment=attachment)}}">Удалить</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div class="form-group">
+        Для добавления еще одного файла (pdf, pptx, docx, txt)
+        {{form.attach(class='form-control-file')}}
+      </div>
+    {% else %}
+      <div class="form-group">
+        {{form.attach.label(class='form-control-label')}}
+        {{form.attach(class='form-control-file')}}
+      </div>
+    {% endif %}
+    <div class="form-group" align='right'>
+      {{form.submit(class='btn btn-outline-info')}}
+    </div>
+  </div>
+</form>
+
+
+{% endblock %}

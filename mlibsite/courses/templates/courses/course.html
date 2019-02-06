@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <!-- Вывод методики в карточки по пунктам -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/project_courses/'+course.label_image)}}">
+        </div>
+        <div class="col-lg">
+          <h1>{{course.name}}</h1>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <br>
+          <h5>
+            <table width='100%'>
+              <tr>
+                <td width='50%'>
+                  Дата начала:<br> {{date_translate(course.start_date)}}
+                </td>
+                <td>
+                  Дата завершения:<br> {{date_translate(course.finish_date)}}
+                </td>
+              </tr>
+            </table>
+          </h5>
+          <br>
+          <div class="" align='right'>
+            {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+              <a class='btn btn-outline-warning btn-sm' href="{{url_for('courses.update_course', course_id=course.id)}}">Изменить</a>
+            {% endif %}
+            {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+              <button type="button" class='btn btn-outline-danger btn-sm' data-toggle='modal' data-target='#del_modal_course'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if (course.description != "" and course.description != None) %}
+    <div class="accordion" id="accordionDescription">
+      <div class="card">
+        <h5 class="card-header" id="headingDescription">
+          <table width="100%">
+            <tr>
+              <td>Описание:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseDescription" aria-expanded="True" aria-controls="collapseDescription">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseDescription" class="collapse show" aria-labelledby="headingDescription" data-parent="#accordionDescription">
+          <div class="card-body">
+            {{description}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+<!-- РАСПИСАНИЕ ЗАНЯТИЙ -->
+  <div class="accordion" id="accordionSchedule">
+    <div class="card">
+      <h5 class="card-header" id="headingSchedule">
+        <table width="100%">
+          <tr>
+            <td>Расписание занятий:</td>
+            <td>
+              <div align='right'>
+                <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseSchedule" aria-expanded="True" aria-controls="collapseSchedule">
+                  скрыть / просмотреть
+                </button>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </h5>
+      <div id="collapseSchedule" class="collapse show" aria-labelledby="headingSchedule" data-parent="#accordionSchedule">
+        <div class="card-body">
+          <div align='right'>
+            {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+              <a class='btn btn-info' href="{{url_for('courses.update_schedule', course_id=course.id)}}">Редактировать расписание</a>
+            {% endif %}
+          </div>
+          {% if course_schedule %}
+            <table width='100%' class="table table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Дата</th>
+                  <th scope="col">С</th>
+                  <th scope="col">До</th>
+                  <th scope="col">Ведущие</th>
+                  <th scope="col">Методика</th>
+                  <th scope="col">Описание</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              {% for num, lesson in zip(range(1, len(course_schedule)+1), course_schedule) %}
+                <tr>
+                  <th scope="row" width='25px'>
+                    {{num}}
+                  </th>
+                  <td width='140px'>
+                    {{date_translate(lesson.lesson_date)}}
+                  </td>
+                  <td width='60px'>
+                    {{lesson.start_time.strftime('%H:%M')}}
+                  </td>
+                  <td width='60px'>
+                    {{lesson.finish_time.strftime('%H:%M')}}
+                  </td>
+                  <td>
+                    {% if lesson.tutors %}
+                      {{lesson.tutors}}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if methods_dict[lesson.method_id] %}
+                      <table>
+                        <tr>
+                          <td>
+                            <a href="{{url_for('methodics.method', method_id=methods_dict[lesson.method_id].id)}}">
+                              <img width='120px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+methods_dict[lesson.method_id].method_label_image)}}" alt="Method label image">
+                            </a>
+                          </td>
+                          <td>
+                            {{methods_dict[lesson.method_id].title}}
+                          </td>
+                        </tr>
+                      </table>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {{lesson.description}}
+                  </td>
+                  <td align='right'>
+                    <a class='btn btn-outline-success btn-sm' href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}" title="Просмотр">?</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- СПИСОК УЧАСТНИКОВ -->
+  <div class="accordion" id="accordionStudents">
+    <div class="card">
+      <h5 class="card-header" id="headingStudents">
+        <table width="100%">
+          <tr>
+            <td>Список участников:</td>
+            <td>
+              <div align='right'>
+                <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseStudents" aria-expanded="True" aria-controls="collapseStudents">
+                  скрыть / просмотреть
+                </button>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </h5>
+      <div id="collapseStudents" class="collapse show" aria-labelledby="headingStudents" data-parent="#accordionStudents">
+        <div class="card-body">
+          {% if not course.students_group_id %}
+            {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+              <a class='btn btn-info' href="{{url_for('students.create_students_group', course_id=course.id)}}">Создать группу участников</a>
+            {% endif %}
+          {% else %}
+            <table width='100%'>
+              <tr>
+                <td>
+                  <strong>Группа:</strong> {{students_group_desc}}
+
+                </td>
+                <td>
+                  <div align='right'>
+                    {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+                      <a class='text-decoration-none' href="{{url_for('students.rename_students_group', course_id=course.id)}}"><small>Переименовать список группы</small></a>&nbsp;&nbsp;&nbsp;
+                      <a class='btn btn-info' href="{{url_for('students.update_students_group_list', course_id=course.id)}}">Редактировать список</a>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <table width='100%' class="table table-sm">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col"></th>
+                <th scope="col">Имя</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Возраст</th>
+              </tr>
+              <!-- Добавляем порядковые номера элементам списка -->
+              {% for num, student in zip(range(1, len(students_group_list)+1), students_group_list) %}
+                <tr>
+                  <th scope="row">{{num}}</th>
+                  <td width='50px'>
+                    <img class="rounded-circle" align='center' height='30px' width='30px' src="{{url_for('static', filename = 'students_pics/students_ava/'+student.avatar)}}">
+                  </td>
+                  <td>
+                    {{student.first_name}}
+                  </td>
+                  <td>
+                    {{student.last_name}}
+                  </td>
+                  <td>
+                    {{student.age}}
+                  </td>
+                  <td align='right'>
+                    {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder', 'reader'])) %}
+                      <a class='btn btn-outline-success btn-sm' href="{{url_for('students.student_view', student_id=student.id)}}" title="Просмотр">
+                        ?
+                      </a>
+                    {% endif %}
+                    {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+                      <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}" title="Измененить">
+                        !
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if (course.tutors != "" and course.tutors != None) %}
+    <div class="accordion" id="accordionTutors">
+      <div class="card">
+        <h5 class="card-header" id="headingTutors">
+          <table width="100%">
+            <tr>
+              <td>Преподаватели, ведущие:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseTutors" aria-expanded="True" aria-controls="collapseTutors">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseTutors" class="collapse show" aria-labelledby="headingTutors" data-parent="#accordionTutors">
+          <div class="card-body">
+            {{tutors}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (course.contacts_info != "" and course.contacts_info != None) %}
+    <div class="accordion" id="accordionContactInfo">
+      <div class="card">
+        <h5 class="card-header" id="headingContactInfo">
+          <table width="100%">
+            <tr>
+              <td>Контакты:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseContactInfo" aria-expanded="True" aria-controls="collapseContactInfo">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseContactInfo" class="collapse show" aria-labelledby="headingContactInfo" data-parent="#accordionContactInfo">
+          <div class="card-body">
+            {{contacts_info}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (course.address != "" and course.address != None) %}
+    <div class="accordion" id="accordionAddress">
+      <div class="card">
+        <h5 class="card-header" id="headingAddress">
+          <table width="100%">
+            <tr>
+              <td>Адрес:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseAddress" aria-expanded="True" aria-controls="collapseAddress">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseAddress" class="collapse show" aria-labelledby="headingAddress" data-parent="#accordionAddress">
+          <div class="card-body">
+            {{address}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (course.web_links != "" and course.web_links != None) %}
+    <div class="accordion" id="accordionWebLinks">
+      <div class="card">
+        <h5 class="card-header" id="headingWebLinks">
+          <table width="100%">
+            <tr>
+              <td>Ссылки:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseWebLinks" aria-expanded="True" aria-controls="collapseWebLinks">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseWebLinks" class="collapse show" aria-labelledby="headingWebLinks" data-parent="#accordionWebLinks">
+          <div class="card-body">
+            {{web_links}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (course.note != "" and course.note != None) %}
+    <div class="accordion" id="accordionNote">
+      <div class="card">
+        <h5 class="card-header" id="headingNote">
+          <table width="100%">
+            <tr>
+              <td>Примечание:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseNote" aria-expanded="True" aria-controls="collapseNote">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseNote" class="collapse show" aria-labelledby="headingNote" data-parent="#accordionNote">
+          <div class="card-body">
+            {{note}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (course.attach != "" and course.attach != None) %}
+    <div class="card">
+      <h5 class="card-header">Прикрепленные файлы:</h5>
+      <div class="card-body">
+        <table class="table table-sm">
+          {% for attachment in attachments %}
+            <tr>
+              <td>{{attachment}}</td>
+              <td><a class='btn btn-outline-success btn-sm' href="{{url_for('courses.download_attachment', course_id=course.id, attachment=attachment)}}">Скачать</a></td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+
+  <div class="modal" tabindex="-1" role="dialog" id='del_modal_course'>   <!--  id='del_modal_term' это тоже имя что и в настройке кнопки data-target='#del_modal'-->
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Удалить курс?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Вы уверены что хотите полностью удалить данный курс занятий?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <!--  Вставка взамен существующей в примере кнопки-->
+        <form action="{{url_for('courses.delete_course', course_id=course.id)}}" method="POST">
+          <input class='btn btn-danger' type="submit" value="Удалить">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<p></p>
+
+{% endblock %}

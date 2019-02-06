@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app
+from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, abort
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import MethodTiming, TimingSteps, Methodics
 from mlibsite.timing.forms import AddTimingForm, AddTimingStepsForm
+from mlibsite.users.user_roles import get_roles, user_role
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from datetime import datetime
 from mlibsite.methodics.text_formater import text_format_for_html
@@ -30,6 +30,19 @@ def add_timing(method_id):
     """
     Создаем новый тайминг для методики method_id
     """
+    method = Methodics.query.get_or_404(method_id)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
+        abort(403)
+
     form = AddTimingForm()
 
     if form.validate_on_submit():
@@ -38,7 +51,6 @@ def add_timing(method_id):
         db.session.add(timing)
         db.session.commit()
         timing = MethodTiming.query.filter_by(method_id=method_id).first()
-        method = Methodics.query.get_or_404(method_id)
         method.timing_id = timing.id
         db.session.commit()
         return redirect(url_for('timing.edit_timing', method_id=method_id))
@@ -55,17 +67,30 @@ def add_timing_step(timing_id):
     """
     Создаем новый этап у тайминга timing_id
     """
+    method = Methodics.query.filter_by(timing_id=timing_id).first()
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
+        abort(403)
+
     form = AddTimingStepsForm()
 
     if form.validate_on_submit():
         timing_step = TimingSteps(method_timing_id=timing_id,
+                                step_seq_number = form.step_seq_number.data,
                                 step_duration = form.step_duration.data,
                                 step_desc = form.step_desc.data,
                                 step_result = form.step_result.data)
 
         db.session.add(timing_step)
         db.session.commit()
-        method = Methodics.query.filter_by(timing_id=timing_id).first()
         return redirect(url_for('timing.edit_timing', method_id=method.id))
     # Если первая загрузка формы поле step_duration не проверяем.
     if (form.step_duration.data == None and
@@ -84,8 +109,20 @@ def edit_timing(method_id):
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     method = Methodics.query.get_or_404(method_id)
     # steps = TimingSteps.query.filter_by(method_timing_id=method.timing_id)
-    steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('id')
+    steps = db.session.query(TimingSteps).filter_by(method_timing_id=timing.id).order_by('step_seq_number')
     timing_left = time_left(steps, timing.duration)
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
+        abort(403)
+
     print(steps)
 
     form = AddTimingForm()
@@ -103,6 +140,7 @@ def edit_timing(method_id):
                                     timing_id=timing.id,
                                     method_author=method.author,
                                     method_id=method.id,
+                                    method=method,
                                     steps=steps,
                                     timing_left=timing_left)
 
@@ -116,19 +154,32 @@ def step_update(step_id):
     """
     form = AddTimingStepsForm()
 
-    # step = TimingSteps.query.get_or_404(step_id)
     step = db.session.query(TimingSteps).filter_by(id=step_id).first()
     timing_id = step.method_timing_id
+    method = Methodics.query.filter_by(timing_id=timing_id).first()
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
+        abort(403)
+
     if form.validate_on_submit():
+        step.step_seq_number = form.step_seq_number.data
         step.step_duration = form.step_duration.data
         step.step_desc = form.step_desc.data
         step.step_result = form.step_result.data
 
         db.session.commit()
-        method = Methodics.query.filter_by(timing_id=timing_id).first()
         return redirect(url_for('timing.edit_timing', method_id=method.id))
     elif request.method == 'GET':
         print(f'duration {step.step_duration}\ndescription {step.step_desc}')
+        form.step_seq_number.data = step.step_seq_number
         form.step_duration.data = step.step_duration
         form.step_desc.data = step.step_desc
         form.step_result.data = step.step_result
@@ -146,6 +197,18 @@ def delete_timing_step(step_id):
     step = TimingSteps.query.get_or_404(step_id)
     timing_id = step.method_timing_id
     method = Methodics.query.filter_by(timing_id=timing_id).first()
+
+    ##### РОЛЬ ДОСТУПА #####
+    # Смотрим роли пользователей по методике
+    method_roles = get_roles(item_id=method.id, item_type=1)
+    # определяем роль пользователя
+    curr_user_role = user_role(method_roles, current_user.id)
+    # завершаем обработку если у пользователя не хватает прав
+    if not ((curr_user_role in ['admin', 'moder'])
+                or (current_user.username == 'Administrator')
+                or (current_user == method.author)):
+        abort(403)
+
     print(f'id {step_id}, step_id {step_id}')
     db.session.delete(step)
     db.session.commit()

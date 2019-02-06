@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+  <br>
   <div class="jumbotron">
     <!-- Вывод методики в карточки по пунктам -->
     <div class="container-fluid">
@@ -10,9 +11,8 @@
         <div class="col-lg">
           <h1>{{method.title}}</h1>
           <!-- Вывод короткого описания -->
-          {% for line in short_desc %}
-            <p>{{line}}</p>
-          {% endfor %}
+          {{short_desc}}
+          <br><br>
           <div align='right'>
             <h6 class="card-subtitle mb-2 text-muted">Автор:
             <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a></h6>
@@ -21,6 +21,15 @@
             {% if (method.change_date != None) %}
               <small class="form-text text-muted">Последнее обновление: {{date_translate(method.change_date)}}</small>
             {% endif %}
+            <br>
+            <div class="" align='right'>
+              {% if ((method.author == current_user) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder'])) %}
+                <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.update', method_id=method.id)}}">Изменить</a>
+              {% endif %}
+              {% if ((method.author == current_user) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+                <button type="button" class='btn btn-outline-danger btn-sm' data-toggle='modal' data-target='#del_modal'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
@@ -64,9 +73,7 @@
         </h5>
         <div id="collapseDescription" class="collapse show" aria-labelledby="headingDescription" data-parent="#accordionDescription">
           <div class="card-body">
-            {% for line in description %}
-                <p class="card-text">{{line}}</p>
-            {% endfor %}
+            {{description}}
           </div>
         </div>
       </div>
@@ -230,7 +237,7 @@
     <div class="card">
       <h5 class="card-header">Методическая литература:</h5>
       <div class="card-body">
-        {{method.literature}}
+        {{literature}}
       </div>
     </div>
   {% endif %}
@@ -243,18 +250,6 @@
       </div>
     </div>
   {% endif %}
-
-  <!-- test dropdown -->
-
-  {% if ((method.author == current_user) or (current_user.username == 'Administrator')) %}
-    <br>
-    <div class="" align='right'>
-      <a class='btn btn-warning' href="{{url_for('methodics.update', method_id=method.id)}}">Изменить</a>
-      <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
-    </div>
-  {% endif %}
-
-
 
   <div class="modal" tabindex="-1" role="dialog" id='del_modal'>   <!--  id='del_modal' это тоже имя что и в настройке кнопки data-target='#del_modal'-->
   <div class="modal-dialog" role="document">

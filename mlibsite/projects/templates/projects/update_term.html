@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<form class="form-group" method="post" enctype="multipart/form-data">
+  {{form.hidden_tag()}}
+  <br>
+  <div class="jumbotron">
+    <div class="container">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{label_image}}">
+          <br><br>
+          <div class="form-group" align='left'>
+            {{form.label_image.label(class='form-group')}}
+            {{form.label_image(class='form-control-file')}}
+          </div>
+        </div>
+        <div class="col-lg">
+          <h2>Редактирование периода деятильности проекта</h2>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.term_list', project_id=project.id)}}">{{project.name}}</a></h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div align='right' class="text-muted">
+      <h5>Заполните форму ниже, и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+    </div>
+    <div class="form-group">
+      <strong>{{form.name.label(class='form-control-label')}}</strong>
+      {{form.name(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.description.label(class='form-control-label')}}</strong>
+      {{form.description(class='form-control', rows="5")}}
+    </div>
+    <table width='100%'>
+      <tr>
+        <td width='50%'>
+          <div class="form-group">
+            <strong>{{form.start_date.label(class='form-control-label')}}</strong>
+            {{form.start_date(class='form-control')}}
+          </div>
+        </td>
+        <td>
+          <div class="form-group">
+            <strong>{{form.finish_date.label(class='form-control-label')}}</strong>
+            {{form.finish_date(class='form-control')}}
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div class="form-group" align='right'>
+      {{form.submit(class='btn btn-outline-info')}}
+    </div>
+  </div>
+</form>
+{% endblock %}

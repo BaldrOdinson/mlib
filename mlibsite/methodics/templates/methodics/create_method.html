@@ -1,54 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
   <br>
-  <div class="jumbotron" align="center">
-    <h2>Добавление методики</h2>
-      {% if method %}
-        <img align='center' src="{{url_for('static', filename='methodics_pics/method_ava'+method.method_label_image)}}">
-      {% else %}
-        <img align='center' src="{{url_for('static', filename='methodics_pics/method_ava/default_method.png')}}">
-      {% endif %}
-
-    <p>Заполните форму ниже и нажмите Сохранить</p>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' src="{{url_for('static', filename='methodics_pics/method_ava/default_method.png')}}">
+        </div>
+        <div class="col-lg">
+          <h2>Добавление методики</h2>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="container">
+
+  <div class="container-fluid">
     <form class="form-group" method="post">
       {{form.hidden_tag()}}
-      <div class="form-group">
-        {{form.title.label(class='form-control-label')}}
-        {{form.title(class='form-control form-control-lg')}}
+      <div align="right" class="text-muted">
+        <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
       </div>
       <div class="form-group">
-        {{form.short_desc.label(class='form-control-label')}}
-        {{form.short_desc(class='form-control form-control-lg')}}
+        <strong>{{form.title.label(class='form-control-label')}}</strong>
+        {{form.title(class='form-control')}}
       </div>
       <div class="form-group">
-        {{form.target.label(class='form-control-label')}}
-        {{form.target(class='form-control form-control-lg')}}
+        <strong>{{form.short_desc.label(class='form-control-label')}}</strong>
+        {{form.short_desc(class='form-control')}}
       </div>
       <div class="form-group">
-        {{form.description.label(class='form-control-label')}}
-        {{form.description(class='form-control form-control-lg')}}
+        <strong>{{form.target.label(class='form-control-label')}}</strong>
+        {{form.target(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.description.label(class='form-control-label')}}</strong>
+        {{form.description(class='form-control')}}
       </div>
       <div class="form-group">
         <div class="input-group">
           <div class="input-group-prepend">
             <span class="input-group-text">Возраст участников от и до</span>
           </div>
-          {{form.age_range_from(class='form-control form-control-lg')}}
-          {{form.age_range_till(class='form-control form-control-lg')}}
+          {{form.age_range_from(class='form-control')}}
+          {{form.age_range_till(class='form-control')}}
         </div>
         <small class="form-text text-muted">Только цифры</small>
       </div>
       <div class="form-group">
-        {{form.tags.label(class='form-control-label')}}
-        {{form.tags(class='form-control form-control-lg')}}
+        <strong>{{form.tags.label(class='form-control-label')}}</strong>
+        {{form.tags(class='form-control')}}
       </div>
-      <div class="form-group">
-        {{form.category.label(class='form-control-label')}} {{category}}
-        <!-- {{form.category(class='form-control form-control-lg', value=1)}} -->
-      </div>
-      <p>Сохранив новую методику вы перейдте к ее расширенному редактированию.</p>
+      <!-- <div class="form-group">
+        <strong>{{form.category.label(class='form-control-label')}}</strong> {{category}}
+        <!-- {{form.category(class='form-control form-control-lg', value=1)}}
+      </div> -->
+      <p>Сохранив новую методику вы перейдёте к ее расширенному редактированию.</p>
       <div class="form-group" align='right'>
         {{form.submit(class='btn btn-outline-info')}}
       </div>

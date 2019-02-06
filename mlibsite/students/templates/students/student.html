@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <!-- Вывод методики в карточки по пунктам -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename = 'students_pics/students_ava/'+student.avatar)}}">
+        </div>
+        <div class="col-lg">
+          <table width='100%'>
+            <tr>
+              <td align='right'>
+                <h1 class="display-4">
+                  {{student.first_name}}&nbsp;
+                </h1>
+              </td>
+              <td>
+                <h1 class="display-4">
+                &nbsp;{{student.last_name}}
+                </h1>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <!-- Курсы и иписки, в которых замечен выбранный участник -->
+          <table width='100%'>
+            {% for course, student_group in zip(students_courses, students_group) %}
+              <tr>
+                <td>
+                  <h5 class="text-info">Курс: <a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+                </td>
+                <td>
+                  <h5 class="text-info">Список: <a class="text-body text-decoration-none" href="{{url_for('students.update_students_group_list', course_id=course.id)}}">{{student_group.description}}</a></h5>
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+
+
+          {% if ((current_user.username == 'Administrator') or moder_stat) %}
+            <br>
+            <div class="" align='right'>
+              <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}">Изменить</a>
+              <button type="button" class='btn btn-outline-danger btn-sm' data-toggle='modal' data-target='#del_modal_student'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <table width='100%' class="table table-sm">
+    <thead>
+      <tr>
+        <th scope="col">Возраст</th>
+        <th scope="col">Пол</th>
+        <th scope="col">День рождения</th>
+        <th scope="col">Номер телефона</th>
+        <th scope="col">Email</th>
+        <th scope="col">Адрес</th>
+      </tr>
+      <tr>
+        <td>
+          {{student.age}}
+        </td>
+        <!-- Выводим пол участника -->
+        <td>
+          {% if student.sex %}
+            {% if student.sex == 'm' %}
+              М
+            {% elif student.sex == 'f' %}
+              Ж
+            {% endif %}
+          {% endif %}
+        </td>
+        <td>
+          {% if (student.birthday != "" and student.birthday != None) %}
+            {{date_translate(student.birthday)}}
+          {% endif %}
+        </td>
+        <td>
+          {{student.phone_num}}
+        </td>
+        <td>
+          {{student.email}}
+        </td>
+        <td>
+          {% if (student.address != "" and student.address != None) %}
+            {{address}}
+          {% endif %}
+        </td>
+      </tr>
+    </thead>
+  </table>
+
+  <br>
+  {% if (student.note != "" and student.note != None) %}
+    <div class="accordion" id="accordionNote">
+      <div class="card">
+        <h5 class="card-header" id="headingNote">
+          <table width="100%">
+            <tr>
+              <td>Примечание:</td>
+              <td>
+                <div align='right'>
+                  <button class="btn btn-outline-info btn-sm" type="button" data-toggle="collapse" data-target="#collapseNote" aria-expanded="True" aria-controls="collapseNote">
+                    скрыть / просмотреть
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </h5>
+        <div id="collapseNote" class="collapse show" aria-labelledby="headingNote" data-parent="#accordionNote">
+          <div class="card-body">
+            {{note}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if (student.attach != "" and student.attach != None) %}
+    <div class="card">
+      <h5 class="card-header">Прикрепленные файлы:</h5>
+      <div class="card-body">
+        <table class="table table-sm">
+          {% for attachment in attachments %}
+            <tr>
+              <td>{{attachment}}</td>
+              <td align='right'><a class='btn btn-outline-success btn-sm' href="{{url_for('students.download_attachment', student_id=student.id, attachment=attachment)}}">Скачать</a></td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+<!-- Modal УДАЛЕНИЯ -->
+  <div class="modal" tabindex="-1" role="dialog" id='del_modal_student'>   <!--  id='del_modal_term' это тоже имя что и в настройке кнопки data-target='#del_modal'-->
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Удалить участника?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Вы уверены что хотите полностью удалить данного участника занятий?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <!--  Вставка взамен существующей в примере кнопки-->
+        <form action="{{url_for('students.delete_student', student_id=student.id)}}" method="POST">
+          <input class='btn btn-danger' type="submit" value="Удалить">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<p></p>
+
+{% endblock %}

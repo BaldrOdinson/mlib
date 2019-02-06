@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block content %}
+  <form class="form-group" method="post" enctype="multipart/form-data">
+    {{form.hidden_tag()}}
+    <br>
+    <div class="jumbotron">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-auto" align='left'>
+            <img align='center' height='200px' src="{{url_for('static', filename='students_pics/students_ava/default_student.png')}}">
+            <div class="form-group" align='left'>
+              {{form.avatar.label(class='form-group')}}
+              {{form.avatar(class='form-control-file')}}
+            </div>
+          </div>
+          <div class="col-lg">
+            <h2>Редактирование информации об участнике</h2>
+            <br>
+            <h4 class="text-muted">Списки:</h4>
+            {% for course, student_group in zip(students_courses, students_group) %}
+              <h5><a class="text-body text-decoration-none" href="{{url_for('students.update_students_group_list', course_id=course.id)}}">{{student_group.description}}</a></h5>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div class="container-fluid">
+    <div align="right" class="text-muted">
+      <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+    </div>
+    <table width='100%'>
+      <tr>
+        <td width='50%'>
+          <div class="form-group">
+            <strong>{{form.first_name.label(class='form-control-label')}}</strong>
+            {{form.first_name(class='form-control')}}
+          </div>
+        </td>
+        <td>
+          <div class="form-group">
+            <strong>{{form.last_name.label(class='form-control-label')}}</strong>
+            {{form.last_name(class='form-control')}}
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table width='100%'>
+      <tr>
+        <td width='25%'>
+          <div class="form-group">
+            <strong>{{form.age.label(class='form-control-label')}}</strong>
+            {{form.age(class='form-control')}}
+          </div>
+        </td>
+        <td width='25%'>
+          <div class="form-group">
+            <strong>{{form.sex.label(class='form-control-label')}}</strong>
+            {{form.sex(class='form-control')}}
+          </div>
+        </td>
+        <td>
+          <div class="form-group">
+            <strong>{{form.birthday.label(class='form-control-label')}}</strong>
+            {{form.birthday(class='form-control')}}
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table width='100%'>
+      <tr>
+        <td width='50%'>
+          <div class="form-group">
+            <strong>{{form.phone_num.label(class='form-control-label')}}</strong>
+            {{form.phone_num(class='form-control')}}
+          </div>
+        </td>
+        <td>
+          <div class="form-group">
+            <strong>{{form.email.label(class='form-control-label')}}</strong>
+            {{form.email(class='form-control')}}
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div class="form-group">
+      <strong>{{form.address.label(class='form-control-label')}}</strong>
+      {{form.address(class='form-control')}}
+    </div>
+    <div class="form-group">
+      <strong>{{form.note.label(class='form-control-label')}}</strong>
+      {{form.note(class='form-control')}}
+    </div>
+    <!-- Блок работы с прикрепленными файлами -->
+    {% if attachments %}
+      <!-- Прикрепленные файлы: -->
+      <table class="table table-sm">
+        <tr class="table-info">
+          <th scope="col">Прикрепленные файлы:</th>
+          <th></th>
+        </tr>
+        {% for attachment in attachments %}
+          <tr>
+            <td> {{attachment}}</td>
+            <td align='right'> <a class='btn btn-outline-success btn-sm' href="{{url_for('students.download_attachment', student_id=student.id, attachment=attachment)}}">Скачать</a>
+            <a class='btn btn-outline-danger btn-sm' href="{{url_for('students.delete_attachment', student_id=student.id, attachment=attachment)}}">Удалить</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div class="form-group">
+        Для добавления еще одного файла (pdf, pptx, docx, txt, jpg)
+        {{form.attach(class='form-control-file')}}
+      </div>
+    {% else %}
+    <div class="form-group">
+      {{form.attach.label(class='form-control-label')}}
+      {{form.attach(class='form-control-file')}}
+    </div>
+    {% endif %}
+
+    <div class="form-group" align='right'>
+      {{form.submit(class='btn btn-outline-info')}}
+    </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename='students_pics/students_ava/default_student.png')}}">
+        </div>
+        <div class="col-lg">
+          <h2>Поиск нужного участника</h2>
+          {% if course %}
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div align="right" class="text-muted">
+        <h5>Заполните что знаете и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+      </div>
+      <table width='100%'>
+        <tr>
+          <td width='40%'>
+            <div class="form-group">
+              <strong>{{form.first_name.label(class='form-control-label')}}</strong>
+              {{form.first_name(class='form-control')}}
+            </div>
+          </td>
+          <td width='40%'>
+            <div class="form-group">
+              <strong>{{form.last_name.label(class='form-control-label')}}</strong>
+              {{form.last_name(class='form-control')}}
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              <strong>{{form.age.label(class='form-control-label')}}</strong>
+              {{form.age(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+      <table width='100%'>
+        <tr>
+          <td width='50%'>
+            <div class="form-group">
+              <strong>{{form.phone_num.label(class='form-control-label')}}</strong>
+              {{form.phone_num(class='form-control')}}
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              <strong>{{form.email.label(class='form-control-label')}}</strong>
+              {{form.email(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div class="form-group">
+        <strong>{{form.address.label(class='form-control-label')}}</strong>
+        {{form.address(class='form-control')}}
+      </div>
+
+
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+{% endblock %}

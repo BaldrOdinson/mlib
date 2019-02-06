@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <table width='100%'>
+        <tr>
+          <td>
+            <h1>Проекты</h1>
+          </td>
+          {% if current_user.is_authenticated %}
+            <td>
+              <div class="" align='right'>
+                <a class='btn btn-outline-info' href="{{url_for('projects.create_project')}}">Создать проект</a>
+              </div>
+            </td>
+          {% endif %}
+        </tr>
+      </table>
+    </div>
+  </div>
+
+<!--  SHOW Projects-->
+  <div class="card-columns">
+    {% for project in projects.items %}
+      <div class="card text-center shadow-sm">
+        <div class="card-header">
+          <h5 class="card-title">{{project.name}}</h5>
+        </div>
+        <div class="card-body">
+          <a href="{{url_for('projects.project_view', project_id=project.id)}}">
+            <img class="card-img-top" src="{{url_for('static', filename = 'projects_pics/project_ava/'+project.label_image)}}" alt="Card image cap">
+          </a>
+          {% for list in short_desc_dict[project.id] %}
+              <p class="card-text">{{ list }}</p>
+          {% endfor %}
+          <div>
+            <a class='btn btn-primary' style="margin-right:6px;" href="{{url_for('projects.project_view', project_id=project.id)}}">Открыть</a>
+          </div>
+        </div>
+        <div class="card-footer text-muted">
+          Создан: {{date_translate(project.create_date)}}<br>
+          {% if project.change_date != None %}
+            Обновлён: {{date_translate(project.change_date)}}
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <!-- <div class="container-fluid">
+    <div class="card-columns">
+    {% for project in projects.items %}
+          <div class="card shadow-sm">
+            <a href="{{url_for('projects.project_view', project_id=project.id)}}">
+              <img class="card-img-top" src="{{url_for('static', filename = 'projects_pics/project_ava/'+project.label_image)}}" alt="Card image cap">
+            </a>
+            <div class="card-body">
+              <h5 class="card-title">{{project.name}}</h5>
+              {% for list in short_desc_dict[project.id] %}
+                  <p class="card-text">{{ list }}</p>
+              {% endfor %}
+            </div>
+            <div align='right'>
+              <a class='btn btn-primary btn-sm' style="margin-right:6px;" href="{{url_for('projects.project_view', project_id=project.id)}}">Открыть</a>
+            </div>
+            <div class="" align='right' style="margin-right:5px">
+              <footer class="footer">
+                <small class="text-muted">
+                  Создан: {{date_translate(project.create_date)}}<br>
+                  {% if project.change_date != None %}
+                    Обновлён: {{date_translate(project.change_date)}}
+                  {% endif %}
+                </small>
+              </footer>
+            </div>
+          </div>
+    {% endfor %}
+    </div>
+  </div> -->
+
+<!--  Pagination-->
+  <nav aria-label='Page Navigation'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in projects.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if projects.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('projects.projects_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('projects.projects_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}

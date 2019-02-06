@@ -16,6 +16,7 @@ class AddTimingForm(FlaskForm):
 
 
 class AddTimingStepsForm(FlaskForm):
+    step_seq_number = StringField('Порядковый номер этапа')
     step_duration = IntegerField('Длительность этапа в минутах', validators=[DataRequired()])
     step_desc = TextAreaField('Описание этапа', validators=[DataRequired()])
     step_result = TextAreaField('Результат этапа', validators=[DataRequired()])

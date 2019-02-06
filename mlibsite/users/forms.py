@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # related to forms
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, IntegerField
+from wtforms.validators import DataRequired, Email, EqualTo, Optional
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
 # related to users
@@ -29,3 +29,19 @@ class UpdateUserForm(FlaskForm):
     def check_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Выбранное вами имя пользователя занято.')
+
+
+class SearchUserForm(FlaskForm):
+    email = StringField('Email', validators=[Optional(), Email()])
+    username = StringField('Имя пользователя (никнейм)')
+    first_name = StringField('Имя')
+    last_name = StringField('Фамилия')
+    phone_num = StringField('Номер телефона')
+    address = StringField('Адрес')
+    curr_job_place = StringField('Место работы')
+    submit = SubmitField('Найти')
+
+
+class AddUserRoleForm(FlaskForm):
+    role_type = IntegerField('Выберите роль:')
+    submit = SubmitField('Добавить')

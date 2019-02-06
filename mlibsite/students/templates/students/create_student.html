@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename='students_pics/students_ava/default_student.png')}}">
+        </div>
+        <div class="col-lg">
+          <h2>Добавление участника</h2>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('students.update_students_group_list', course_id=course.id)}}"><span class="text-muted">список </span>{{student_group}}</a></h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div align="right" class="text-muted">
+        <h5>Заполните форму ниже и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+      </div>
+      <table width='100%'>
+        <tr>
+          <td width='45%'>
+            <div class="form-group">
+              <strong>{{form.first_name.label(class='form-control-label')}}</strong>
+              {{form.first_name(class='form-control')}}
+            </div>
+          </td>
+          <td width='45%'>
+            <div class="form-group">
+              <strong>{{form.last_name.label(class='form-control-label')}}</strong>
+              {{form.last_name(class='form-control')}}
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              <strong>{{form.age.label(class='form-control-label')}}</strong>
+              {{form.age(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+      <p>Сохранив нового участника вы перейдёте к расширенному редактированию его профиля.</p>
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+{% endblock %}

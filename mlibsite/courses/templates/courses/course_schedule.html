@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/project_courses/'+course.label_image)}}">
+        </div>
+        <div class="col-lg">
+          <h2>Редактирование расписания занятий курса</h2>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+          <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+          <div align='right'>
+            <br>
+            <a class='btn btn-outline-success btn-sm' href="{{url_for('courses.create_lesson', course_id=course.id)}}">Создать занятие</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+  <!-- РАСПИСАНИЕ ЗАНЯТИЙ -->
+  <table width='100%' class="table table-sm">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Дата</th>
+        <th scope="col">С</th>
+        <th scope="col">До</th>
+        <th scope="col">Ведущие</th>
+        <th scope="col">Методика</th>
+        <th scope="col">Описание</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    {% for num, lesson in zip(range(1, len(course_schedule)+1), course_schedule) %}
+      <tr>
+        <th scope="row" width='25px'>
+          {{num}}
+        </th>
+        <td width='140px'>
+          {{date_translate(lesson.lesson_date)}}
+        </td>
+        <td width='60px'>
+          {{lesson.start_time.strftime('%H:%M')}}
+        </td>
+        <td width='60px'>
+          {{lesson.finish_time.strftime('%H:%M')}}
+        </td>
+        <td>
+          {% if lesson.tutors %}
+            {{lesson.tutors}}
+          {% endif %}
+        </td>
+        <td>
+          {% if methods_dict[lesson.method_id] %}
+            <table>
+              <tr>
+                <td>
+                  <a href="{{url_for('methodics.method', method_id=methods_dict[lesson.method_id].id)}}">
+                    <img width='120px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+methods_dict[lesson.method_id].method_label_image)}}" alt="Method label image">
+                  </a>
+                </td>
+                <td>
+                  {{methods_dict[lesson.method_id].title}}
+                </td>
+              </tr>
+            </table>
+          {% else %}
+            <a class='btn btn-outline-danger btn-sm' href="{{url_for('courses.update_lesson', lesson_id=lesson.id)}}" title="Выбрать методику для занятия">Выбрать</a>
+          {% endif %}
+        </td>
+        <td>
+          {{lesson.description}}
+        </td>
+        <td align='right'>
+          <a class='btn btn-outline-success btn-sm' href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}" title="Просмотр">?</a>
+          <a class='btn btn-outline-warning btn-sm' href="{{url_for('courses.update_lesson', lesson_id=lesson.id)}}" title="Измененить">!</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}

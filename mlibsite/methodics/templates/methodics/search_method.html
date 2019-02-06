@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename='methodics_pics/method_ava/default_method.png')}}">
+        </div>
+        <div class="col-lg">
+          <h2>Поиск методики для</h2>
+          {% if lesson %}
+            <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
+            <h5>&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('projects.term_view', term_id=term.id)}}">{{term.name}}</a></h5>
+            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h5>
+            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="text-body text-decoration-none" href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}">{{lesson.description}}</a></h5>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div align="right" class="text-muted">
+        <h5>Заполните что знаете и нажмите {{form.submit(class='btn btn-outline-info')}}</h5>
+      </div>
+      <table width='100%'>
+        <tr>
+          <td width='50%'>
+            <!-- Категория -->
+            <div class="form-group">
+              <strong>{{form.category.label(class='form-control-label')}}</strong>
+              <select class="form-control" name="form_category">
+                <!-- <option selected value="{{category.id}}">{{category}}</option> -->
+                {% for cat_num, category_name, count in html_category_list %}
+                    {% if cat_num == category.id%}
+                      <option selected value={{cat_num}}>{{category_name}}</option>
+                    {% else %}
+                      <option value={{cat_num}}>{{category_name}}</option>
+                    {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              <strong>{{form.tags.label(class='form-control-label')}}</strong>
+              {{form.tags(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div class="form-group">
+        <strong>{{form.author.label(class='form-control-label')}}</strong>
+        {{form.author(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.title.label(class='form-control-label')}}</strong>
+        {{form.title(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.short_desc.label(class='form-control-label')}}</strong>
+        {{form.short_desc(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.target.label(class='form-control-label')}}</strong>
+        {{form.target(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{form.consumables.label(class='form-control-label')}}</strong>
+        {{form.consumables(class='form-control')}}
+      </div>
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+{% endblock %}
