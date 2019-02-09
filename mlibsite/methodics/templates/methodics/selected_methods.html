@@ -7,7 +7,7 @@
       <table width='100%'>
         <tr>
           <td>
-            <h2>Результаты поика методики</h2>
+            <h2>Результаты поиска методики</h2>
             {% if lesson_id %}
                 <h4>для занятия: <a class="text-body text-decoration-none" href="{{url_for('courses.lesson_view', lesson_id=lesson_id)}}">{{lesson.description}}</a></h4>
             {% endif %}
@@ -40,6 +40,57 @@
             <td align='right' width='190px'>
               <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.method', method_id=method.id)}}">!</a>
               <a class='btn btn-outline-info btn-sm' href="{{url_for('methodics.add_method_to_lesson', method_id=method.id, lesson_id=lesson.id)}}">Добавить в занятие</a>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              {{method.short_desc}}
+            </td>
+          </tr>
+        </table>
+        <table width='100%'>
+          <tr>
+            {% if method.age_from %}
+              <td width='120px'>
+                <strong>Возраст: от</strong> {{method.age_from}}
+              </td>
+            {% endif %}
+            {% if method.age_till %}
+              <td width='60px'>
+                <strong>до</strong> {{method.age_till}}
+              </td>
+            {% endif %}
+            {% if method.tags %}
+              <td>
+                <strong>Теги:</strong> {{method.tags}} {{method.author.username}}
+              </td>
+            {% endif %}
+            <td align='right'>
+              <strong>Автор:</strong> {{method.author.username}}<br>
+              <strong>Обновлено:</strong> {{date_translate(method.change_date)}}
+            </td>
+          </tr>
+        </table>
+        <hr>
+      {% endfor %}
+    {% else %}
+      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
+    {% endif %}
+    <!-- COMMON SEARCH -->
+    {% else %}
+    {% if method_set.items %}
+      {% for method in method_set.items %}
+        <table width='100%'>
+          <tr>
+            <td width='90px'>
+              <img width='70px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
+            </td>
+            <td align='left'>
+              <h5>{{method.title}}</h5>
+            </td>
+            <td align='right' width='190px'>
+              <a class='btn btn-outline-primary btn-sm' href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
             </td>
           </tr>
           <tr>

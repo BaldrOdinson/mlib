@@ -503,3 +503,30 @@ def delete_term(term_id):
     db.session.commit()
     flash('Период проект удален', 'success')
     return redirect(url_for('projects.term_list', project_id=project.id))
+
+
+###### SELECTED PROJECTS LIST ######
+@projects.route('/selected_projects')  # <int: - для того чтобы номер методики точно был integer
+def selected_projects_list():
+    selected_projects_dict = session['selected_projects_dict']
+    selected_projects = Projects.query.filter(Projects.name.ilike(selected_projects_dict['name']),
+                                Projects.short_desc.ilike(selected_projects_dict['short_desc']),
+                                Projects.contacts_info.ilike(selected_projects_dict['contacts']),
+                                Projects.address.ilike(selected_projects_dict['address']),
+                                Projects.web_links.ilike(selected_projects_dict['web_links']),
+                                ).order_by(Projects.name.desc())
+
+    # print(f'selected_projects: {selected_projects}')
+    # PAGINATION
+    # Максимальное количество элементов на странице
+    per_page=15
+    page = request.args.get('page', 1, type=int)
+    project_set = selected_projects.paginate(page=page, per_page=per_page)
+    project_whole = selected_projects[page*per_page-per_page:page*per_page]
+    project_web_links_dict = {}
+    for project in project_whole:
+        project_web_links_dict[project.id] = Markup(text_for_links_markup(project.web_links))
+    return render_template('selected_projects.html',
+                            project_set=project_set,
+                            project_web_links_dict=project_web_links_dict,
+                            date_translate=date_translate)

@@ -1,11 +1,12 @@
 ToDo:
-moredators list
 Tags
 upload images
 images for steps
 Real example photo
 Search (check this: https://habr.com/post/351900/)
 view of linked images/video/audio with delete button
+absent students list
+students list file upload/download
 
 
 

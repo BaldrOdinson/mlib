@@ -176,12 +176,7 @@ def course_view(course_id):
         student_group_desc=students_group.description
     else:
         student_group_desc=''
-    # Формируем список модераторов
-    moder_stat = False
-    if project.moders_list:
-        moders_list = text_format_for_html(project.moders_list)
-        if current_user.id in moders_list:
-            moder_stat = True
+
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
     description_html=Markup(text_for_markup(course.description))
     contacts_info_html=Markup(text_for_markup(course.contacts_info))
@@ -218,7 +213,6 @@ def course_view(course_id):
                             course_schedule=course_schedule,
                             methods_dict=methods_dict,
                             attachments = attachments,
-                            moder_stat = moder_stat,
                             description = description_html,
                             contacts_info = contacts_info_html,
                             address = address_html,

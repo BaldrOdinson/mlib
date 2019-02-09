@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <table width='100%'>
+        <tr>
+          <td>
+            <h2>Результаты поиска проекта</h2>
+          </td>
+          <!-- {% if current_user.is_authenticated %}
+          {% endif %} -->
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+<!--  SHOW Projects-->
+  {% if project_set.items %}
+    {% for project in project_set.items %}
+      <table width='100%'>
+        <tr>
+          <td>
+            <img align='center' height='40px' src="{{url_for('static', filename = 'projects_pics/project_ava/'+project.label_image)}}">
+          </td>
+          <td>
+            <h4>{{project.name}}</h4>
+          </td>
+          <td align='right'>
+            <a class='btn btn-outline-primary btn-sm' href="{{url_for('projects.project_view', project_id=project.id)}}">Открыть</a>
+          </td>
+        </tr>
+      </table>
+      <table width='100%'>
+        {% if project.short_desc %}
+          <tr>
+            <td>
+              <strong>Краткое описание:</strong> {{project.short_desc}}
+            </td>
+          </tr>
+        {% endif %}
+        <tr>
+          {% if project.contacts %}
+            <td>
+              <strong>Контакты:</strong> {{project.contacts}}
+            </td>
+          {% endif %}
+          {% if project.address %}
+            <td>
+              <strong>Адрес:</strong> {{project.address}}
+            </td>
+          {% endif %}
+          {% if project.web_links %}
+            <td>
+              <strong>Ссылки:</strong> {{project_web_links_dict[project.id]}}
+            </td>
+          {% endif %}
+        </tr>
+      </table>
+      <hr>
+    {% endfor %}
+  {% else %}
+    Ой. Ничего не найдено. Проверьте указанную вами информацию для поиска.
+  {% endif %}
+
+
+
+<!--  Pagination-->
+  <nav aria-label='Page Navigation'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in project_set.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if project_set.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('projects.selected_projects_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('projects.selected_projects_list', page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}

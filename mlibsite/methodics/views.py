@@ -567,7 +567,7 @@ def delete_presentation(method_id):
 @methodics.route('/select_method/category_<int:category>', methods=['GET', 'POST'])  # <int: - для того чтобы номер методики точно был integer
 def search_method(category):
     # Опрелеляем номер списка для текущего курса и остальные параметры
-    if session['lesson_id']:
+    if 'lesson_id' in session:
         lesson_id = session['lesson_id']
         lesson = Lessons.query.filter_by(id=lesson_id).first()
         course = Courses.query.get_or_404(lesson.course_id)
@@ -631,7 +631,7 @@ def search_method(category):
         # flash_text += '<br>К сожалению, последние изменения не сохранены. '
         flash(Markup(flash_text), 'negative')
     # Первоначальные поисковые параметры
-    if session['lesson_id']:
+    if 'lesson_id' in session:
         return render_template('search_method.html',
                                 lesson_id=lesson_id,
                                 lesson=lesson,
@@ -653,7 +653,7 @@ def selected_methods_list():
     # print('BEGIN of selected_students_list')
     # selected_students = request.args.get('selected_students')
     selected_methods_dict = session['selected_methods_dict']
-    print(f'selected_methods_dict: {selected_methods_dict}')
+    # print(f'selected_methods_dict: {selected_methods_dict}')
     # Если не выбрана категория, т.е. выбрана с номером 0 (любая категория), не включаем поле категории в поисковый запрос
     if selected_methods_dict['category'] == [0]:
         selected_methods = Methodics.query.filter(Methodics.user_id.in_(User.query.with_entities(User.id).filter(User.username.ilike(selected_methods_dict['author']))),
@@ -684,13 +684,17 @@ def selected_methods_list():
     page = request.args.get('page', 1, type=int)
     method_set = selected_methods.paginate(page=page, per_page=per_page)
     method_whole = selected_methods[page*per_page-per_page:page*per_page]
-    if session['lesson_id']:
+    if 'lesson_id' in session:
         lesson_id = session['lesson_id']
         lesson = Lessons.query.get_or_404(lesson_id)
         return render_template('selected_methods.html',
                             method_set=method_set,
                             lesson_id = lesson_id,
                             lesson = lesson,
+                            date_translate=date_translate)
+    else:
+        return render_template('selected_methods.html',
+                            method_set=method_set,
                             date_translate=date_translate)
 
 

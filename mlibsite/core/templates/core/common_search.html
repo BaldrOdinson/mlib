@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="jumbotron">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-auto" align='left'>
+          <img align='center' height='200px' src="{{url_for('static', filename='methodics_pics/method_ava/default_method.png')}}">
+        </div>
+        <div class="col-lg">
+          <h2>Поиск методики, проекта
+            {% if current_user.is_authenticated %}
+              или участника
+            {% endif %}
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Поиск методики -->
+  <h1 class="display-4">Поиск методики</h1>
+  <div class="container">
+    <form class="form-group" method="post">
+      {{method_form.hidden_tag()}}
+      <div align="right" class="text-muted">
+        <h5>Заполните что знаете и нажмите {{method_form.submit(class='btn btn-outline-info')}}</h5>
+      </div>
+      <table width='100%'>
+        <tr>
+          <td width='50%'>
+            <!-- Категория -->
+            <div class="form-group">
+              <strong>{{method_form.category.label(class='form-control-label')}}</strong>
+              <select class="form-control" name="form_category">
+                {% for cat_num, category_name, count in html_category_list %}
+                    {% if cat_num == 0%}
+                      <option selected value={{cat_num}}>{{category_name}}</option>
+                    {% else %}
+                      <option value={{cat_num}}>{{category_name}}</option>
+                    {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              <strong>{{method_form.tags.label(class='form-control-label')}}</strong>
+              {{method_form.tags(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div class="form-group">
+        <strong>{{method_form.author.label(class='form-control-label')}}</strong>
+        {{method_form.author(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{method_form.title.label(class='form-control-label')}}</strong>
+        {{method_form.title(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{method_form.short_desc.label(class='form-control-label')}}</strong>
+        {{method_form.short_desc(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{method_form.target.label(class='form-control-label')}}</strong>
+        {{method_form.target(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{method_form.consumables.label(class='form-control-label')}}</strong>
+        {{method_form.consumables(class='form-control')}}
+      </div>
+      <div class="form-group" align='right'>
+        {{method_form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+
+  <!-- Поиск проекта -->
+  <hr>
+  <h1 class="display-4">Поиск проекта</h1>
+  <div class="container">
+    <form class="form-group" method="post">
+      {{project_form.hidden_tag()}}
+      <div align="right" class="text-muted">
+        <h5>Заполните что знаете и нажмите {{project_form.submit(class='btn btn-outline-info')}}</h5>
+      </div>
+      <div class="form-group">
+        <strong>{{project_form.name.label(class='form-control-label')}}</strong>
+        {{project_form.name(class='form-control')}}
+      </div>
+      <div class="form-group">
+        <strong>{{project_form.short_desc.label(class='form-control-label')}}</strong>
+        {{project_form.short_desc(class='form-control')}}
+      </div>
+      <table width='100%'>
+        <tr>
+          <td>
+            <div class="form-group">
+              <strong>{{project_form.contacts.label(class='form-control-label')}}</strong>
+              {{project_form.contacts(class='form-control')}}
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              <strong>{{project_form.address.label(class='form-control-label')}}</strong>
+              {{project_form.address(class='form-control')}}
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div class="form-group">
+        <strong>{{project_form.web_links.label(class='form-control-label')}}</strong>
+        {{project_form.web_links(class='form-control')}}
+      </div>
+      <div class="form-group" align='right'>
+        {{student_form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+
+  <!-- поиск участника -->
+  {% if current_user.is_authenticated %}
+    <hr>
+    <h1 class="display-4">Поиск участника</h1>
+    <div class="container">
+      <form class="form-group" method="post">
+        {{student_form.hidden_tag()}}
+        <div align="right" class="text-muted">
+          <h5>Заполните что знаете и нажмите {{student_form.submit(class='btn btn-outline-info')}}</h5>
+        </div>
+        <table width='100%'>
+          <tr>
+            <td width='40%'>
+              <div class="form-group">
+                <strong>{{student_form.first_name.label(class='form-control-label')}}</strong>
+                {{student_form.first_name(class='form-control')}}
+              </div>
+            </td>
+            <td width='40%'>
+              <div class="form-group">
+                <strong>{{student_form.last_name.label(class='form-control-label')}}</strong>
+                {{student_form.last_name(class='form-control')}}
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <strong>{{student_form.age.label(class='form-control-label')}}</strong>
+                {{student_form.age(class='form-control')}}
+              </div>
+            </td>
+          </tr>
+        </table>
+        <table width='100%'>
+          <tr>
+            <td width='50%'>
+              <div class="form-group">
+                <strong>{{student_form.phone_num.label(class='form-control-label')}}</strong>
+                {{student_form.phone_num(class='form-control')}}
+              </div>
+            </td>
+            <td>
+              <div class="form-group">
+                <strong>{{student_form.email.label(class='form-control-label')}}</strong>
+                {{student_form.email(class='form-control')}}
+              </div>
+            </td>
+          </tr>
+        </table>
+        <div class="form-group">
+          <strong>{{student_form.address.label(class='form-control-label')}}</strong>
+          {{student_form.address(class='form-control')}}
+        </div>
+        <div class="form-group" align='right'>
+          {{student_form.submit(class='btn btn-outline-info')}}
+        </div>
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}

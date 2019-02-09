@@ -236,7 +236,7 @@ def update_student(student_id):
                     or (current_user.username == 'Administrator')
                     or (current_user.id == project.author_id)):
             allow_flag = True
-    if not allow_flag:
+    if not allow_flag and current_user.username != 'Administrator':
         abort(403)
 
     form = UpdateStudentForm()
@@ -331,6 +331,7 @@ def student_view(student_id):
     # Получаем из базы всю инфу свзанную со студентом
     student = Students.query.get_or_404(student_id)
     student_proj_info_dict = student_projects_info_dict(student_id)
+    print(f'student_proj_info_dict:{student_proj_info_dict}')
 
     ##### РОЛЬ ДОСТУПА #####
     # Проверяем есть ли у пользователя хоть в одном проекте участника права подходящие для просмотра
@@ -347,7 +348,7 @@ def student_view(student_id):
                     or (current_user.username == 'Administrator')
                     or (current_user.id == project.author_id)):
             allow_flag = True
-    if not allow_flag:
+    if not allow_flag and current_user.username != 'Administrator':
         abort(403)
 
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
@@ -372,7 +373,7 @@ def student_view(student_id):
                             zip=zip)
 
 
-###### SELECT STUDENT ######
+###### SEARCH STUDENT ######
 @students.route('/select_student', methods=['GET', 'POST'])  # <int: - для того чтобы номер методики точно был integer
 def search_student():
     # Опрелеляем номер списка для текущего курса и остальные параметры
@@ -423,7 +424,7 @@ def search_student():
         pass
     # Если форма заполненна с ошибками, а валидаторам плевать
     if form.errors:
-        flash_text = 'Форма курса заполнена неверно. <br>'
+        flash_text = 'Форма поиска участника заполнена неверно. <br>'
         print(f'form errors: {form.errors}')
         for error in form.errors:
             flash_text += form.errors[error][0]
@@ -442,6 +443,7 @@ def search_student():
 
 ###### SELECTED STUDENTS LIST ######
 @students.route('/selected_students')  # <int: - для того чтобы номер методики точно был integer
+@login_required
 def selected_students_list():
 
     ##### РОЛЬ ДОСТУПА #####
@@ -500,13 +502,18 @@ def selected_students_list():
     page = request.args.get('page', 1, type=int)
     student_set = selected_students.paginate(page=page, per_page=per_page)
     student_whole = selected_students[page*per_page-per_page:page*per_page]
-    if session['course_id']:
+    if 'course_id' in session:
         course_id = session['course_id']
         course = Courses.query.get_or_404(course_id)
         return render_template('selected_students.html',
                             student_set=student_set,
                             course_id = course_id,
                             course = course,
+                            allow_flag=allow_flag,
+                            date_translate=date_translate)
+    else:
+        return render_template('selected_students.html',
+                            student_set=student_set,
                             allow_flag=allow_flag,
                             date_translate=date_translate)
 
@@ -573,7 +580,7 @@ def delete_student(student_id):
                     or (current_user.username == 'Administrator')
                     or (current_user.id == project.author_id)):
             allow_flag = True
-    if not allow_flag:
+    if not allow_flag and current_user.username != 'Administrator':
         abort(403)
 
     # Удаляем заглавную картинку для проекта
@@ -588,9 +595,12 @@ def delete_student(student_id):
             directory = os.path.join(current_app.root_path, curr_folder_path, 'student_'+str(student_id))
             shutil.rmtree(directory, ignore_errors=True)
     # Определяем группы студента и удаляем связи
-    learning_groups = db.session.execute(text(f"select id from learning_groups where student_id='{student_id}'")).first()[0]
-    if learning_groups != None:
-        db.session.execute(text(f"delete from learning_groups where student_id='{student_id}'"))
+    try:
+        learning_groups = db.session.execute(text(f"select id from learning_groups where student_id='{student_id}'")).first()[0]
+        if learning_groups != None:
+            db.session.execute(text(f"delete from learning_groups where student_id='{student_id}'"))
+    except:
+        pass
     # Удалние проекта, после того как разобрались с констреинтами
     db.session.delete(student)
     db.session.commit()
