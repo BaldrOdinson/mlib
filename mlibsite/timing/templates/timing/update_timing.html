@@ -42,11 +42,11 @@
                   <table width='100%'>
                     <tr>
                       <td width='150px' valign='top'><strong>Описание этапа:</strong></td>
-                      <td align='left'>{{step.step_desc}}</td>
+                      <td align='left'>11{{steps_desc_dict[step.id]}}</td>
                     </tr>
                     <tr>
                       <td valign='top'><strong>Результат этапа:</strong></td>
-                      <td align='left'>{{step.step_result}}</td>
+                      <td align='left'>{{steps_results_dict[step.id]}}</td>
                     </tr>
                   </table>
                   {% if ((method_author == current_user) or (current_user.username=="Administrator")  or (curr_user_role in ['admin', 'moder'])) %}

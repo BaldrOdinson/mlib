@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, abort
+from flask import render_template, url_for, flash, request, redirect, Blueprint, current_app, abort, Markup
 from flask_login import current_user, login_required
 from mlibsite import db
 from mlibsite.models import MethodTiming, TimingSteps, Methodics
@@ -8,7 +8,7 @@ from mlibsite.timing.forms import AddTimingForm, AddTimingStepsForm
 from mlibsite.users.user_roles import get_roles, user_role
 from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net_pic, img_tupal, thumbnail_list
 from datetime import datetime
-from mlibsite.methodics.text_formater import text_format_for_html
+from mlibsite.methodics.text_formater import text_format_for_html, text_for_markup
 # import os, shutil
 from mlibsite.timing.misc_func import time_left
 
@@ -135,6 +135,11 @@ def edit_timing(method_id):
     elif request.method == 'GET':
         form.duration.data = timing.duration
     form.check_duration_data_type(form.duration)
+    steps_desc_dict = {}
+    steps_results_dict = {}
+    for step in steps:
+        steps_desc_dict[step.id] = Markup(text_for_markup(step.step_desc))
+        steps_results_dict[step.id] = Markup(text_for_markup(step.step_result))
     return render_template('update_timing.html',
                                     form=form,
                                     timing_id=timing.id,
@@ -143,6 +148,8 @@ def edit_timing(method_id):
                                     method=method,
                                     curr_user_role=curr_user_role,
                                     steps=steps,
+                                    steps_desc_dict=steps_desc_dict,
+                                    steps_results_dict=steps_results_dict,
                                     timing_left=timing_left)
 
 
