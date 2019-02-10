@@ -318,6 +318,11 @@ def method(method_id):
     short_desc_html=Markup(text_for_markup(method.short_desc))
     literature_html=Markup(text_for_markup(method.literature))
     consumables_html=Markup(text_for_markup(method.consumables))
+    steps_desc_dict = {}
+    steps_results_dict = {}
+    for step in steps:
+        steps_desc_dict[step.id] = Markup(text_for_markup(step.step_desc))
+        steps_results_dict[step.id] = Markup(text_for_markup(step.step_result))
     # создание превьюшек картинок по указанным ссылкам
     # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
     # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
@@ -383,6 +388,8 @@ def method(method_id):
                             date_translate=date_translate,
                             timing_duration=timing_duration,
                             steps=steps,
+                            steps_desc_dict=steps_desc_dict,
+                            steps_results_dict=steps_results_dict,
                             category=category.category_name,
                             age_list=age_list)
 

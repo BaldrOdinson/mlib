@@ -137,8 +137,8 @@
                 {% for step in steps %}
                   <tr>
                     <td> {{ step.step_duration }} мин.</td>
-                    <td> {{ step.step_desc }}</td>
-                    <td> {{ step.step_result }}</td>
+                    <td> {{ steps_desc_dict[step.id] }}</td>
+                    <td> {{ steps_results_dict[step.id] }}</td>
                   </tr>
                 {% endfor %}
               </table>
