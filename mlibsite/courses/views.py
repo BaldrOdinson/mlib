@@ -161,6 +161,7 @@ def course_view(course_id):
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
     course_schedule = Lessons.query.filter_by(course_id=course.id).order_by(Lessons.lesson_date).all()
+    session['course_id'] = course.id
 
     ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту

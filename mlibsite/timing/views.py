@@ -141,6 +141,7 @@ def edit_timing(method_id):
                                     method_author=method.author,
                                     method_id=method.id,
                                     method=method,
+                                    curr_user_role=curr_user_role,
                                     steps=steps,
                                     timing_left=timing_left)
 

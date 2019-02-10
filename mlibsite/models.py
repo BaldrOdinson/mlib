@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):
     profile_image = db.Column(db.String(64), nullable=False, default='default_profile.png')
     # Relationships
     methodics = db.relationship('Methodics', backref='author', lazy=True)
+    comments = db.relationship('Comments', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return f'Username {self.username}'
@@ -341,3 +342,19 @@ class Learning_groups(db.Model):
         self.course_id = course_id
         self.term_id = term_id
         self.project_id = project_id
+
+
+### Комментарии ###
+class Comments(db.Model):
+    __tablename__ = 'comments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    parrent_comment = db.Column(db.Integer, nullable=False, default=0)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    change_date = db.Column(db.DateTime)
+    item_id = db.Column(db.Integer, nullable=False)
+    item_type = db.Column(db.Integer, nullable=False)
+    item_type_desc = db.Column(db.String(256))
+    disabled = db.Column(db.Boolean)

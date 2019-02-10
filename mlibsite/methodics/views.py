@@ -317,6 +317,7 @@ def method(method_id):
     description_html=Markup(text_for_markup(method.description))
     short_desc_html=Markup(text_for_markup(method.short_desc))
     literature_html=Markup(text_for_markup(method.literature))
+    consumables_html=Markup(text_for_markup(method.consumables))
     # создание превьюшек картинок по указанным ссылкам
     # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками
     # затем делаем список кортежей с линком и путём к превьюшке, который отправляем в форму для отображения
@@ -378,6 +379,7 @@ def method(method_id):
                             curr_user_role=curr_user_role,
                             videos=video_html_links,
                             literature=literature_html,
+                            consumables=consumables_html,
                             date_translate=date_translate,
                             timing_duration=timing_duration,
                             steps=steps,
