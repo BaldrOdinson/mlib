@@ -13,11 +13,6 @@
             {% endif %}
           </td>
           <!-- {% if current_user.is_authenticated %}
-            <td>
-              <div class="" align='right'>
-                <a class='btn btn-outline-info' href="{{url_for('projects.create_project')}}">Создать проект</a>
-              </div>
-            </td>
           {% endif %} -->
         </tr>
       </table>
@@ -52,21 +47,21 @@
         <table width='100%'>
           <tr>
             {% if method.age_from %}
-              <td width='120px'>
+              <td width='120px' valign='top'>
                 <strong>Возраст: от</strong> {{method.age_from}}
               </td>
             {% endif %}
             {% if method.age_till %}
-              <td width='60px'>
+              <td width='60px' valign='top'>
                 <strong>до</strong> {{method.age_till}}
               </td>
             {% endif %}
             {% if method.tags %}
-              <td>
+              <td valign='top' width='60%'>
                 <strong>Теги:</strong> {{method.tags}} {{method.author.username}}
               </td>
             {% endif %}
-            <td align='right'>
+            <td align='right' valign='top'>
               <strong>Автор:</strong> {{method.author.username}}<br>
               <strong>Обновлено:</strong> {{date_translate(method.change_date)}}
             </td>
@@ -103,21 +98,21 @@
         <table width='100%'>
           <tr>
             {% if method.age_from %}
-              <td width='120px'>
+              <td width='120px' valign='top'>
                 <strong>Возраст: от</strong> {{method.age_from}}
               </td>
             {% endif %}
             {% if method.age_till %}
-              <td width='60px'>
+              <td width='60px' valign='top'>
                 <strong>до</strong> {{method.age_till}}
               </td>
             {% endif %}
             {% if method.tags %}
-              <td>
+              <td valign='top' width='60%'>
                 <strong>Теги:</strong> {{method.tags}} {{method.author.username}}
               </td>
             {% endif %}
-            <td align='right'>
+            <td align='right' valign='top'>
               <strong>Автор:</strong> {{method.author.username}}<br>
               <strong>Обновлено:</strong> {{date_translate(method.change_date)}}
             </td>

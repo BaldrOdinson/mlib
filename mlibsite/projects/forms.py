@@ -24,7 +24,7 @@ class UpdateProjectForm(FlaskForm):
     address = TextAreaField('Адрес')
     note = TextAreaField('Примечание')
     web_links = TextAreaField('Ссылки')
-    attach = FileField('Для загрузки дополнительного файла (pdf, pptx, docx, txt)', validators=[FileAllowed(['pdf', 'pptx', 'docx', 'txt'], 'Файл должен быть разрешенного формата. <br>Проверьте загружаемый файл. <br>')])
+    attach = FileField('Для загрузки дополнительного файла (pdf, pptx, docx, txt, jpg или png)', validators=[FileAllowed(['pdf', 'pptx', 'docx', 'txt', 'jpg', 'png'], 'Файл должен быть разрешенного формата. <br>Проверьте загружаемый файл. <br>')])
     submit = SubmitField('Сохранить')
 
 
