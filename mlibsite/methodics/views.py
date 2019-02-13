@@ -314,14 +314,14 @@ def method(method_id):
         curr_user_role = ''
 
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
-    description_html=Markup(text_for_markup(method.description))
+    description_html=Markup(method.description)
     short_desc_html=Markup(text_for_markup(method.short_desc))
     literature_html=Markup(text_for_markup(method.literature))
     consumables_html=Markup(text_for_markup(method.consumables))
     steps_desc_dict = {}
     steps_results_dict = {}
     for step in steps:
-        steps_desc_dict[step.id] = Markup(text_for_markup(step.step_desc))
+        steps_desc_dict[step.id] = Markup(step.step_desc)
         steps_results_dict[step.id] = Markup(text_for_markup(step.step_result))
     # создание превьюшек картинок по указанным ссылкам
     # получаем данные из формы, бъем их по строкам, делаем список из путей к превьюшкам и список с сылками

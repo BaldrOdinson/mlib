@@ -175,7 +175,7 @@ def project_view(project_id):
         curr_user_role = ''
 
     # разделяем преформатированный текст на строки, так как переносы не обрабатываются
-    description_html=Markup(text_for_markup(project.description))
+    description_html=Markup(project.description)
     short_desc_html=Markup(text_for_markup(project.short_desc))
     contacts_info_html=Markup(text_for_markup(project.contacts_info))
     address_html=Markup(text_for_markup(project.address))

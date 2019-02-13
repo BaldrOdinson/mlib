@@ -28,8 +28,24 @@
       <h5>Этапы занятия</h5>
       {% for step in steps %}
         <div class="card text-center">
-          <div class="card-header">
-            {{step.step_duration}} минут
+          <div class="card-header" style="height:55px;">
+            <table class="table table-borderless table-sm">
+              <tr>
+                <td># <strong>{{step.step_seq_number}}</strong></td>
+                <td><strong>{{step.step_duration}}</strong> минут</td>
+              </tr>
+            </table>
+            <!-- <div class="container">
+              <div class="row justify-content-around">
+                <div class="col-">
+                  # <strong>{{step.step_seq_number}}</strong>
+                </div>
+                <div class="col-">
+                  {{step.step_duration}} минут
+                </div>
+              </div>
+            </div> -->
+            <!-- {{step.step_duration}} минут -->
           </div>
 
           <div class="card-body">

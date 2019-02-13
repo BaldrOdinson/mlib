@@ -27,7 +27,7 @@
     </div>
     <div class="form-group">
       <strong>{{form.title.label(class='form-control-label')}}</strong>
-      {{form.title(class='form-control')}}
+      {{form.title(class_='form-control')}}
     </div>
     <div class="form-group">
       <strong>{{form.short_desc.label(class='form-control-label')}}</strong>
@@ -49,7 +49,7 @@
     </div>
     <div class="form-group">
       <strong>{{form.description.label(class='form-control-label')}}</strong>
-      {{form.description(class='form-control', rows="5")}}
+      {{form.description(class='form-control', id="editor")}}
     </div>
     <div class="form-group">
       <strong>{{form.consumables.label(class='form-control-label')}}</strong>
@@ -110,6 +110,7 @@
       <div class="form-group">
         Для добавления еще одного файла презентации (pdf, pptx) или текста пояснения к презентации (docx, txt)
         {{form.presentation(class='form-control-file')}}
+        <small class='text-muted'>Не более 20Мб</small>
       </div>
     {% else %}
     <div class="form-group">

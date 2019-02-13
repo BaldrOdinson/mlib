@@ -138,7 +138,7 @@ def edit_timing(method_id):
     steps_desc_dict = {}
     steps_results_dict = {}
     for step in steps:
-        steps_desc_dict[step.id] = Markup(text_for_markup(step.step_desc))
+        steps_desc_dict[step.id] = Markup(step.step_desc)
         steps_results_dict[step.id] = Markup(text_for_markup(step.step_result))
     return render_template('update_timing.html',
                                     form=form,
