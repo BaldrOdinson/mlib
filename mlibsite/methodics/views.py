@@ -11,6 +11,7 @@ from mlibsite.methodics.picture_handler import add_method_pic, thumbnail_for_net
 from mlibsite.methodics.video_handler import check_video_links
 from mlibsite.methodics.files_saver import add_method_presentation
 from mlibsite.methodics.music_handler import take_music_url, check_music_link
+from mlibsite.comments.comments_processing import count_comments
 from mlibsite.users.user_roles import get_roles, user_role
 from mlibsite.methodics.text_formater import text_format_for_html, text_for_markup, check_url_list, date_translate, create_category_dict, get_html_category_list, text_format_for_html
 from sqlalchemy import or_, text
@@ -302,6 +303,7 @@ def method(method_id):
     method = Methodics.query.get_or_404(method_id)
     timing = MethodTiming.query.filter_by(method_id=method_id).first()
     steps = db.session.query(TimingSteps).filter_by(method_timing_id=method.timing_id).order_by('id')
+    quant_of_comments = count_comments(method.id, item_type=1)
     print(f'Система: {os.name}')
 
     ##### РОЛЬ ДОСТУПА #####
@@ -391,7 +393,8 @@ def method(method_id):
                             steps_desc_dict=steps_desc_dict,
                             steps_results_dict=steps_results_dict,
                             category=category.category_name,
-                            age_list=age_list)
+                            age_list=age_list,
+                            quant_of_comments=quant_of_comments)
 
 
 ##### CATEGORY METHODICS #####

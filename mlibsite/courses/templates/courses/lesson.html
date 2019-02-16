@@ -45,6 +45,15 @@
               <button type="button" class='btn btn-outline-danger btn-sm' data-toggle='modal' data-target='#del_modal_lesson'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
             </div>
           {% endif %}
+          <div align='right'>
+            <br>
+            <a  href="{{url_for('comments.comments_view', item_id=lesson.id, item_type=4)}}">Комментарии</a>
+            {% if quant_of_comments %}
+              <span class="badge badge-light"> {{quant_of_comments}}</span>
+            {% else %}
+              <span class="badge badge-light"> 0</span>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

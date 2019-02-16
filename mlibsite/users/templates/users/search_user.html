@@ -13,6 +13,10 @@
           <h5>для настройки прав доступа к проекту</h5>
           <h5><a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h5>
           {% endif %}
+          {% if method %}
+          <h5>для настройки прав доступа к методике</h5>
+          <h5><a class="text-body text-decoration-none" href="{{url_for('methodics.method', method_id=method.id)}}">{{method.title}}</a></h5>
+          {% endif %}
         </div>
       </div>
     </div>

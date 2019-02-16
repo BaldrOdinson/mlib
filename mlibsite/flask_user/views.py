@@ -269,11 +269,6 @@ def login():
             user, user_email = user_manager.find_user_by_email(login_form.email.data)
 
         if user:
-            # # Ilya, check email confirm_email_expiration
-            # print(f'User confirmation: {user.confirmed_at}')
-            # if not user.confirmed_at:
-            #     print(f'Inside if')
-            #     flash(_('Перед входом следует завершить подтверждение email адреса.'), 'error')
             # Log user in
             safe_next = user_manager.make_safe_url_function(login_form.next.data)
             return _do_login_user(user, safe_next, login_form.remember_me.data)

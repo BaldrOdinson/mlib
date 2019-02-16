@@ -57,7 +57,7 @@
         </td>
         <td>
           {% if methods_dict[lesson.method_id] %}
-            <table>
+            <table class="table-borderless">
               <tr>
                 <td>
                   <a href="{{url_for('methodics.method', method_id=methods_dict[lesson.method_id].id)}}">
@@ -76,7 +76,7 @@
         <td>
           {{lesson.description}}
         </td>
-        <td align='right'>
+        <td align='right' width='80px'>
           <a class='btn btn-outline-success btn-sm' href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}" title="Просмотр">?</a>
           <a class='btn btn-outline-warning btn-sm' href="{{url_for('courses.update_lesson', lesson_id=lesson.id)}}" title="Измененить">!</a>
         </td>

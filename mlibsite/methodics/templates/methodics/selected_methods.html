@@ -21,110 +21,62 @@
 
 
 <!--  SHOW Students-->
-  {% if lesson_id %}
-    {% if method_set.items %}
-      {% for method in method_set.items %}
-        <table width='100%'>
-          <tr>
-            <td width='90px'>
-              <img width='70px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
-            </td>
-            <td align='left'>
-              <h5>{{method.title}}</h5>
-            </td>
-            <td align='right' width='190px'>
-              <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.method', method_id=method.id)}}">!</a>
+  {% if method_set.items %}
+    {% for method in method_set.items %}
+      <table width='100%'>
+        <tr>
+          <td width='90px'>
+            <img width='70px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
+          </td>
+          <td align='left'>
+            <h5>{{method.title}}</h5>
+          </td>
+          <td align='right' width='190px'>
+            <a class='btn btn-outline-warning btn-sm' href="{{url_for('methodics.method', method_id=method.id)}}">!</a>
+            {% if lesson_id %}
               <a class='btn btn-outline-info btn-sm' href="{{url_for('methodics.add_method_to_lesson', method_id=method.id, lesson_id=lesson.id)}}">Добавить в занятие</a>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            {{method.short_desc}}
+          </td>
+        </tr>
+      </table>
+      <table width='100%'>
+        <tr>
+          <td width='90px'>
+          </td>
+          {% if method.age_from %}
+            <td width='120px' valign='top'>
+              <strong>Возраст: от</strong> {{method.age_from}}
             </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              {{method.short_desc}}
+          {% endif %}
+          {% if method.age_till %}
+            <td width='60px' valign='top'>
+              <strong>до</strong> {{method.age_till}}
             </td>
-          </tr>
-        </table>
-        <table width='100%'>
-          <tr>
-            {% if method.age_from %}
-              <td width='120px' valign='top'>
-                <strong>Возраст: от</strong> {{method.age_from}}
-              </td>
-            {% endif %}
-            {% if method.age_till %}
-              <td width='60px' valign='top'>
-                <strong>до</strong> {{method.age_till}}
-              </td>
-            {% endif %}
-            {% if method.tags %}
-              <td valign='top' width='60%'>
-                <strong>Теги:</strong> {{method.tags}} {{method.author.username}}
-              </td>
-            {% endif %}
-            <td align='right' valign='top'>
+          {% endif %}
+          {% if method.tags %}
+            <td valign='top' width='60%'>
+              <strong>Теги:</strong> {{method.tags}} {{method.author.username}}
+            </td>
+          {% endif %}
+          <td align='right' valign='top'>
+            <small>
               <strong>Автор:</strong> {{method.author.username}}<br>
-              <strong>Обновлено:</strong> {{date_translate(method.change_date)}}
-            </td>
-          </tr>
-        </table>
-        <hr>
-      {% endfor %}
-    {% else %}
-      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
-    {% endif %}
-    <!-- COMMON SEARCH -->
-    {% else %}
-    {% if method_set.items %}
-      {% for method in method_set.items %}
-        <table width='100%'>
-          <tr>
-            <td width='90px'>
-              <img width='70px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
-            </td>
-            <td align='left'>
-              <h5>{{method.title}}</h5>
-            </td>
-            <td align='right' width='190px'>
-              <a class='btn btn-outline-primary btn-sm' href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              {{method.short_desc}}
-            </td>
-          </tr>
-        </table>
-        <table width='100%'>
-          <tr>
-            {% if method.age_from %}
-              <td width='120px' valign='top'>
-                <strong>Возраст: от</strong> {{method.age_from}}
-              </td>
-            {% endif %}
-            {% if method.age_till %}
-              <td width='60px' valign='top'>
-                <strong>до</strong> {{method.age_till}}
-              </td>
-            {% endif %}
-            {% if method.tags %}
-              <td valign='top' width='60%'>
-                <strong>Теги:</strong> {{method.tags}} {{method.author.username}}
-              </td>
-            {% endif %}
-            <td align='right' valign='top'>
-              <strong>Автор:</strong> {{method.author.username}}<br>
-              <strong>Обновлено:</strong> {{date_translate(method.change_date)}}
-            </td>
-          </tr>
-        </table>
-        <hr>
-      {% endfor %}
-    {% else %}
-      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
-    {% endif %}
+              <strong>Обновлено:</strong>{{date_translate(method.change_date)}}
+            </small>
+          </td>
+        </tr>
+      </table>
+      <hr>
+    {% endfor %}
+  {% else %}
+    Ой. Ничего не найдено. Проверьте указанную вами информацию для поиска.
   {% endif %}
-
 
 <!--  Pagination-->
   <nav aria-label='Page Navigation'>

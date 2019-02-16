@@ -29,23 +29,16 @@
       {% for step in steps %}
         <div class="card text-center">
           <div class="card-header" style="height:55px;">
-            <table class="table table-borderless table-sm">
+            <table class="table table-borderless table-sm" width='100%'>
               <tr>
-                <td># <strong>{{step.step_seq_number}}</strong></td>
-                <td><strong>{{step.step_duration}}</strong> минут</td>
+                {% if step.step_seq_number %}
+                    <td style="text-align:left"># <strong>{{step.step_seq_number}}</strong></td>
+                {% else %}
+                  <td style="text-align:left" width='180px'>номер этапа не указан</td>
+                {% endif %}
+                <td style="text-align:center"><strong>{{step.step_duration}}</strong> минут</td>
               </tr>
             </table>
-            <!-- <div class="container">
-              <div class="row justify-content-around">
-                <div class="col-">
-                  # <strong>{{step.step_seq_number}}</strong>
-                </div>
-                <div class="col-">
-                  {{step.step_duration}} минут
-                </div>
-              </div>
-            </div> -->
-            <!-- {{step.step_duration}} минут -->
           </div>
 
           <div class="card-body">

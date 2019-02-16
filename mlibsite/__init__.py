@@ -55,6 +55,7 @@ from mlibsite.timing.views import timing
 from mlibsite.projects.views import projects
 from mlibsite.courses.views import courses
 from mlibsite.students.views import students
+from mlibsite.comments.views import comments
 app.register_blueprint(core)
 app.register_blueprint(error_pages)
 app.register_blueprint(users)
@@ -63,3 +64,4 @@ app.register_blueprint(timing)
 app.register_blueprint(projects)
 app.register_blueprint(courses)
 app.register_blueprint(students)
+app.register_blueprint(comments)

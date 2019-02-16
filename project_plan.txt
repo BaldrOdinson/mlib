@@ -1,7 +1,8 @@
 ToDo:
+pagination для комментариев
 система сопровождения проектов
-comments
 общее расписание для периода
+загрузка списка участников файлом
 Tags
 upload images
 images for steps

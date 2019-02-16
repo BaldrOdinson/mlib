@@ -123,7 +123,7 @@ def edit_timing(method_id):
                 or (current_user == method.author)):
         abort(403)
 
-    print(steps)
+    # print(steps)
 
     form = AddTimingForm()
 

@@ -20,6 +20,13 @@
             {% endif %}
             <br>
             <a class='btn btn-info' href="{{url_for('projects.term_list', project_id=project.id)}}">Мероприятия</a>
+            <br><br>
+            <a  href="{{url_for('comments.comments_view', item_id=project.id, item_type=2)}}">Комментарии</a>
+            {% if quant_of_comments %}
+              <span class="badge badge-light"> {{quant_of_comments}}</span>
+            {% else %}
+              <span class="badge badge-light"> 0</span>
+            {% endif %}
           </div>
         </div>
       </div>

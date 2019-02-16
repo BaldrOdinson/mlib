@@ -26,54 +26,6 @@
 
 
 <!--  SHOW Students-->
-  {% if course_id %}
-    {% if student_set.items %}
-      {% for student in student_set.items %}
-        <table width='100%'>
-          <tr>
-            <td>
-              <img align='center' height='40px' src="{{url_for('static', filename = 'students_pics/students_ava/'+student.avatar)}}">
-            </td>
-            <td>
-              <h1 class="display-4">{{student.first_name}} {{student.last_name}}</h1>
-            </td>
-            <td align='right'>
-              <a class='btn btn-outline-success btn-sm' href="{{url_for('students.student_view', student_id=student.id)}}">?</a>
-              <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}">!</a>
-              <a class='btn btn-outline-info btn-sm' href="{{url_for('students.add_student_to_list', course_id=course_id, student_id=student.id)}}">Добавить в список</a>
-            </td>
-          </tr>
-        </table>
-        <table width='100%'>
-          <tr>
-            {% if student.age %}
-              <td>
-                <strong>Возраст:</strong> {{student.age}}
-              </td>
-            {% endif %}
-            {% if student.phone_num %}
-              <td>
-                <strong>Телефон:</strong> {{student.phone_num}}
-              </td>
-            {% endif %}
-            {% if student.email %}
-              <td>
-                <strong>Email:</strong> {{student.email}}
-              </td>
-            {% endif %}
-            {% if student.address %}
-              <td>
-                <strong>Адрес:</strong> {{student.address}}
-              </td>
-            {% endif %}
-          </tr>
-        </table>
-        <hr>
-      {% endfor %}
-    {% else %}
-      Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
-    {% endif %}
-  {% else %}
   {% if student_set.items %}
     {% for student in student_set.items %}
       <table width='100%'>
@@ -87,6 +39,9 @@
           <td align='right'>
             <a class='btn btn-outline-success btn-sm' href="{{url_for('students.student_view', student_id=student.id)}}">?</a>
             <a class='btn btn-outline-warning btn-sm' href="{{url_for('students.update_student', student_id=student.id)}}">!</a>
+            {% if course_id %}
+              <a class='btn btn-outline-info btn-sm' href="{{url_for('students.add_student_to_list', course_id=course_id, student_id=student.id)}}">Добавить в список</a>
+            {% endif %}
           </td>
         </tr>
       </table>
@@ -118,7 +73,6 @@
     {% endfor %}
   {% else %}
     Ой. Никого не найдено. Проверьте указанную вами информацию для поиска.
-  {% endif %}
   {% endif %}
 
 

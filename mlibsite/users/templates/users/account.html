@@ -10,40 +10,43 @@
   </div>
 
   <div class="container">
-    <h6>При необходимости, ниже вы можете изменить данные о себе.</h6>
-      <p>После завершения редактирования не забудьте нажать кнопку "Сохранить"</p>
+    <div align='right'>
+      <h6>При необходимости, ниже вы можете изменить данные о себе.</h6>
+        <p>После завершения редактирования не забудьте нажать кнопку {{form.submit(class='btn btn-primary')}}</p>
+    </div>
+
     <form method="POST" action="" enctype="multipart/form-data">
       {{form.hidden_tag()}}
       <div class="form-group">
-        {{form.username.label(class='form-group')}}
+        <strong>{{form.username.label(class='form-group')}}</strong>
         {{form.username(class='form-control')}}
       </div>
       <div class="form-group">
-        {{form.email.label(class='form-group')}}
+        <strong>{{form.email.label(class='form-group')}}</strong>
         {{form.email(class='form-control')}}
       </div>
       <div class="form-group">
-        {{form.picture.label(class='form-group')}}
+        <strong>{{form.picture.label(class='form-group')}}</strong>
         {{form.picture(class='form-control-file')}}
       </div>
       <div class="form-group">
-        {{form.first_name.label()}}
+        <strong>{{form.first_name.label()}}</strong>
         {{form.first_name(class="form-control", placeholder="Ваше имя")}}
       </div>
       <div class="form-group">
-        {{form.last_name.label()}}
+        <strong>{{form.last_name.label()}}</strong>
         {{form.last_name(class="form-control", placeholder="Ваша фамилия")}}
       </div>
       <div class="form-group">
-        {{form.phone_num.label()}}
+        <strong>{{form.phone_num.label()}}</strong>
         {{form.phone_num(class="form-control", placeholder="Номер телефона")}}
       </div>
       <div class="form-group">
-        {{form.address.label()}}
+        <strong>{{form.address.label()}}</strong>
         {{form.address(class="form-control", placeholder="Ваш адрес (город)")}}
       </div>
       <div class="form-group">
-        {{form.curr_job_place.label()}}
+        <strong>{{form.curr_job_place.label()}}</strong>
         {{form.curr_job_place(class="form-control", placeholder="Место работы")}}
       </div>
       <div class="form-group" align='right'>

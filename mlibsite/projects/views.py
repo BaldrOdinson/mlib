@@ -8,6 +8,7 @@ from mlibsite.methodics.text_formater import text_format_for_html, date_translat
 from mlibsite.projects.forms import AddProjectForm, UpdateProjectForm, AddTermForm, UpdateTermForm
 from mlibsite.projects.picture_handler import add_project_pic, add_term_pic
 from mlibsite.projects.files_saver import add_attachment
+from mlibsite.comments.comments_processing import count_comments
 from mlibsite.users.user_roles import get_roles, user_role
 from datetime import datetime
 import json, os, shutil
@@ -164,6 +165,7 @@ def update_project(project_id):
 def project_view(project_id):
     # Получаем из базы метод, тайминг занятия, этапы занятия
     project = Projects.query.get_or_404(project_id)
+    quant_of_comments = count_comments(project.id, item_type=2)
 
     ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту
@@ -197,7 +199,8 @@ def project_view(project_id):
                             attachments = attachments,
                             curr_user_role = curr_user_role,
                             label_image=project.label_image,
-                            date_translate=date_translate)
+                            date_translate=date_translate,
+                            quant_of_comments=quant_of_comments)
 
 
 ###### DELETE PROJECT ######

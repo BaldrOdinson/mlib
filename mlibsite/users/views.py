@@ -99,11 +99,11 @@ def user_methodics(username):
 def search_user():
     # Опрелеляем номер списка для текущего курса и остальные параметры
     if 'project_id' in session:
-            project_id = session['project_id']
-            project = Projects.query.get_or_404(project_id)
+        project_id = session['project_id']
+        project = Projects.query.get_or_404(project_id)
     elif 'method_id' in session:
-            method_id = session['method_id']
-            method = Methodics.query.get_or_404(method_id)
+        method_id = session['method_id']
+        method = Methodics.query.get_or_404(method_id)
 
     form = SearchUserForm()
 

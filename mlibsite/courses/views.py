@@ -8,6 +8,7 @@ from mlibsite.methodics.text_formater import text_format_for_html, date_translat
 from mlibsite.courses.forms import AddCourseForm, UpdateCourseForm, AddLessonForm, UpdateLessonForm
 from mlibsite.courses.picture_handler import add_course_pic
 from mlibsite.courses.files_saver import add_attachment, add_lesson_attachment
+from mlibsite.comments.comments_processing import count_comments
 from mlibsite.users.user_roles import get_roles, user_role
 from datetime import datetime
 import json, os, shutil
@@ -160,7 +161,8 @@ def course_view(course_id):
     course = Courses.query.get_or_404(course_id)
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
-    course_schedule = Lessons.query.filter_by(course_id=course.id).order_by(Lessons.lesson_date).all()
+    quant_of_comments = count_comments(course.id, item_type=3)
+    course_schedule = Lessons.query.filter_by(course_id=course.id).order_by(Lessons.lesson_date).order_by(Lessons.start_time).all()
     session['course_id'] = course.id
 
     ##### РОЛЬ ДОСТУПА #####
@@ -223,6 +225,7 @@ def course_view(course_id):
                             date_translate=date_translate,
                             students_group_desc=student_group_desc,
                             students_group_list=students_group_list,
+                            quant_of_comments=quant_of_comments,
                             len=len,
                             zip=zip)
 
@@ -433,7 +436,7 @@ def update_lesson(lesson_id):
         form.lesson_date.data = lesson.lesson_date
         form.start_time.data = lesson.start_time
         form.finish_time.data = lesson.finish_time
-        form.method_id.data = lesson.method_id
+        # form.method_id.data = lesson.method_id
         form.tutors.data = lesson.tutors
         form.absent_students_list.data = lesson.absent_students_list
         form.web_links.data = lesson.web_links
@@ -477,6 +480,7 @@ def lesson_view(lesson_id):
     course = Courses.query.get_or_404(lesson.course_id)
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
+    quant_of_comments = count_comments(lesson.id, item_type=4)
 
     ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту
@@ -515,6 +519,7 @@ def lesson_view(lesson_id):
                             note = note_html,
                             web_links = web_links_html,
                             tutors = tutors_html,
+                            quant_of_comments=quant_of_comments,
                             date_translate=date_translate)
 
 
@@ -581,7 +586,7 @@ def update_schedule(course_id):
     course = Courses.query.get_or_404(course_id)
     term = Term.query.get_or_404(course.term_id)
     project = Projects.query.get_or_404(term.project_id)
-    course_schedule = Lessons.query.filter_by(course_id=course.id).order_by(Lessons.lesson_date).all()
+    course_schedule = Lessons.query.filter_by(course_id=course.id).order_by(Lessons.lesson_date).order_by(Lessons.start_time).all()
 
     ##### РОЛЬ ДОСТУПА #####
     # Смотрим роли пользователей по проекту

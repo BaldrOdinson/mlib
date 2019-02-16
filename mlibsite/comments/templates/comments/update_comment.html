@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <table width='100%'>
+        <tr>
+          <td><img align='center' height='200px' src="{{url_for('static', filename = 'base/change_comment.png')}}"></td>
+          <td>
+            <h2>Изменение комментария</h2>
+          </td>
+          <!-- {% if current_user.is_authenticated %}
+          {% endif %} -->
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div class="form-group">
+        <strong>{{form.body.label(class='form-control-label')}}</strong>
+        {{form.body(class='form-control', id='editor')}}
+      </div>
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

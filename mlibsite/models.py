@@ -51,7 +51,7 @@ class UserRole(db.Model):
     item_type_desc = db.Column(db.String(256))
     role_type = db.Column(db.Integer, nullable=False)
     role_type_desc = db.Column(db.String(256))
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
 
     def __init__(self, user_id, item_id, item_type, role_type, item_type_desc, role_type_desc):
@@ -71,7 +71,7 @@ class Methodics(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    publish_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    publish_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
     title = db.Column(db.String(256), nullable=False)
     age_from = db.Column(db.Integer)
@@ -175,7 +175,7 @@ class Projects(db.Model):
     note = db.Column(db.Text)
     web_links = db.Column(db.Text)
     attach = db.Column(db.Text)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
 
     def __init__(self, name, short_desc, author_id):
@@ -229,7 +229,7 @@ class Courses(db.Model):
     web_links = db.Column(db.Text)
     note = db.Column(db.Text)
     attach = db.Column(db.Text)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
 
     def __init__(self, project_id, term_id, name, description, start_date, finish_date):
@@ -260,7 +260,7 @@ class Lessons(db.Model):
     web_links = db.Column(db.Text)
     note = db.Column(db.Text)
     attach = db.Column(db.Text)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
 
     def __init__(self, course_id, description, lesson_date, start_time, finish_time):
@@ -281,7 +281,7 @@ class StudentsGroup(db.Model):
     description = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     moders_list = db.Column(db.Text)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
 
     def __init__(self, description, author_id):
@@ -306,7 +306,7 @@ class Students(db.Model):
     address = db.Column(db.Text)
     avatar = db.Column(db.String(128), nullable=False, default='default_student.png')
     document_dict = db.Column(db.Text)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
     note = db.Column(db.Text)
     attach = db.Column(db.Text)
@@ -333,7 +333,7 @@ class Learning_groups(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     term_id = db.Column(db.Integer, db.ForeignKey('term.id'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     def __init__(self, group_id, student_id, course_id, term_id, project_id):
         self.group_id = group_id
@@ -352,9 +352,9 @@ class Comments(db.Model):
     body = db.Column(db.Text)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     parrent_comment = db.Column(db.Integer, nullable=False, default=0)
-    create_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
     item_id = db.Column(db.Integer, nullable=False)
-    item_type = db.Column(db.Integer, nullable=False)
+    item_type = db.Column(db.Integer, nullable=False) #(1-project, 2-method, 3-course, 4-lesson)
     item_type_desc = db.Column(db.String(256))
     disabled = db.Column(db.Boolean)

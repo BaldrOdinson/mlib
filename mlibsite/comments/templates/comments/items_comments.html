@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+  <br>
+  <div class="container-fluid">
+    <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
+    <div class="jumbotron">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-auto" align='left'>
+            {% if method %}
+            <img align='center' height='200px' src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}">
+            {% elif project %}
+            <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/project_ava/'+project.label_image)}}">
+            {% elif course %}
+            <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/project_courses/'+course.label_image)}}">
+            {% elif lesson %}
+            <img align='center' height='200px' src="{{url_for('static', filename = 'projects_pics/default_lesson.png')}}">
+            {% endif %}
+          </div>
+          <div class="col-lg">
+            <h2>Комментарии</h2>
+            {% if method %}
+              <h4>к методике: <a class="text-body text-decoration-none" href="{{url_for('methodics.method', method_id=method.id)}}">{{method.title}}</a></h4>
+            {% elif project %}
+              <h4>к проекту: <a class="text-body text-decoration-none" href="{{url_for('projects.project_view', project_id=project.id)}}">{{project.name}}</a></h4>
+            {% elif course %}
+              <h4>к курсу занятий: <a class="text-body text-decoration-none" href="{{url_for('courses.course_view', course_id=course.id)}}">{{course.name}}</a></h4>
+            {% elif lesson %}
+              <h4>к занятию: <a class="text-body text-decoration-none" href="{{url_for('courses.lesson_view', lesson_id=lesson.id)}}">{{lesson.description}}</a></h4>
+            {% endif %}
+            <small class='text-muted'>Свой комментарий можно изменить или удалить если ему не больше суток.</small>
+          </div>
+        </div>
+      </div>
+          <!-- {% if current_user.is_authenticated %}
+          {% endif %} -->
+    </div>
+  </div>
+
+  <!-- Существуюшие комменты -->
+  <!-- Макрос для организации рекурсии, чтобы вывести все базовые комментарии -->
+  <!-- card view -->
+  {% macro show_comments_card(comments_dict) %}
+   {% for comment in comments_dict.items() %}
+     <div class="card">
+       <small class="card-header">
+         <table width='100%'>
+           <tr>
+             <td>
+                <img height='25px' class="rounded-circle" src="{{url_for('static', filename='profile_pics/'+authors_dict[comment[0].author_id].profile_image)}}">
+                &nbsp;&nbsp;<a href="{{url_for('users.user_methodics', username=authors_dict[comment[0].author_id].username)}}">{{authors_dict[comment[0].author_id].username}}</a>
+                {{date_translate(comment[0].create_date)}} в {{str(comment[0].create_date)[11:19]}}
+                {% if comment[0].change_date %}
+                  &nbsp;&nbsp;<span class="text-muted">(был изменен {{date_translate(comment[0].change_date)}} в {{str(comment[0].change_date)[11:19]}})</span>
+                {% endif %}
+             </td>
+             <td>
+                <div align='right'>
+                  {% if ((comment[0].author_id == current_user.id) and ((curr_time - comment[0].create_date).days < 1)) or (current_user.username == 'Administrator') %}
+                    <a href="{{url_for('comments.edit_comment', comment_id=comment[0].id, page=page)}}">Изменить</a>
+                  {% endif %}
+                  {% if ((comment[0].author_id == current_user.id) and ((curr_time - comment[0].create_date).days < 1)) or (current_user.username == 'Administrator') or (curr_user_role in ['admin', 'moder']) %}
+                    <a class="text-danger" href="{{url_for('comments.delete_comment', comment_id=comment[0].id, page=page)}}">Удалить</a>
+                  {% endif %}
+                </div>
+             </td>
+           </tr>
+         </table>
+        </small>
+       <div class="card-body">
+         {{ Markup(comment[0].body) }}
+         <a href="{{url_for('comments.reply_to_comment', comment_id=comment[0].id, page=page)}}"><small>Ответить</small></a>
+         {% if comment[1] %}
+           <br><hr><h5>ответы</h5>
+           <ul style="list-style: none;">
+             {{ show_sub_comments(comment[1][0]) }}
+           </ul>
+         {% endif %}
+       </div>
+     </div>
+   {% endfor %}
+  {% endmacro %}
+
+
+<!-- Макрос для организации рекурсии, чтобы вывести все ответы на комментарии -->
+  {% macro show_sub_comments(comments_dict) %}
+    {% for comment in comments_dict.items() %}
+      <li>
+        <table width='100%' class="table-borderless">
+          <tr>
+            <td>
+              <small>
+                <img height='25px' class="rounded-circle" src="{{url_for('static', filename='profile_pics/'+authors_dict[comment[0].author_id].profile_image)}}">
+                &nbsp;&nbsp;<a href="{{url_for('users.user_methodics', username=authors_dict[comment[0].author_id].username)}}">{{authors_dict[comment[0].author_id].username}}</a>
+                {{date_translate(comment[0].create_date)}} в {{str(comment[0].create_date)[11:19]}}
+                {% if comment[0].change_date %}
+                  &nbsp;&nbsp;<span class="text-muted">(был изменен {{date_translate(comment[0].change_date)}} в {{str(comment[0].change_date)[11:19]}})</span>
+                {% endif %}
+              </small>
+            </td>
+            {% if ((comment[0].author_id == current_user.id) and ((curr_time - comment[0].create_date).days < 1)) or (current_user.username == 'Administrator')  or (curr_user_role in ['admin', 'moder']) %}
+              <td align='right' width='150px'>
+                {% if ((comment[0].author_id == current_user.id) and ((curr_time - comment[0].create_date).days < 1)) or (current_user.username == 'Administrator') %}
+                  <a href="{{url_for('comments.edit_comment', comment_id=comment[0].id, page=page)}}"><small>Изменить</small></a>
+                {% endif %}
+                <a class="text-danger" href="{{url_for('comments.delete_comment', comment_id=comment[0].id, page=page)}}"><small>Удалить</small></a>
+              </td>
+            {% endif %}
+          </tr>
+          <tr>
+            <td colspan="2">
+              {{ Markup(comment[0].body) }}
+              <a href="{{url_for('comments.reply_to_comment', comment_id=comment[0].id, page=page)}}"><small>Ответить</small></a>
+            </td>
+          </tr>
+        </table>
+      </li>
+      <hr>
+      {% if comment[1] %}
+        <ul style="list-style: none;">
+          {{ show_sub_comments(comment[1][0]) }}
+        </ul>
+      {% endif %}
+    {% endfor %}
+  {% endmacro %}
+
+  <div class="container-fluid">
+    {{ show_comments_card(comments_dict) }}
+  </div>
+
+<!--  Pagination-->
+  <br>
+  <nav aria-label='Page Navigation example'>
+    <ul class='pagination justify-content-center'>
+      {% for page_num in paginate_base_comments.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if paginate_base_comments.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
+          <li class='page-item disabled'>  <!-- то номер этой страницы задизэйблен -->
+            <a class='page-link' href="{{url_for('comments.comments_view', item_id=item_id, item_type=item_type, page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% else %}
+          <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
+            <a class='page-link' href="{{url_for('comments.comments_view', item_id=item_id, item_type=item_type, page=page_num)}}">{{page_num}}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <br><br>
+<!-- Новвый корневой комментарий -->
+  <div class="container-fluid">
+    <form class="form-group" method="post">
+      {{form.hidden_tag()}}
+      <div class="form-group">
+        <strong>{{form.body.label(class='form-control-label')}}</strong>
+        {{form.body(class='form-control', id='editor')}}
+      </div>
+      <div class="form-group" align='right'>
+        {{form.submit(class='btn btn-outline-info')}}
+      </div>
+    </form>
+  </div>
+
+
+{% endblock %}
