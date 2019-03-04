@@ -409,7 +409,7 @@ def update_lesson(lesson_id):
         # формируем общий список, переводим в форма JSON и сохраняем в базу
         if form.attach.data:
             project_id = project.id
-            if course.attach:
+            if lesson.attach:
                 attachments_files_list = json.loads(project.attach)
             else:
                 attachments_files_list = []

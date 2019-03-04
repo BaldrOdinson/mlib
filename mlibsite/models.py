@@ -355,6 +355,6 @@ class Comments(db.Model):
     create_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
     change_date = db.Column(db.DateTime)
     item_id = db.Column(db.Integer, nullable=False)
-    item_type = db.Column(db.Integer, nullable=False) #(1-project, 2-method, 3-course, 4-lesson)
+    item_type = db.Column(db.Integer, nullable=False) #(1-method, 2-project, 3-course, 4-lesson)
     item_type_desc = db.Column(db.String(256))
     disabled = db.Column(db.Boolean)

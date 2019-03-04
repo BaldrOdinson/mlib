@@ -257,7 +257,7 @@ def create_user_role(user_id):
 
             db.session.add(user_role)
             db.session.commit()
-            flash('Пользователю добавлена выбранна роль', 'success')
+            flash('Пользователю добавлена выбранная роль', 'success')
         if item_type == 2:
             return redirect(url_for('projects.update_project', project_id=project.id))
         if item_type == 1:

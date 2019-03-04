@@ -128,7 +128,9 @@
     <br>
     <div class="" align='right'>
       <a class='btn btn-warning' href="{{url_for('projects.update_project', project_id=project.id)}}">Изменить</a>
-      <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal_project'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+      {% if ((project.author_id == current_user.id) or (current_user.username == 'Administrator') or (curr_user_role in ['admin'])) %}
+        <button type="button" class='btn btn-danger' data-toggle='modal' data-target='#del_modal_project'>Удалить</button>  <!-- Кнопка вызывает всплывающее окно modal описанное ниже-->
+      {% endif %}
     </div>
   {% endif %}
 
