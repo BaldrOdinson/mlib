@@ -410,7 +410,7 @@ def update_lesson(lesson_id):
         if form.attach.data:
             project_id = project.id
             if lesson.attach:
-                attachments_files_list = json.loads(project.attach)
+                attachments_files_list = json.loads(lesson.attach)
             else:
                 attachments_files_list = []
             attachment_filename = add_lesson_attachment(form.attach.data, lesson.id, course.id, project.id, term.id, lesson.attach)
