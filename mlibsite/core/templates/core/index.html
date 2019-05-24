@@ -4,19 +4,19 @@
 <div class="container-fluid">
   <!-- <div class="jumbotron" style="background-image: url({{url_for('static', filename = 'base/jumbo_bg5.jpg')}});"> -->
   <div class="jumbotron">
-    <h1>Методическая библиотека</h1>
-    <h6>mlib.<span style="color:green">online</span></h6>
+    <h1 class="localFonts_ubuntu">Методическая библиотека</h1>
+    <h6 class="localFonts_ubuntu">mlib.<span style="color:green">online</span></h6>
 
     <!-- Категории -->
     <p></p>
     <div class="dropright">
-      <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button class="btn btn-secondary btn-sm dropdown-toggle localFonts_ubuntu" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Категории
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         {% for category_num, category_name, count in html_category_list %}
           {% if category_num != 1 %}
-              <a class="dropdown-item" href="{{url_for('methodics.category_methodics', category=category_num)}}">
+              <a class="dropdown-item localFonts_ubuntu" href="{{url_for('methodics.category_methodics', category=category_num)}}">
                 {{category_name}} &emsp;<span class="badge badge-pill badge-light">{{count}}</span>
               </a>
           {% endif %}
@@ -24,7 +24,7 @@
         <div class="dropdown-divider"></div>
         {% for category_num, category_name, count in html_category_list %}
           {% if category_num == 1 %}
-            <a class="dropdown-item" href="{{url_for('methodics.category_methodics', category=category_num)}}">
+            <a class="dropdown-item localFonts_ubuntu" href="{{url_for('methodics.category_methodics', category=category_num)}}">
               {{category_name}} &emsp;<span class="badge badge-pill badge-light">{{count}}</span>
             </a>
           {% endif %}
@@ -44,18 +44,18 @@
               <img class="card-img-top" src="{{url_for('static', filename = 'methodics_pics/method_ava/'+method.method_label_image)}}" alt="Card image cap">
             </a>
             <div class="card-body">
-              <h5 class="card-title">{{method.title}}</h5>
+              <h5 class="card-title localFonts_ubuntu">{{method.title}}</h5>
               {% for list in short_desc_dict[method.id] %}
-                  <p class="card-text">{{ list }}</p>
+                  <p class="card-text localFonts_ubuntu">{{ list }}</p>
               {% endfor %}
             </div>
             <div align='right'>
-              <a class='btn btn-primary btn-sm' style="margin-right:6px;" href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
+              <a class='btn btn-primary btn-sm localFonts_ubuntu' style="margin-right:6px;" href="{{url_for('methodics.method', method_id=method.id)}}">Открыть</a>
             </div>
             <div class="" align='right' style="margin-right:5px">
               <footer class="footer">
-                <small class="text-muted">
-                  Автор: <a href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
+                <small class="text-muted localFonts_ubuntu">
+                  Автор: <a class="localFonts_ubuntu" href="{{url_for('users.user_methodics', username=method.author.username)}}"> {{method.author.username}}</a><br>
                   Добавленно: {{date_translate(method.publish_date)}}<br>
                   {% if method.change_date != None %}
                     Последнее обновление: {{date_translate(method.change_date)}}
@@ -74,11 +74,11 @@
       {% for page_num in methodics.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
         {% if methodics.page == page_num %}  <!-- Если мы уже на запрашиваемой странице -->
           <li class='page-item disabled'>  <!-- то номер этой страницы задисэйблин -->
-            <a class='page-link' href="{{url_for('core.index', page=page_num)}}">{{page_num}}</a>
+            <a class='page-link localFonts_ubuntu' href="{{url_for('core.index', page=page_num)}}">{{page_num}}</a>
           </li>
         {% else %}
           <li class='page-item'>  <!-- то номер этой страницы задисэйблин -->
-            <a class='page-link' href="{{url_for('core.index', page=page_num)}}">{{page_num}}</a>
+            <a class='page-link localFonts_ubuntu' href="{{url_for('core.index', page=page_num)}}">{{page_num}}</a>
           </li>
         {% endif %}
       {% endfor %}

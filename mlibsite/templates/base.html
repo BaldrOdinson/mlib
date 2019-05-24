@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" text="text/css" href="static/local_stylesheets/local_css.css" />
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -11,29 +12,29 @@
   <body>
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <a class="navbar-brand" href="{{url_for('core.index')}}">M-Lib</a>
+      <a class="navbar-brand localFonts_ubuntu" href="{{url_for('core.index')}}">M-Lib</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2" id="navbarText">
       <!-- <div class="collapse navbar-collapse" id="navbarText"> -->
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item"><a class="nav-link" href="{{url_for('core.info')}}">Информация</a></li>
+          <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('core.info')}}">Информация</a></li>
           {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="{{url_for('methodics.create_method')}}">Добавить Методику</a></li>
+            <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('methodics.create_method')}}">Добавить Методику</a></li>
           {% endif %}
-          <li class="nav-item"><a class="nav-link" href="{{url_for('projects.projects_list')}}">Проекты</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{url_for('core.mlib_search')}}">Поиск</a></li>
+          <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('projects.projects_list')}}">Проекты</a></li>
+          <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('core.mlib_search')}}">Поиск</a></li>
         </ul>
       </div>
       <div class="navbar-collapse collapse w-100 order-3 dual-collapse2" id="navbarText">
         <ul class="navbar-nav ml-auto">
           {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="{{url_for('users.account')}}">{{current_user.username}}</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{url_for('users.logout')}}">Выход</a></li>
+            <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('users.account')}}">{{current_user.username}}</a></li>
+            <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('users.logout')}}">Выход</a></li>
           {% else %}
-            <li class="nav-item"><a class="nav-link" href="{{url_for('users.login')}}">Вход</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{url_for('users.register')}}">Регистрация</a></li>
+            <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('users.login')}}">Вход</a></li>
+            <li class="nav-item"><a class="nav-link localFonts_ubuntu" href="{{url_for('users.register')}}">Регистрация</a></li>
           {% endif %}
         </ul>
       </div>
@@ -80,8 +81,8 @@
     </div>
     <div class="" align='right'>
       <footer class="footer" style="margin-right:5px">
-        <small class="text-muted">Designed by
-          <a href="http://senseflare.ru">SenseFlare Lab</a>
+        <small class="text-muted localFonts_ubuntu">Designed by
+          <a class="localFonts_ubuntu" href="http://senseflare.ru">SenseFlare Lab</a>
         </small>
       </footer>
     </div>
