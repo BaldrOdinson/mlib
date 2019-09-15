@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = 'mysecretkey'
 ############################################################
 basedir = os.path.abspath(os.path.dirname(__file__))
 # строка для postgresql
-app.congig.from_pyfile('db_config.cfg')
+app.config.from_pyfile('db_config.cfg')
 # app.config['SQLALCHEMY_DATABASE_URI']='postgresql://mlib:mlib1@localhost/mlib'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['CSRF_ENABLED'] = True
