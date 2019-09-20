@@ -44,7 +44,7 @@ def username_validator(form, field):
     """ Username must cont at least 3 alphanumeric characters long"""
     username = field.data
     if len(username) < 3:
-        raise ValidationError(_('Username должен быть длиной йкак минимум 3 символа'))
+        raise ValidationError(_('Username должен быть длиной как минимум 3 символа'))
     valid_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
     chars = list(username)
     for char in chars:
